@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembuat LKPD Otomatis (AI-Powered)</title>
+    <!-- Tailwind CSS CDN untuk styling responsif -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles untuk font Inter jika tersedia, fallback ke sans-serif */
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-smoothing: grayscale;
+            background-color: #f0f8ff; /* Light blue pastel background */
+        }
+        /* Mengatur agar textarea hasil LKPD bisa di-scroll dan terlihat rapi */
+        #lkpdOutput {
+            white-space: pre-wrap; /* Mempertahankan spasi dan baris baru */
+            word-wrap: break-word; /* Memecah kata panjang */
+            min-height: 400px; /* Tinggi minimal untuk area output */
+        }
+        /* Styling untuk mode cetak */
+        @media print {
+            body {
+                background-color: white; /* Hapus background di mode cetak */
+                margin: 0; /* Hapus margin body */
+            }
+            .no-print {
+                display: none !important; /* Sembunyikan elemen yang tidak perlu dicetak */
+            }
+            .print-area {
+                width: 21cm; /* Lebar A4 */
+                height: 29.7cm; /* Tinggi A4 */
+                margin: 0.5cm auto; /* Margin atas/bawah 0.5cm, tengah horizontal */
+                padding: 2.5cm; /* Margin 2.5 cm di semua sisi */
+                box-sizing: border-box; /* Pastikan padding termasuk dalam lebar/tinggi */
+                font-family: 'Arial', 'Times New Roman', serif; /* Font untuk cetak */
+                font-size: 11pt; /* Ukuran font untuk cetak */
+                line-height: 1.5; /* Spasi baris untuk cetak */
+            }
+            /* Style khusus untuk judul dan subjudul dalam cetakan */
+            .print-area h1 {
+                text-align: center;
+                margin-bottom: 1em;
+            }
+            .print-area h2 {
+                text-align: left;
+                margin-top: 1.5em;
+                margin-bottom: 0.5em;
+            }
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-blue-200">
+        <h1 class="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-6">Pembuat LKPD Otomatis (AI-Powered)</h1>
+        <p class="text-center text-gray-600 mb-8">Isi formulir di bawah ini untuk membuat Lembar Kerja Peserta Didik (LKPD) Anda dengan bantuan AI.</p>
+
+        <!-- Formulir Input Guru -->
+        <div class="no-print space-y-4 mb-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="namaSekolah" class="block text-sm font-medium text-gray-700">Nama Sekolah</label>
+                    <input type="text" id="namaSekolah" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: SMA Negeri 1 Jakarta">
+                </div>
+                <div>
+                    <label for="namaGuru" class="block text-sm font-medium text-gray-700">Nama Guru</label>
+                    <input type="text" id="namaGuru" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Budi Santoso, S.Pd.">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="mataPelajaran" class="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
+                    <input type="text" id="mataPelajaran" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Bahasa Indonesia">
+                </div>
+                <div>
+                    <label for="kelasSemester" class="block text-sm font-medium text-gray-700">Kelas/Semester</label>
+                    <input type="text" id="kelasSemester" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: X / Genap">
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="topikPembelajaran" class="block text-sm font-medium text-gray-700">Topik Pembelajaran</label>
+                    <input type="text" id="topikPembelajaran" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Teks Prosedur">
+                </div>
+                <div>
+                    <label for="modelPembelajaran" class="block text-sm font-medium text-gray-700">Model Pembelajaran</label>
+                    <input type="text" id="modelPembelajaran" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Discovery Learning">
+                </div>
+            </div>
+
+            <div>
+                <label for="alokasiWaktu" class="block text-sm font-medium text-gray-700">Alokasi Waktu</label>
+                <input type="text" id="alokasiWaktu" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: 2 x 45 menit">
+            </div>
+
+            <div>
+                <label for="kdIpk" class="block text-sm font-medium text-gray-700">Kompetensi Dasar & Indikator Pencapaian (KD & IPK)</label>
+                <textarea id="kdIpk" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh:&#10;KD: 3.1 Mengidentifikasi teks prosedur...&#10;IPK: 3.1.1 Menjelaskan ciri umum teks prosedur..."></textarea>
+            </div>
+
+            <div>
+                <label for="tingkatKesulitanSoal" class="block text-sm font-medium text-gray-700">Tingkat Kesulitan Soal (Opsional)</label>
+                <select id="tingkatKesulitanSoal" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    <option value="">Pilih Tingkat Kesulitan</option>
+                    <option value="mudah">Mudah</option>
+                    <option value="sedang">Sedang</option>
+                    <option value="sulit">Sulit</option>
+                </select>
+            </div>
+            
+            <button id="buatLkpdBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
+                Buat LKPD dengan AI
+            </button>
+        </div>
+
+        <!-- Area Hasil LKPD -->
+        <div class="mt-8">
+            <h2 class="text-2xl font-semibold text-blue-700 mb-4 text-center no-print">Hasil LKPD Anda</h2>
+            <textarea id="lkpdOutput" readonly class="w-full p-4 border border-green-300 rounded-md bg-green-50 text-gray-800 text-sm overflow-auto shadow-inner"></textarea>
+            <div class="mt-4 flex justify-center no-print">
+                <button id="copyLkpdBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out mr-2">
+                    Salin LKPD
+                </button>
+                <button id="clearFormBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
+                    Bersihkan Formulir
+                </button>
+            </div>
+            <p class="text-sm text-gray-500 mt-4 text-center no-print">
+                Silakan salin teks di atas, lalu tempel ke aplikasi pengolah kata (misalnya Microsoft Word atau Google Docs) untuk pengaturan tata letak cetak (margin, spasi, font A4) agar hasil cetak maksimal.
+            </p>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mengambil elemen-elemen dari DOM
+            const namaSekolahInput = document.getElementById('namaSekolah');
+            const namaGuruInput = document.getElementById('namaGuru');
+            const mataPelajaranInput = document.getElementById('mataPelajaran');
+            const kelasSemesterInput = document.getElementById('kelasSemester');
+            const topikPembelajaranInput = document.getElementById('topikPembelajaran');
+            const modelPembelajaranInput = document.getElementById('modelPembelajaran');
+            const alokasiWaktuInput = document.getElementById('alokasiWaktu');
+            const kdIpkInput = document.getElementById('kdIpk');
+            const tingkatKesulitanSoalInput = document.getElementById('tingkatKesulitanSoal'); // New input
+            const lkpdOutput = document.getElementById('lkpdOutput');
+            const buatLkpdBtn = document.getElementById('buatLkpdBtn');
+            const copyLkpdBtn = document.getElementById('copyLkpdBtn');
+            const clearFormBtn = document.getElementById('clearFormBtn');
+
+            // Fungsi untuk membuat teks LKPD dengan Gemini AI
+            const generateLkpd = async () => {
+                const namaSekolah = namaSekolahInput.value.trim();
+                const namaGuru = namaGuruInput.value.trim();
+                const mataPelajaran = mataPelajaranInput.value.trim();
+                const kelasSemester = kelasSemesterInput.value.trim();
+                const topikPembelajaran = topikPembelajaranInput.value.trim();
+                const modelPembelajaran = modelPembelajaranInput.value.trim();
+                const alokasiWaktu = alokasiWaktuInput.value.trim();
+                const kdIpk = kdIpkInput.value.trim();
+                const tingkatKesulitanSoal = tingkatKesulitanSoalInput.value.trim();
+
+                // Validasi input penting sebelum memanggil API
+                if (!topikPembelajaran || !mataPelajaran || !kelasSemester || !kdIpk) {
+                    lkpdOutput.value = "Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.";
+                    return;
+                }
+
+                lkpdOutput.value = "Membuat konten LKPD cerdas dengan AI... Mohon tunggu sebentar. Proses ini mungkin memakan waktu beberapa detik.";
+                buatLkpdBtn.disabled = true; // Nonaktifkan tombol saat proses berlangsung
+
+                try {
+                    // Isi tetap untuk petunjuk dan rubrik penilaian (tidak dihasilkan AI)
+                    const petunjukPenggunaan = `
+PETUNJUK PENGGUNAAN LKPD:
+1.  Bacalah dan pahami setiap petunjuk pada LKPD dengan teliti.
+2.  Diskusikan setiap pertanyaan atau tugas yang diberikan bersama anggota kelompok.
+3.  Gunakan berbagai sumber belajar (buku, internet) untuk membantu menjawab pertanyaan.
+4.  Kerjakan LKPD secara jujur dan bertanggung jawab.
+5.  Jika ada kesulitan atau hal yang kurang dipahami, tanyakan kepada guru.
+6.  Presentasikan hasil diskusi kelompok Anda di depan kelas.
+                    `.trim();
+
+                    const rubrikPenilaian = `
+RUBRIK PENILAIAN KEGIATAN KELOMPOK:
+(Untuk diisi guru)
+
+No.     Aspek Penilaian                  Skor 4 (Sangat Baik)               Skor 3 (Baik)                      Skor 2 (Cukup)                    Skor 1 (Kurang)
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+1.      Partisipasi dalam Diskusi      Aktif berkontribusi & membantu   Aktif berkontribusi                   Cukup berpartisipasi              Kurang/tidak berpartisipasi
+2.      Kerja Sama Kelompok            Sangat baik, saling mendukung    Baik, ada kolaborasi                 Cukup kooperatif                  Kurang/tidak kooperatif
+3.      Kualitas Jawaban/Hasil         Jawaban/hasil sangat akurat      Jawaban/hasil akurat                  Jawaban/hasil kurang akurat       Jawaban/hasil tidak akurat
+4.      Presentasi Kelompok            Sangat jelas, percaya diri       Jelas & percaya diri                 Cukup jelas                       Kurang jelas/tidak percaya diri
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                    `.trim();
+
+                    // Prompt untuk Gemini API
+                    const prompt = `Sebagai seorang guru yang ingin membuat Lembar Kerja Peserta Didik (LKPD) untuk mata pelajaran ${mataPelajaran} dengan topik "${topikPembelajaran}" untuk kelas ${kelasSemester}, dan model pembelajaran ${modelPembelajaran}.
+
+                    Berdasarkan Kompetensi Dasar & Indikator Pencapaian berikut:
+                    "${kdIpk}"
+
+                    Buatkan konten LKPD dalam format JSON, dengan detail berikut:
+                    1.  **tujuanPembelajaranGenerated**: Minimal 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
+                    2.  **pengantarKontekstualGenerated**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${topikPembelajaran}".
+                    3.  **kegiatanIntiPanduan**: Detail panduan untuk setiap tahapan model pembelajaran ${modelPembelajaran}. Ini harus berupa satu blok teks panjang yang mencakup:
+                        * A. Observasi (Stimulation): Petunjuk spesifik untuk observasi terkait topik.
+                        * B. Diskusi (Problem Statement): Petunjuk untuk mengidentifikasi masalah dari observasi.
+                        * C. Analisis (Data Collection & Processing): Petunjuk untuk mengumpulkan dan mengolah informasi.
+                        * D. Aplikasi (Verification): Petunjuk untuk menerapkan konsep.
+                        * E. Refleksi (Generalization): Petunjuk untuk menyimpulkan pembelajaran.
+                        Pastikan setiap sub-bagian ini diawali dengan huruf kapital (A., B., C., D., E.) dan nama tahapannya dalam kurung.
+                    4.  **daftarSoal**: Sebuah array berisi minimal 5-7 soal latihan atau tugas esai/analisis/diskusi yang mendorong berpikir kritis, bukan hanya hafalan, terkait topik "${topikPembelajaran}" dan tujuan pembelajaran. Jika tingkat kesulitan soal adalah "${tingkatKesulitanSoal}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
+                    5.  **refleksiDiriSiswaGenerated**: Minimal 4 pertanyaan reflektif bagi siswa setelah mengerjakan LKPD, dalam format daftar berpoin.
+                    6.  **catatanGuruMotivasi**: Satu paragraf singkat (1-2 kalimat) berisi catatan atau motivasi penutup dari guru untuk siswa.
+
+                    Pastikan semua teks yang dihasilkan menggunakan bahasa Indonesia yang baik dan baku, dan sesuai untuk konteks pendidikan menengah. Hindari penggunaan markdown di dalam nilai string, kecuali untuk tanda hubung pada daftar poin.`;
+
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+
+                    const payload = {
+                        contents: chatHistory,
+                        generationConfig: {
+                            responseMimeType: "application/json",
+                            responseSchema: {
+                                type: "OBJECT",
+                                properties: {
+                                    tujuanPembelajaranGenerated: { type: "STRING" },
+                                    pengantarKontekstualGenerated: { type: "STRING" },
+                                    kegiatanIntiPanduan: { type: "STRING" },
+                                    daftarSoal: {
+                                        type: "ARRAY",
+                                        items: { type: "STRING" }
+                                    },
+                                    refleksiDiriSiswaGenerated: { type: "STRING" },
+                                    catatanGuruMotivasi: { type: "STRING" }
+                                }
+                            }
+                        }
+                    };
+
+                    const apiKey = ""; // API key akan otomatis disediakan oleh lingkungan Canvas
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
+                    }
+
+                    const result = await response.json();
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+
+                        const jsonResponse = JSON.parse(result.candidates[0].content.parts[0].text);
+                        const {
+                            tujuanPembelajaranGenerated,
+                            pengantarKontekstualGenerated,
+                            kegiatanIntiPanduan,
+                            daftarSoal,
+                            refleksiDiriSiswaGenerated,
+                            catatanGuruMotivasi
+                        } = jsonResponse;
+
+                        // Membangun teks LKPD secara keseluruhan dengan konten dari Gemini
+                        let lkpdText = `
+LEMBAR KERJA PESERTA DIDIK (LKPD) – ${topikPembelajaran.toUpperCase() || '[TOPIC]'}
+
+IDENTITAS LKPD:
+Nama Sekolah      : ${namaSekolah || '[Nama Sekolah]'}
+Mata Pelajaran    : ${mataPelajaran || '[Mata Pelajaran]'}
+Kelas / Semester  : ${kelasSemester || '[Kelas / Semester]'}
+Alokasi Waktu     : ${alokasiWaktu || '[Alokasi Waktu]'}
+Nama Guru         : ${namaGuru || '[Nama Guru]'}
+
+KOMPETENSI DASAR & INDIKATOR PENCAPAIAN:
+${kdIpk || 'KD: [Kompetensi Dasar]\nIPK: [Indikator Pencapaian Kompetensi]'}
+
+TUJUAN PEMBELAJARAN:
+Setelah mengikuti kegiatan pembelajaran ini, peserta didik diharapkan dapat:
+${tujuanPembelajaranGenerated || '- [Tujuan Pembelajaran belum dihasilkan]'}
+
+---
+${petunjukPenggunaan}
+
+---
+${pengantarKontekstualGenerated || '[Pengantar kontekstual belum dihasilkan]'}
+
+---
+KEGIATAN INTI (Model Pembelajaran: ${modelPembelajaran || '[Model Pembelajaran]'})
+${kegiatanIntiPanduan || '[Panduan Kegiatan Inti belum dihasilkan]'}
+
+---
+SOAL LATIHAN / TUGAS:
+${daftarSoal.map((soal, index) => `${index + 1}. ${soal}`).join('\n') || '[Daftar soal belum dihasilkan]'}
+
+---
+REFLEKSI DIRI SISWA:
+${refleksiDiriSiswaGenerated || '[Refleksi diri siswa belum dihasilkan]'}
+
+---
+${rubrikPenilaian}
+
+---
+CATATAN GURU/MOTIVASI PENUTUP:
+${catatanGuruMotivasi || '[Catatan guru/motivasi penutup belum dihasilkan]'}
+                        `.trim();
+
+                        lkpdOutput.value = lkpdText;
+
+                    } else {
+                        lkpdOutput.value = "Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input.";
+                    }
+                } catch (error) {
+                    console.error('Error generating LKPD content:', error);
+                    lkpdOutput.value = `Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan coba lagi.`;
+                } finally {
+                    buatLkpdBtn.disabled = false; // Aktifkan kembali tombol
+                }
+            };
+
+            // Fungsi untuk menyalin teks LKPD ke clipboard
+            const copyLkpd = () => {
+                lkpdOutput.select(); // Pilih semua teks di textarea
+                document.execCommand('copy'); // Salin teks yang dipilih
+                // Opsional: berikan feedback ke pengguna
+                alert('Teks LKPD berhasil disalin ke clipboard!');
+            };
+
+            // Fungsi untuk membersihkan formulir
+            const clearForm = () => {
+                namaSekolahInput.value = '';
+                namaGuruInput.value = '';
+                mataPelajaranInput.value = '';
+                kelasSemesterInput.value = '';
+                topikPembelajaranInput.value = '';
+                modelPembelajaranInput.value = '';
+                alokasiWaktuInput.value = '';
+                kdIpkInput.value = '';
+                tingkatKesulitanSoalInput.value = ''; // Clear new input
+                lkpdOutput.value = ''; // Kosongkan output juga
+            };
+
+            // Event Listeners
+            buatLkpdBtn.addEventListener('click', generateLkpd);
+            copyLkpdBtn.addEventListener('click', copyLkpd);
+            clearFormBtn.addEventListener('click', clearForm);
+
+            // Inisialisasi output dengan LKPD kosong saat pertama kali dimuat
+            // generateLkpd(); // Tidak perlu otomatis generate saat load, biarkan user yang klik
+        });
+    </script>
+</body>
+</html>
