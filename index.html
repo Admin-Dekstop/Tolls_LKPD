@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Asisten Pembuat Lembar Aktivitas Siswa</title>
-    <!-- Tailwind CSS CDN untuk styling yang mudah dan responsif -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles untuk font Inter jika tersedia, fallback ke sans-serif */
@@ -148,44 +147,57 @@
             transform: translateY(-2px);
         }
 
-        /* Settings Button Styles */
+        /* Settings Button Styles - PENYESUAIAN DI SINI */
         #settingsControlBtn {
             position: absolute;
-            top: 1.75rem; /* Jarak sedikit lebih jauh dari atas */
-            right: 1.75rem; /* Jarak sedikit lebih jauh dari kanan */
+            /* Menggeser tombol ke kiri bawah judul atau di bawah sub-judul */
+            top: 6.5rem; /* Sesuaikan jarak dari atas, di bawah judul utama */
+            right: 1.75rem; /* Jaga jarak dari kanan */
+            /* Alternatif: top: 1.75rem; left: 1.75rem; jika ingin di kiri atas */
             cursor: pointer;
-            padding: 0.625rem 1.25rem; /* Padding sedikit lebih besar */
-            background-color: #e0f2fe; /* Warna latar belakang tombol */
-            color: #2563eb; /* Warna teks tombol */
-            border: 1px solid #93c5fd; /* Border tombol */
-            border-radius: 0.625rem; /* Sudut tombol lebih membulat */
-            font-size: 0.9rem; /* Ukuran font sedikit lebih besar */
-            font-weight: 600; /* Ketebalan font */
+            padding: 0.625rem 1.25rem;
+            background-color: #e0f2fe;
+            color: #2563eb;
+            border: 1px solid #93c5fd;
+            border-radius: 0.625rem;
+            font-size: 0.9rem;
+            font-weight: 600;
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
-            z-index: 10; /* Pastikan tombol di atas elemen lain */
+            z-index: 10;
             display: flex;
             align-items: center;
-            gap: 0.625rem; /* Jarak antara teks dan ikon (jika ada) */
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08); /* Bayangan ringan */
+            gap: 0.625rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+        @media (max-width: 768px) { /* Untuk layar yang lebih kecil */
+            #settingsControlBtn {
+                position: static; /* Kembali ke posisi normal dalam flow */
+                margin-top: 1rem; /* Tambahkan sedikit margin atas */
+                margin-left: auto;
+                margin-right: auto;
+                display: block; /* Agar mengambil lebar penuh di mobile */
+                width: fit-content; /* Sesuaikan lebar dengan konten */
+                margin-bottom: 1.5rem; /* Beri jarak ke elemen di bawahnya */
+            }
         }
         #settingsControlBtn:hover {
-            background-color: #bfdbfe; /* Warna latar belakang saat hover */
-            color: #1e40af; /* Warna teks saat hover */
-            transform: scale(1.03); /* Efek membesar sedikit saat hover */
+            background-color: #bfdbfe;
+            color: #1e40af;
+            transform: scale(1.03);
         }
 
         /* Notification Message Box */
         .notification-message {
-            position: fixed; /* Gunakan fixed untuk penempatan global */
-            top: 1.5rem; /* Sesuaikan posisi */
+            position: fixed;
+            top: 1.5rem;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1001; /* Di atas modal */
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Bayangan lebih jelas */
+            z-index: 1001;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
             max-width: 90%;
-            padding: 0.8rem 1.5rem; /* Padding lebih besar */
-            border-radius: 0.75rem; /* Sudut lebih membulat */
-            font-size: 0.95rem; /* Ukuran font sedikit lebih besar */
+            padding: 0.8rem 1.5rem;
+            border-radius: 0.75rem;
+            font-size: 0.95rem;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
@@ -196,21 +208,20 @@
         }
         /* Warna untuk notifikasi sukses */
         .notification-success {
-            background-color: #d1fae5; /* Green-100 */
-            color: #065f46; /* Green-800 */
-            border: 1px solid #6ee7b7; /* Green-300 */
+            background-color: #d1fae5;
+            color: #065f46;
+            border: 1px solid #6ee7b7;
         }
         /* Warna untuk notifikasi error */
         .notification-error {
-            background-color: #fee2e2; /* Red-100 */
-            color: #991b1b; /* Red-800 */
-            border: 1px solid #fca5a5; /* Red-300 */
+            background-color: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
         }
     </style>
 </head>
 <body class="p-5 md:p-10">
     <div class="max-w-5xl mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-indigo-200 relative">
-        <!-- Tombol Pengaturan Kunci API -->
         <button id="settingsControlBtn" class="hide-on-print">
             Kelola Kunci API
         </button>
@@ -319,7 +330,6 @@
         </div>
     </div>
 
-    <!-- Modal untuk input Kunci API Gemini -->
     <div id="geminiApiModal" class="api-modal-overlay">
         <div class="modal-content-card">
             <h2>Konfigurasi Kunci API Gemini</h2>
