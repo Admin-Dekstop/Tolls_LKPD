@@ -52,7 +52,7 @@
             }
         }
 
-        /* Modal Styles - NEW */
+        /* Modal Styles */
         .api-key-modal {
             position: fixed;
             top: 0;
@@ -140,7 +140,7 @@
             background-color: #4b5563; /* Gray-600 */
         }
 
-        /* Settings Icon Styles - NEW */
+        /* Settings Icon Styles */
         #settingsIcon {
             position: absolute;
             top: 1.5rem; /* Sesuaikan jarak dari atas */
@@ -155,6 +155,17 @@
         #settingsIcon:hover {
             transform: scale(1.1); /* Efek membesar sedikit saat hover */
             color: #3b82f6; /* Warna saat hover */
+        }
+
+        /* Temporary Message Box for showMessageBox function */
+        .temp-message {
+            position: fixed; /* Use fixed for global placement */
+            top: 1rem; /* Adjust as needed */
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 1001; /* Above modal */
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            max-width: 90%;
         }
     </style>
 </head>
@@ -298,26 +309,25 @@
             const copyLkpdBtn = document.getElementById('copyLkpdBtn');
             const clearFormBtn = document.getElementById('clearFormBtn');
 
-            // NEW: Modal Elements
+            // Modal Elements
             const geminiApiKeyModal = document.getElementById('geminiApiKeyModal');
             const modalGeminiApiKeyInput = document.getElementById('modalGeminiApiKeyInput');
             const modalSaveGeminiApiKeyBtn = document.getElementById('modalSaveGeminiApiKeyBtn');
             const modalClearGeminiApiKeyBtn = document.getElementById('modalClearGeminiApiKeyBtn');
             const modalCloseGeminiApiKeyBtn = document.getElementById('modalCloseGeminiApiKeyBtn');
 
-            // NEW: Settings Icon Element
+            // Settings Icon Element
             const settingsIcon = document.getElementById('settingsIcon');
 
-            // NEW: Fungsi untuk menampilkan pesan temporer (mengganti alert)
+            // Fungsi untuk menampilkan pesan temporer
             function showMessageBox(message, isError = false) {
-                // Menemukan tempat yang cocok untuk menampilkan pesan sementara
-                const messageContainer = document.querySelector('.max-w-4xl.mx-auto'); // Container utama
+                const messageContainer = document.querySelector('.max-w-4xl.mx-auto'); 
                 let tempMessageDiv = messageContainer.querySelector('.temp-message');
                 
                 if (!tempMessageDiv) {
                     tempMessageDiv = document.createElement('div');
                     tempMessageDiv.className = `temp-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
-                    messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild); // Insert at the top
+                    messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild); 
                 }
 
                 tempMessageDiv.textContent = message;
@@ -330,19 +340,19 @@
                 }, 3000);
             }
 
-            // NEW: Function to save Gemini API Key
+            // Function to save Gemini API Key
             function saveGeminiApiKey() {
                 const apiKey = modalGeminiApiKeyInput.value.trim();
                 if (apiKey) {
                     localStorage.setItem('geminiApiKey', apiKey);
-                    geminiApiKeyModal.classList.remove('show'); // Hide modal by removing 'show' class
+                    geminiApiKeyModal.classList.remove('show'); 
                     showMessageBox('Kunci API Gemini berhasil disimpan.', false);
                 } else {
                     showMessageBox('Kunci API Gemini tidak boleh kosong.', true);
                 }
             }
 
-            // NEW: Function to clear Gemini API Key
+            // Function to clear Gemini API Key
             function clearGeminiApiKey() {
                 localStorage.removeItem('geminiApiKey');
                 modalGeminiApiKeyInput.value = '';
@@ -351,14 +361,14 @@
 
             // Fungsi untuk membuat teks LKPD dengan Gemini AI
             const generateLkpd = async () => {
-                // NEW: Ambil API Key dari localStorage
+                // Ambil API Key dari localStorage
                 const apiKey = localStorage.getItem('geminiApiKey');
 
-                // NEW: Validasi API Key sebelum melanjutkan
+                // Validasi API Key sebelum melanjutkan
                 if (!apiKey || apiKey.trim() === '') {
                     showMessageBox('Kunci API Gemini diperlukan untuk membuat LKPD. Silakan masukkan.', true);
-                    geminiApiKeyModal.classList.add('show'); // Tampilkan modal jika kunci hilang
-                    modalGeminiApiKeyInput.value = ''; // Kosongkan input modal untuk memaksa pengisian ulang
+                    geminiApiKeyModal.classList.add('show'); 
+                    modalGeminiApiKeyInput.value = ''; 
                     return;
                 }
 
@@ -375,17 +385,17 @@
                     lk1Activity1Input.value.trim(),
                     lk1Activity2Input.value.trim(),
                     lk1Activity3Input.value.trim()
-                ].filter(Boolean); // Filter out empty strings
+                ].filter(Boolean); 
 
                 // Validasi input penting sebelum memanggil API
                 if (!topikPembelajaran || !mataPelajaran || !kelasSemester || !kdIpk) {
                     showMessageBox("Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.", true);
-                    lkpdOutput.value = ""; // Clear output if validation fails
+                    lkpdOutput.value = ""; 
                     return;
                 }
 
                 lkpdOutput.value = "Membuat konten LKPD cerdas dengan AI... Mohon tunggu sebentar. Proses ini mungkin memakan waktu beberapa detik.";
-                buatLkpdBtn.disabled = true; // Nonaktifkan tombol saat proses berlangsung
+                buatLkpdBtn.disabled = true; 
 
                 try {
                     // Isi tetap untuk petunjuk penggunaan (tidak dihasilkan AI)
@@ -485,10 +495,10 @@ PETUNJUK PENGGUNAAN LKPD:
                         result.candidates[0].content.parts.length > 0) {
 
                         const jsonString = result.candidates[0].content.parts[0].text;
-                        console.log("Raw JSON response from Gemini:", jsonString); // Log for debugging
+                        console.log("Raw JSON response from Gemini:", jsonString); 
 
                         const jsonResponse = JSON.parse(jsonString);
-                        console.log("Parsed JSON response:", jsonResponse); // Log for debugging
+                        console.log("Parsed JSON response:", jsonResponse); 
 
                         const {
                             tujuanPembelajaranGenerated,
@@ -619,27 +629,25 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
 
                     } else {
                         showMessageBox("Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
-                        lkpdOutput.value = ""; // Clear output if no valid content
+                        lkpdOutput.value = ""; 
                     }
                 } catch (error) {
                     console.error('Error generating LKPD content:', error);
-                    // Lebih detail untuk JSON parse error
                     if (error instanceof SyntaxError && error.message.includes("JSON")) {
                         showMessageBox(`Terjadi kesalahan saat memproses respons AI (JSON Error): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi atau sesuaikan prompt.`, true);
                     } else {
                         showMessageBox(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan koneksi internet Anda stabil, dan Kunci API Gemini Anda benar dan aktif. Coba lagi.`, true);
                     }
-                    lkpdOutput.value = ""; // Clear output on error
+                    lkpdOutput.value = ""; 
                 } finally {
-                    buatLkpdBtn.disabled = false; // Aktifkan kembali tombol
+                    buatLkpdBtn.disabled = false; 
                 }
             };
 
             // Fungsi untuk menyalin teks LKPD ke clipboard
             const copyLkpd = () => {
-                lkpdOutput.select(); // Pilih semua teks di textarea
-                document.execCommand('copy'); // Salin teks yang dipilih
-                // Mengganti alert dengan showMessageBox untuk konsistensi
+                lkpdOutput.select(); 
+                document.execCommand('copy'); 
                 showMessageBox('Teks LKPD berhasil disalin ke clipboard!', false); 
             };
 
@@ -657,7 +665,7 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
                 lk1Activity2Input.value = '';
                 lk1Activity3Input.value = '';
                 tingkatKesulitanSoalInput.value = '';
-                lkpdOutput.value = ''; // Kosongkan output juga
+                lkpdOutput.value = ''; 
             };
 
             // Event Listeners
@@ -665,31 +673,31 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
             copyLkpdBtn.addEventListener('click', copyLkpd);
             clearFormBtn.addEventListener('click', clearForm);
 
-            // NEW: Inisialisasi dan Event Listeners untuk Modal API Key
-            // Pastikan kode ini berada di dalam document.addEventListener('DOMContentLoaded', ...)
-            // atau dijalankan setelah semua elemen DOM tersedia.
-            const initializeApiKeyModal = () => {
+            // Inisialisasi dan Event Listeners untuk Modal API Key
+            // Bagian ini harus berada di dalam DOMContentLoaded,
+            // tetapi saya memisahkannya ke dalam fungsi untuk kejelasan.
+            const initializeModalAndListeners = () => {
                 const storedApiKey = localStorage.getItem('geminiApiKey');
                 if (!storedApiKey || storedApiKey.trim() === '') {
-                    geminiApiKeyModal.classList.add('show'); // Tambahkan 'show' class untuk menampilkan modal
+                    geminiApiKeyModal.classList.add('show'); 
                 }
-                modalGeminiApiKeyInput.value = storedApiKey || ''; // Isi input modal dengan kunci yang ada (jika ada)
+                modalGeminiApiKeyInput.value = storedApiKey || ''; 
+
+                // Event Listeners tombol modal
+                modalSaveGeminiApiKeyBtn.addEventListener('click', saveGeminiApiKey);
+                modalClearGeminiApiKeyBtn.addEventListener('click', clearGeminiApiKey);
+                modalCloseGeminiApiKeyBtn.addEventListener('click', () => {
+                    geminiApiKeyModal.classList.remove('show'); 
+                });
+
+                // Event Listener untuk ikon pengaturan
+                settingsIcon.addEventListener('click', () => {
+                    geminiApiKeyModal.classList.add('show'); 
+                    modalGeminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || ''; 
+                });
             };
             
-            initializeApiKeyModal(); // Panggil saat DOMContentLoaded
-
-            // Event Listeners tombol modal
-            modalSaveGeminiApiKeyBtn.addEventListener('click', saveGeminiApiKey);
-            modalClearGeminiApiKeyBtn.addEventListener('click', clearGeminiApiKey);
-            modalCloseGeminiApiKeyBtn.addEventListener('click', () => {
-                geminiApiKeyModal.classList.remove('show'); // Sembunyikan modal
-            });
-
-            // Event Listener untuk ikon pengaturan
-            settingsIcon.addEventListener('click', () => {
-                geminiApiKeyModal.classList.add('show'); // Tampilkan modal saat ikon diklik
-                modalGeminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || ''; // Pastikan input modal terisi
-            });
+            initializeModalAndListeners(); // Panggil fungsi inisialisasi modal
         });
     </script>
 </body>
