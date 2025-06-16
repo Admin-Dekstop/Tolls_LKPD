@@ -14,20 +14,59 @@
             background-color: #e6f7ff; /* Warna latar belakang biru pastel yang berbeda */
             color: #333; /* Warna teks dasar */
         }
-        /* Mengatur agar textarea hasil bisa di-scroll dan terlihat rapi */
-        #worksheetOutput {
-            white-space: pre-wrap; /* Mempertahankan spasi dan baris baru */
-            word-wrap: break-word; /* Memecah kata panjang */
+        /* Mengatur agar area output LKPD bisa di-scroll dan terlihat rapi */
+        #worksheetOutputContainer {
             min-height: 400px; /* Tinggi minimal untuk area output */
-            font-family: 'Consolas', 'Menlo', 'monospace'; /* Font monospace untuk tabel ASCII agar rapi */
-            font-size: 0.875rem; /* Ukuran font lebih kecil untuk kerapian */
-            line-height: 1.4; /* Spasi baris untuk keterbacaan */
+            font-family: 'Arial', sans-serif; /* Font umum untuk dokumen */
+            font-size: 1rem; /* Ukuran font dasar */
+            line-height: 1.6; /* Spasi baris untuk keterbacaan */
+            overflow-y: auto; /* Agar bisa discroll jika konten panjang */
         }
+        #worksheetOutputContainer h1, #worksheetOutputContainer h2 {
+            font-weight: bold;
+            margin-bottom: 0.75rem;
+        }
+        #worksheetOutputContainer h1 {
+            font-size: 1.5rem; /* Ukuran untuk judul utama LKPD */
+            text-align: center;
+            color: #1a202c; /* Hampir hitam */
+        }
+        #worksheetOutputContainer h2 {
+            font-size: 1.25rem; /* Ukuran untuk sub-judul bagian */
+            color: #2c5282; /* Biru tua */
+            margin-top: 1.5rem;
+            border-bottom: 1px solid #e2e8f0;
+            padding-bottom: 0.25rem;
+        }
+        #worksheetOutputContainer p, #worksheetOutputContainer ul, #worksheetOutputContainer ol, #worksheetOutputContainer table {
+            margin-bottom: 1rem;
+        }
+        #worksheetOutputContainer ul, #worksheetOutputContainer ol {
+            padding-left: 1.5rem;
+        }
+        #worksheetOutputContainer table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+        #worksheetOutputContainer th, #worksheetOutputContainer td {
+            border: 1px solid #cbd5e0;
+            padding: 0.75rem;
+            text-align: left;
+        }
+        #worksheetOutputContainer th {
+            background-color: #f0f4f8;
+            font-weight: 600;
+        }
+
         /* Styling untuk mode cetak */
         @media print {
             body {
                 background-color: white; /* Hapus background di mode cetak */
                 margin: 0; /* Hapus margin body */
+                padding: 0;
+                font-size: 10pt; /* Ukuran font lebih kecil untuk cetak */
+                line-height: 1.4;
             }
             .hide-on-print {
                 display: none !important; /* Sembunyikan elemen yang tidak perlu dicetak */
@@ -38,19 +77,24 @@
                 margin: 0.5cm auto; /* Margin atas/bawah 0.5cm, tengah horizontal */
                 padding: 2.5cm; /* Margin 2.5 cm di semua sisi */
                 box-sizing: border-box; /* Pastikan padding termasuk dalam lebar/tinggi */
-                font-family: 'Arial', 'Times New Roman', serif; /* Font untuk cetak */
-                font-size: 11pt; /* Ukuran font untuk cetak */
-                line-height: 1.5; /* Spasi baris untuk cetak */
+                font-family: 'Times New Roman', serif; /* Font untuk cetak */
             }
-            /* Style khusus untuk judul dan subjudul dalam cetakan */
             .printable-area h1 {
-                text-align: center;
+                font-size: 18pt;
                 margin-bottom: 1em;
             }
             .printable-area h2 {
-                text-align: left;
+                font-size: 14pt;
                 margin-top: 1.5em;
                 margin-bottom: 0.5em;
+                border-bottom: 1px solid #ccc;
+                padding-bottom: 0.2em;
+            }
+            .printable-area p, .printable-area ul, .printable-area ol, .printable-area table {
+                margin-bottom: 0.8em;
+            }
+            .printable-area ul, .printable-area ol {
+                padding-left: 1.2em;
             }
         }
 
@@ -147,9 +191,8 @@
             transform: translateY(-2px);
         }
 
-        /* Settings Button Styles - PENYESUAIAN DI SINI */
+        /* Settings Button Styles */
         #settingsControlBtn {
-            /* Default styles for mobile (button with text and icon) */
             position: static;
             width: fit-content;
             height: auto;
@@ -168,40 +211,35 @@
             font-weight: 600;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-            z-index: 10; /* Lower z-index for mobile flow */
+            z-index: 10;
             cursor: pointer;
         }
-
-        /* Hover for mobile button */
         #settingsControlBtn:hover {
             background-color: #bfdbfe;
             color: #1e40af;
             transform: scale(1.03);
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
         }
-
-        /* Media query for larger screens (desktop) */
         @media (min-width: 768px) {
             #settingsControlBtn {
-                position: fixed; /* Ubah dari static ke fixed */
-                top: 1.5rem; /* Jarak dari atas viewport */
-                right: 1.5rem; /* Jarak dari kanan viewport */
-                width: 3rem; /* Lebar tombol */
-                height: 3rem; /* Tinggi tombol */
-                padding: 0.5rem; /* Padding untuk ikon */
-                background-color: #4f46e5; /* Indigo-600 */
-                color: white; /* Warna ikon putih */
-                border: none; /* Hapus border */
-                border-radius: 50%; /* Membuat tombol bulat */
-                justify-content: center; /* Pusatkan ikon */
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Bayangan lebih kuat */
-                z-index: 1002; /* Lebih tinggi dari modal overlay (1000) dan notifikasi (1001) */
+                position: fixed;
+                top: 1.5rem;
+                right: 1.5rem;
+                width: 3rem;
+                height: 3rem;
+                padding: 0.5rem;
+                background-color: #4f46e5;
+                color: white;
+                border: none;
+                border-radius: 50%;
+                justify-content: center;
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+                z-index: 1002;
             }
-            /* Hover for desktop button */
             #settingsControlBtn:hover {
-                background-color: #4338ca; /* Indigo-700 on hover */
-                transform: scale(1.08); /* Efek zoom sedikit */
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Bayangan lebih kuat lagi */
+                background-color: #4338ca;
+                transform: scale(1.08);
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
             }
         }
 
@@ -225,129 +263,134 @@
             opacity: 1;
             visibility: visible;
         }
-        /* Warna untuk notifikasi sukses */
         .notification-success {
             background-color: #d1fae5;
             color: #065f46;
             border: 1px solid #6ee7b7;
         }
-        /* Warna untuk notifikasi error */
         .notification-error {
             background-color: #fee2e2;
             color: #991b1b;
             border: 1px solid #fca5a5;
         }
+        .required-field {
+            border-color: #ef4444 !important; /* Merah untuk field wajib yang kosong */
+        }
+        .animate-pulse-light {
+            animation: pulse-light 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+        @keyframes pulse-light {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
     </style>
 </head>
 <body class="p-5 md:p-10">
     <div class="max-w-5xl mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-indigo-200 relative">
-        <!-- Tombol Pengaturan - Sekarang dengan ikon dan teks responsif -->
+        <!-- Tombol Pengaturan -->
         <button id="settingsControlBtn" class="hide-on-print">
-            <!-- Ikon untuk layar besar (desktop) -->
             <svg class="w-6 h-6 hidden md:block" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 15.375a3.375 3.375 0 100-6.75 3.375 3.375 0 000 6.75z" />
-                <path fill-rule="evenodd" d="M10.707 2.293a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.293.293a1 1 0 010 1.414l-.478.478a.75.75 0 000 1.06l.478.478a1 1 0 010 1.414l-.293.293a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.293-.293a1 1 0 010-1.414l.478-.478a.75.75 0 000-1.06l-.478-.478a1 1 0 010-1.414l.293-.293zM12 18a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" />
+                <path fill-rule="evenodd" d="M10.707 2.293a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.293.293a1 1 0 010 1.414l-.478.478a.75.75 0 000 1.06l.478.478a1 1 0 010 1.414l-.293.293a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.293-.293a1 1 0 010-1.414l.478-.478a.75.75 0 000-1.06l-.478-.478a1 1 0 010-1.414l.293-.293zM12 18a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" />
             </svg>
-            <!-- Teks untuk layar kecil (mobile) -->
             <span class="md:hidden">Kelola Kunci API</span>
         </button>
         <h1 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-800 mb-7">Asisten Pembuat Lembar Aktivitas Siswa</h1>
-        <p class="text-center text-gray-700 mb-9">Isi detail di bawah untuk menghasilkan Lembar Aktivitas siswa (LKPD) mengikuti format standar.</p>
+        <p class="text-center text-gray-700 mb-9">Isi detail di bawah untuk menghasilkan Lembar Aktivitas siswa (LKPD) yang siap cetak dan berbasis teks.</p>
 
-        <div class="hide-on-print space-y-5 mb-12">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label for="schoolNameInput" class="block text-sm font-medium text-gray-700">Nama Lembaga Pendidikan</label>
-                    <input type="text" id="schoolNameInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: SMA Negeri 1 Maju Bersama">
+        <div class="hide-on-print space-y-6 mb-12">
+            <!-- DATA GURU -->
+            <div class="p-6 border border-indigo-300 rounded-xl bg-indigo-50">
+                <p class="text-lg font-bold text-indigo-800 mb-4">✅ Data Guru & Informasi LKPD</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
+                    <div>
+                        <label for="teacherNameInput" class="block text-sm font-medium text-gray-700">Nama Guru <span class="text-red-500">*</span></label>
+                        <input type="text" id="teacherNameInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Bpk. Andi Susanto, M.Pd.">
+                    </div>
+                    <div>
+                        <label for="gradeInput" class="block text-sm font-medium text-gray-700">Kelas <span class="text-red-500">*</span></label>
+                        <input type="text" id="gradeInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: X IPA 1 / 7">
+                    </div>
                 </div>
-                <div>
-                    <label for="teacherNameInput" class="block text-sm font-medium text-gray-700">Nama Pengajar</label>
-                    <input type="text" id="teacherNameInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Bpk. Andi Susanto, M.Pd.">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label for="subjectInput" class="block text-sm font-medium text-gray-700">Mata Pelajaran <span class="text-red-500">*</span></label>
+                        <input type="text" id="subjectInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Fisika / Matematika">
+                    </div>
+                    <div>
+                        <label for="learningTopicInput" class="block text-sm font-medium text-gray-700">Materi Pokok <span class="text-red-500">*</span></label>
+                        <input type="text" id="learningTopicInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Hukum Newton tentang Gerak / Aljabar Linier">
+                    </div>
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label for="subjectInput" class="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
-                    <input type="text" id="subjectInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Fisika">
-                </div>
-                <div>
-                    <label for="gradeSemesterInput" class="block text-sm font-medium text-gray-700">Tingkat/Semester</label>
-                    <input type="text" id="gradeSemesterInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: X / Ganjil">
-                </div>
+            <!-- Kompetensi Dasar / Tujuan Pembelajaran -->
+            <div class="p-6 border border-teal-300 rounded-xl bg-teal-50">
+                <label for="competenceGoalsInput" class="block text-lg font-bold text-teal-800 mb-3">Kompetensi Dasar / Tujuan Pembelajaran <span class="text-red-500">*</span></label>
+                <p class="text-sm text-gray-600 mb-3">Sebutkan Kompetensi Dasar atau Tujuan Pembelajaran yang ingin dicapai. AI akan mengubahnya menjadi Tujuan Pembelajaran yang berorientasi siswa.</p>
+                <textarea id="competenceGoalsInput" rows="4" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 text-base" placeholder="Contoh:&#10;- Menganalisis pengaruh gaya terhadap percepatan benda&#10;- Mengidentifikasi jenis-jenis gaya berdasarkan kontak/non-kontak"></textarea>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div>
-                    <label for="learningTopicInput" class="block text-sm font-medium text-gray-700">Pokok Pembelajaran</label>
-                    <input type="text" id="learningTopicInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Hukum Newton tentang Gerak">
-                </div>
-                <div>
-                    <label for="learningModelInput" class="block text-sm font-medium text-gray-700">Model Pembelajaran</label>
-                    <input type="text" id="learningModelInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Problem-Based Learning">
-                </div>
+            <!-- Pengantar / Apersepsi -->
+            <div class="p-6 border border-purple-300 rounded-xl bg-purple-50">
+                <label for="apersepsiInput" class="block text-lg font-bold text-purple-800 mb-3">Ide Pengantar / Apersepsi (Opsional)</label>
+                <p class="text-sm text-gray-600 mb-3">Berikan ide atau pertanyaan pemantik terkait kehidupan sehari-hari untuk memulai LKPD. AI akan mengembangkannya.</p>
+                <textarea id="apersepsiInput" rows="3" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 text-base" placeholder="Contoh:&#10;Pernahkah kamu memperhatikan mengapa bola yang ditendang akhirnya berhenti?&#10;Bagaimana gaya bekerja dalam olahraga tim?"></textarea>
             </div>
 
-            <div>
-                <label for="timeAllocationInput" class="block text-sm font-medium text-gray-700">Alokasi Waktu</label>
-                <input type="text" id="timeAllocationInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: 3 x 45 menit">
+            <!-- Petunjuk Kerja -->
+            <div class="p-6 border border-orange-300 rounded-xl bg-orange-50">
+                <label for="petunjukKerjaInput" class="block text-lg font-bold text-orange-800 mb-3">Petunjuk Kerja Umum (Opsional)</label>
+                <p class="text-sm text-gray-600 mb-3">Sebutkan poin-poin instruksi umum yang ingin siswa ikuti. AI akan menyusunnya menjadi petunjuk yang sistematis.</p>
+                <textarea id="petunjukKerjaInput" rows="3" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-base" placeholder="Contoh:&#10;- Baca materi ini dengan seksama.&#10;- Diskusikan dengan kelompokmu.&#10;- Presentasikan hasil diskusi."></textarea>
             </div>
 
-            <div>
-                <label for="competenceIndicatorsInput" class="block text-sm font-medium text-gray-700">Kompetensi Inti & Indikator Pencapaian (KI & IP)</label>
-                <textarea id="competenceIndicatorsInput" rows="5" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh:&#10;KI: 3.4 Menganalisis pengaruh gaya terhadap percepatan benda...&#10;IP: 3.4.1 Mengidentifikasi jenis-jenis gaya..."></textarea>
+            <!-- Kegiatan Inti -->
+            <div class="p-6 border border-red-300 rounded-xl bg-red-50">
+                <label for="kegiatanIntiScenarioInput" class="block text-lg font-bold text-red-800 mb-3">Skenario/Poin untuk Kegiatan Inti (Opsional)</label>
+                <p class="text-sm text-gray-600 mb-3">Berikan beberapa skenario, konsep, atau poin yang ingin dijadikan dasar pertanyaan terbuka dan aktivitas. Setiap poin satu baris.</p>
+                <textarea id="kegiatanIntiScenarioInput" rows="5" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 text-base" placeholder="Contoh:&#10;- Bola menggelinding di lantai lalu berhenti.&#10;- Dua orang mendorong meja yang sama dari arah berlawanan.&#10;- Mengapa roket bisa terbang ke luar angkasa?"></textarea>
             </div>
 
-            <div class="mt-5 p-5 border border-indigo-300 rounded-xl bg-indigo-50">
-                <p class="text-sm font-semibold text-indigo-800 mb-3">Input untuk "Aktivitas 1" (Kegiatan Kategorisasi)</p>
-                <p class="text-xs text-gray-600 mb-3">Jelaskan kegiatan atau skenario yang ingin Anda klasifikasikan pada bagian Aktivitas 1. AI akan membantu mengategorikannya. Contoh: "Buah apel jatuh dari pohon", "Mendorong lemari".</p>
-                <div>
-                    <label for="activity1Scenario1" class="block text-sm font-medium text-gray-700">Skenario/Kegiatan 1</label>
-                    <input type="text" id="activity1Scenario1" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Buah apel jatuh dari pohon">
-                </div>
-                <div class="mt-2">
-                    <label for="activity1Scenario2" class="block text-sm font-medium text-gray-700">Skenario/Kegiatan 2</label>
-                    <input type="text" id="activity1Scenario2" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Mengayuh sepeda">
-                </div>
-                <div class="mt-2">
-                    <label for="activity1Scenario3" class="block text-sm font-medium text-gray-700">Skenario/Kegiatan 3</label>
-                    <input type="text" id="activity1Scenario3" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Menarik tali tambang">
-                </div>
-                <div class="mt-4">
-                    <label for="questionDifficulty" class="block text-sm font-medium text-gray-700">Level Kesulitan Soal (untuk Latihan)</label>
-                    <select id="questionDifficulty" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base">
-                        <option value="">Pilih Level Kesulitan</option>
-                        <option value="pemula">Pemula</option>
-                        <option value="menengah">Menengah</option>
-                        <option value="mahir">Mahir</option>
-                    </select>
-                </div>
+            <!-- Pilihan Level Kesulitan Soal -->
+            <div class="p-6 border border-gray-300 rounded-xl bg-gray-50">
+                <label for="questionDifficulty" class="block text-lg font-bold text-gray-800 mb-3">Level Kesulitan Soal (untuk Kegiatan Inti)</label>
+                <p class="text-sm text-gray-600 mb-3">Pilih level kesulitan untuk pertanyaan dan aktivitas yang akan dihasilkan AI.</p>
+                <select id="questionDifficulty" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base">
+                    <option value="dasar">Dasar (C1-C2)</option>
+                    <option value="menengah" selected>Menengah (C3-C4, Analisis)</option>
+                    <option value="tinggi">Tinggi (C5-C6, Evaluasi/Kreasi - HOTS)</option>
+                </select>
             </div>
             
-            <button id="generateWorksheetBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-5 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+            <button id="generateWorksheetBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-5 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105 flex items-center justify-center">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
-                Buat Lembar Aktivitas dengan AI
+                <span>Buat Lembar Aktivitas dengan AI</span>
             </button>
         </div>
 
         <div class="mt-10 printable-area">
             <h2 class="text-2xl font-semibold text-indigo-700 mb-5 text-center hide-on-print">Hasil Lembar Aktivitas Anda</h2>
-            <textarea id="worksheetOutput" readonly class="w-full p-5 border border-teal-300 rounded-lg bg-teal-50 text-gray-800 overflow-auto shadow-inner"></textarea>
-            <div class="mt-5 flex justify-center hide-on-print">
-                <button id="copyWorksheetBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 mr-3">
+            <!-- Output LKPD akan dirender di dalam div ini -->
+            <div id="worksheetOutputContainer" class="w-full p-5 border border-teal-300 rounded-lg bg-teal-50 text-gray-800 shadow-inner">
+                <p class="text-center text-gray-500 italic">LKPD yang dihasilkan AI akan muncul di sini setelah Anda mengklik "Buat Lembar Aktivitas dengan AI".</p>
+            </div>
+
+            <div class="mt-5 flex justify-center hide-on-print flex-wrap gap-3">
+                <button id="copyWorksheetBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
                         <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
                         <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2H6zM5 9.3V7a1 1 0 011-1h8a1 1 0 011 1v2.3l2.353 2.354a1 1 0 000-1.414l-4.95-4.95a1 1 0 00-1.414 0L3.646 9.3a1 1 0 000 1.414l4.95 4.95a1 1 0 001.414 0L17 10.3V13a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.7z" />
                     </svg>
-                    Salin Teks
+                    <span>Salin Teks</span>
                 </button>
-                <button id="clearFormBtn" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                <button id="clearFormBtn" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 flex items-center">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
                     </svg>
-                    Bersihkan Formulir
+                    <span>Bersihkan Formulir</span>
                 </button>
             </div>
             <p class="text-sm text-gray-600 mt-5 text-center hide-on-print">
@@ -377,19 +420,17 @@
 
     <script>
         // Mendapatkan referensi elemen-elemen DOM
-        const schoolNameInputElem = document.getElementById('schoolNameInput');
         const teacherNameInputElem = document.getElementById('teacherNameInput');
+        const gradeInputElem = document.getElementById('gradeInput');
         const subjectInputElem = document.getElementById('subjectInput');
-        const gradeSemesterInputElem = document.getElementById('gradeSemesterInput');
         const learningTopicInputElem = document.getElementById('learningTopicInput');
-        const learningModelInputElem = document.getElementById('learningModelInput');
-        const timeAllocationInputElem = document.getElementById('timeAllocationInput');
-        const competenceIndicatorsInputElem = document.getElementById('competenceIndicatorsInput');
-        const activity1Scenario1InputElem = document.getElementById('activity1Scenario1');
-        const activity1Scenario2InputElem = document.getElementById('activity1Scenario2');
-        const activity1Scenario3InputElem = document.getElementById('activity1Scenario3');
+        const competenceGoalsInputElem = document.getElementById('competenceGoalsInput');
+        const apersepsiInputElem = document.getElementById('apersepsiInput');
+        const petunjukKerjaInputElem = document.getElementById('petunjukKerjaInput');
+        const kegiatanIntiScenarioInputElem = document.getElementById('kegiatanIntiScenarioInput');
         const questionDifficultySelectElem = document.getElementById('questionDifficulty');
-        const worksheetOutputElem = document.getElementById('worksheetOutput');
+
+        const worksheetOutputContainer = document.getElementById('worksheetOutputContainer'); // Ini sekarang DIV
         const generateWorksheetBtn = document.getElementById('generateWorksheetBtn');
         const copyWorksheetBtn = document.getElementById('copyWorksheetBtn');
         const clearFormBtn = document.getElementById('clearFormBtn');
@@ -405,8 +446,7 @@
         function displayNotificationMessage(message, isError = false) {
             const container = document.querySelector('.max-w-5xl.mx-auto');
             let notificationDiv = container.querySelector('.notification-message');
-            
-            // Buat elemen notifikasi jika belum ada
+
             if (!notificationDiv) {
                 notificationDiv = document.createElement('div');
                 notificationDiv.className = `notification-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
@@ -414,15 +454,13 @@
             }
 
             notificationDiv.textContent = message;
-            // Hapus kelas warna sebelumnya dan tambahkan yang sesuai
-            notificationDiv.classList.remove('notification-success', 'notification-error', 'hidden', 'show'); 
+            notificationDiv.classList.remove('notification-success', 'notification-error', 'hidden', 'show');
             notificationDiv.classList.add(isError ? 'notification-error' : 'notification-success');
-            notificationDiv.classList.add('show'); // Tampilkan dengan transisi
+            notificationDiv.classList.add('show');
 
-            // Sembunyikan pesan setelah 3 detik
             setTimeout(() => {
-                notificationDiv.classList.remove('show'); // Mulai transisi fade out
-                setTimeout(() => notificationDiv.classList.add('hidden'), 300); // Sembunyikan setelah transisi selesai
+                notificationDiv.classList.remove('show');
+                setTimeout(() => notificationDiv.classList.add('hidden'), 300);
             }, 3000);
         }
 
@@ -445,79 +483,140 @@
             displayNotificationMessage('Kunci API Gemini telah dihapus.', false);
         }
 
+        // Fungsi untuk validasi input
+        function validateInputs() {
+            let isValid = true;
+            const requiredFields = [
+                teacherNameInputElem,
+                gradeInputElem,
+                subjectInputElem,
+                learningTopicInputElem,
+                competenceGoalsInputElem
+            ];
+
+            requiredFields.forEach(field => {
+                if (field.value.trim() === '') {
+                    field.classList.add('required-field');
+                    isValid = false;
+                } else {
+                    field.classList.remove('required-field');
+                }
+            });
+
+            if (!isValid) {
+                displayNotificationMessage("Mohon lengkapi semua bidang yang ditandai (*) sebelum membuat LKPD.", true);
+            }
+            return isValid;
+        }
+
         // Fungsi utama untuk menghasilkan konten Lembar Aktivitas Siswa dengan AI
         const generateWorksheetContent = async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
 
-            // Validasi Kunci API sebelum melanjutkan
             if (!apiKey || apiKey.trim() === '') {
                 displayNotificationMessage('Kunci API Gemini diperlukan untuk membuat Lembar Aktivitas. Silakan masukkan di pengaturan.', true);
                 geminiApiModal.classList.add('show');
-                modalApiInputElem.value = ''; // Kosongkan input di modal
-                return; // Berhenti eksekusi jika Kunci API tidak ada
-            }
-
-            const schoolName = schoolNameInputElem.value.trim();
-            const teacherName = teacherNameInputElem.value.trim();
-            const subject = subjectInputElem.value.trim();
-            const gradeSemester = gradeSemesterInputElem.value.trim();
-            const learningTopic = learningTopicInputElem.value.trim();
-            const learningModel = learningModelInputElem.value.trim();
-            const timeAllocation = timeAllocationInputElem.value.trim();
-            const competenceIndicators = competenceIndicatorsInputElem.value.trim();
-            const questionDifficulty = questionDifficultySelectElem.value.trim();
-            const activity1Scenarios = [
-                activity1Scenario1InputElem.value.trim(),
-                activity1Scenario2InputElem.value.trim(),
-                activity1Scenario3InputElem.value.trim()
-            ].filter(Boolean); // Filter out empty strings
-
-            // Validasi input wajib
-            if (!learningTopic || !subject || !gradeSemester || !competenceIndicators) {
-                displayNotificationMessage("Mohon lengkapi bidang 'Pokok Pembelajaran', 'Mata Pelajaran', 'Tingkat/Semester', dan 'Kompetensi Inti & Indikator Pencapaian' untuk hasil terbaik dari AI.", true);
-                worksheetOutputElem.value = "";
+                modalApiInputElem.value = '';
                 return;
             }
 
-            worksheetOutputElem.value = "Menyiapkan konten Lembar Aktivitas cerdas dengan AI... Harap bersabar, proses ini mungkin membutuhkan waktu beberapa detik.";
-            generateWorksheetBtn.disabled = true; // Nonaktifkan tombol saat proses berlangsung
+            if (!validateInputs()) {
+                return;
+            }
+
+            // Dapatkan semua nilai input
+            const teacherName = teacherNameInputElem.value.trim();
+            const grade = gradeInputElem.value.trim();
+            const subject = subjectInputElem.value.trim();
+            const learningTopic = learningTopicInputElem.value.trim();
+            const competenceGoals = competenceGoalsInputElem.value.trim();
+            const apersepsiIdea = apersepsiInputElem.value.trim();
+            const petunjukKerjaGeneral = petunjukKerjaInputElem.value.trim();
+            const kegiatanIntiScenarios = kegiatanIntiScenarioInputElem.value.split('\n').map(s => s.trim()).filter(Boolean);
+            const questionDifficulty = questionDifficultySelectElem.value.trim();
+
+            worksheetOutputContainer.innerHTML = `<p class="text-center text-gray-500 italic animate-pulse-light">Menyiapkan konten Lembar Aktivitas cerdas dengan AI... Harap bersabar, proses ini mungkin membutuhkan waktu beberapa detik.</p>`;
+            generateWorksheetBtn.disabled = true;
+            generateWorksheetBtn.querySelector('span').textContent = 'Memproses...';
 
             try {
-                // Teks statis petunjuk penggunaan
-                const usageInstructions = `
-PETUNJUK PENGGUNAAN LEMBAR AKTIVITAS SISWA:
-1. Baca dan pahami setiap instruksi pada Lembar Aktivitas dengan seksama.
-2. Diskusikan setiap pertanyaan atau tugas yang diberikan bersama anggota kelompok Anda.
-3. Manfaatkan berbagai sumber belajar (buku, internet, dll.) untuk membantu menjawab.
-4. Kerjakan aktivitas secara jujur dan penuh tanggung jawab.
-5. Jika menemui kesulitan atau hal yang belum jelas, jangan ragu bertanya kepada guru.
-6. Siapkan diri untuk mempresentasikan hasil diskusi kelompok di depan kelas.
-                `.trim();
-
                 // Prompt untuk Gemini API
-                const aiPrompt = `Sebagai seorang pendidik yang akan menyusun Lembar Aktivitas Siswa (LAS) untuk mata pelajaran ${subject} dengan pokok bahasan "${learningTopic}" bagi siswa kelas ${gradeSemester}, menggunakan model pembelajaran ${learningModel}.
-                Berdasarkan Kompetensi Inti & Indikator Pencapaian berikut:
-                "${competenceIndicators}"
+                const aiPrompt = `
+                Sebagai Asisten AI Pendidikan, tugas Anda adalah membantu guru membuat LKPD (Lembar Kerja Peserta Didik) yang siap cetak, berbasis teks, tanpa gambar, tanpa digitalisasi, dan tanpa ikon/QR code, namun tetap efektif secara pedagogis.
 
-                Mohon hasilkan konten LAS dalam format JSON, dengan poin-poin sebagai berikut:
-                1. **learningObjectives**: Minimum 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
-                2. **contextualIntroduction**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${learningTopic}".
-                3. **coreActivityGuidance**: Detail panduan untuk setiap tahapan model pembelajaran ${learningModel}. Ini harus berupa satu blok teks panjang yang mencakup:
-                    * A. Orientasi (Stimulation): Petunjuk spesifik untuk observasi atau pemicu terkait topik.
-                    * B. Identifikasi Masalah (Problem Statement): Petunjuk untuk merumuskan masalah dari observasi.
-                    * C. Pengumpulan & Pengolahan Data (Data Collection & Processing): Petunjuk untuk mengumpulkan dan mengolah informasi.
-                    * D. Verifikasi (Verification): Petunjuk untuk mengaplikasikan konsep atau solusi.
-                    * E. Generalisasi (Generalization): Petunjuk untuk merangkum atau menyimpulkan pembelajaran.
-                    Pastikan setiap sub-bagian ini diawali dengan huruf kapital (A., B., C., D., E.) dan nama tahapannya dalam kurung.
-                4. **activity1Instruction**: Instruksi singkat (1-2 kalimat) untuk kegiatan Aktivitas 1.
-                5. **activity1Categorization**: Sebuah array objek, di mana setiap objek memiliki \`scenario\` (string) dan \`category\` (string, bisa "Gaya Kontak" atau "Gaya Tak Kontak"). Gunakan skenario berikut: ${JSON.stringify(activity1Scenarios)}. Jika ada skenario yang tidak jelas, masukkan sebagai "Belum Terkategorikan". Tambahkan setidaknya 2-3 contoh tambahan skenario gaya kontak/tak kontak yang relevan dengan topik jika \`activity1Scenarios\` kurang dari 3.
-                6. **activity2OpeningStatement**: Sebuah pernyataan pembuka atau fakta (2-3 kalimat) seperti "Ketika sebuah benda bergerak..." yang relevan dengan topik "${learningTopic}" jika memungkinkan, atau pernyataan umum.
-                7. **activity2Steps**: Sebuah array string berisi 5-6 langkah kegiatan untuk Aktivitas 2, termasuk diskusi, pencatatan hasil, dan presentasi (jika sesuai).
-                8. **practiceQuestions**: Sebuah array berisi minimal 5-7 soal latihan atau pertanyaan esai/analisis/diskusi yang mendorong pemikiran kritis, bukan hanya hafalan, terkait topik "${learningTopic}" dan tujuan pembelajaran. Jika level kesulitan soal adalah "${questionDifficulty}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
-                9. **studentSelfReflection**: Minimum 4 pertanyaan reflektif bagi siswa setelah menyelesaikan LAS, dalam format daftar berpoin.
-                10. **teacherClosingRemarks**: Satu paragraf singkat (1-2 kalimat) berisi catatan atau motivasi penutup dari pengajar untuk siswa.
+                Format LKPD harus ringkas, jelas, dan memuat elemen penting untuk pembelajaran aktif dan reflektif.
+                Output Anda harus dalam format JSON sesuai skema yang diberikan, dan semua konten harus berupa teks murni yang dikembangkan oleh AI berdasarkan data guru dan permintaan struktur.
 
-                Pastikan semua teks yang dihasilkan menggunakan bahasa Indonesia yang formal dan tepat untuk konteks pendidikan menengah. Jangan gunakan markdown di dalam nilai string JSON, kecuali untuk list items yang diawali tanda hubung.`;
+                DATA GURU:
+                - Nama Guru: "${teacherName}"
+                - Kelas: "${grade}"
+                - Mata Pelajaran: "${subject}"
+                - Materi Pokok: "${learningTopic}"
+                - Kompetensi Dasar/Tujuan Pembelajaran (yang ingin diubah menjadi bahasa siswa): "${competenceGoals}"
+
+                IDE GURU (jika ada, kembangkan ini):
+                - Ide Pengantar/Apersepsi: "${apersepsiIdea || 'tidak ada'}"
+                - Petunjuk Kerja Umum: "${petunjukKerjaGeneral || 'tidak ada'}"
+                - Skenario/Poin untuk Kegiatan Inti: ${kegiatanIntiScenarios.length > 0 ? JSON.stringify(kegiatanIntiScenarios) : 'tidak ada'}
+                - Level Kesulitan Soal untuk Kegiatan Inti: "${questionDifficulty}"
+
+                STRUKTUR OUTPUT JSON YANG HARUS ANDA HASILKAN:
+
+                {
+                    "identitasLKPD": {
+                        "mataPelajaran": "[Mata Pelajaran]",
+                        "kelas": "[Kelas]",
+                        "semester": "[Semester, tebak jika tidak disebutkan]",
+                        "materiPokok": "[Materi Pokok]",
+                        "namaGuru": "[Nama Guru]"
+                    },
+                    "tujuanPembelajaran": [
+                        "- [Tujuan 1 ditulis dalam bahasa siswa, aktif dan komunikatif]",
+                        "- [Tujuan 2]",
+                        "- [Tujuan 3]"
+                    ],
+                    "pengantarApersepsi": "[Paragraf pengantar singkat, 2-4 kalimat, berupa pertanyaan pemantik atau reflektif terkait kehidupan sehari-hari, dikembangkan dari ide guru jika ada]",
+                    "petunjukKerja": [
+                        "1. [Langkah 1 yang sistematis dan jelas]",
+                        "2. [Langkah 2]",
+                        "3. [Langkah 3]",
+                        "4. [Langkah 4]"
+                    ],
+                    "kegiatanInti": {
+                        "instruksiUmum": "[Instruksi umum singkat untuk bagian Kegiatan Inti, 1-2 kalimat]",
+                        "pertanyaanBertingkat": [
+                            "1. [Pertanyaan terbuka dan bertingkat (C1-C4/HOTS) terkait materi pokok, disesuaikan dengan level kesulitan dan skenario guru jika ada]",
+                            "2. [Pertanyaan 2]",
+                            "3. [Pertanyaan 3]",
+                            "4. [Pertanyaan 4]"
+                        ],
+                        "tabelObservasi": [ // Hasilkan ini HANYA jika skenario guru sangat mendukung format observasi/kategorisasi. Jika tidak, hasilkan array kosong []
+                            {"No.": "1.", "Skenario/Poin": "[Skenario 1 dari input guru atau AI]", "Analisis": "", "Kesimpulan Singkat": ""},
+                            {"No.": "2.", "Skenario/Poin": "[Skenario 2 dari input guru atau AI]", "Analisis": "", "Kesimpulan Singkat": ""}
+                        ]
+                    },
+                    "refleksiSiswa": {
+                        "pertanyaan1": "Apa yang saya pelajari hari ini?",
+                        "pertanyaan2": "Bagian mana yang paling saya pahami atau sulit?",
+                        "pertanyaan3": "Apa yang ingin saya tanyakan lebih lanjut terkait materi ini?"
+                    },
+                    "penilaianDiri": [
+                        "[Pernyataan 1 untuk self-assessment, contoh: 'Saya memahami konsep dasar...']",
+                        "[Pernyataan 2, contoh: 'Saya mampu menganalisis permasalahan...']",
+                        "[Pernyataan 3]"
+                    ],
+                    "kesimpulanTugasTambahan": "[Ringkasan poin penting dari LKPD dan/atau PR ringan/tugas lanjutan jika relevan, 2-4 kalimat]",
+                    "ruangCatatanBebas": "[Pernyataan singkat untuk ruang catatan bebas siswa, 1-2 kalimat]"
+                }
+
+                KETENTUAN TAMBAHAN UNTUK SEMUA TEKS YANG DIHASILKAN:
+                - TIDAK mengandung gambar, ikon, QR code, atau media digital lainnya.
+                - Gunakan bahasa Indonesia yang ramah siswa, formal, dan sesuai level berpikir siswa SMA/sederajat.
+                - Output harus berupa teks murni yang bisa langsung dicetak.
+                - Jika suatu bagian dari input guru kosong (misal: 'tidak ada'), kembangkan konten yang relevan dan umum untuk bagian tersebut.
+                - Pastikan output JSON Anda bersih, tanpa karakter markdown di dalam string, kecuali untuk list item yang diawali tanda hubung.
+                - Untuk 'semester' di identitasLKPD, tebak 'Ganjil' atau 'Genap' jika tidak spesifik.
+                `;
 
                 let chatHistory = [];
                 chatHistory.push({ role: "user", parts: [{ text: aiPrompt }] });
@@ -529,31 +628,50 @@ PETUNJUK PENGGUNAAN LEMBAR AKTIVITAS SISWA:
                         responseSchema: {
                             type: "OBJECT",
                             properties: {
-                                learningObjectives: { type: "STRING" },
-                                contextualIntroduction: { type: "STRING" },
-                                coreActivityGuidance: { type: "STRING" },
-                                activity1Instruction: { type: "STRING" },
-                                activity1Categorization: {
-                                    type: "ARRAY",
-                                    items: {
-                                        type: "OBJECT",
-                                        properties: {
-                                            scenario: { type: "STRING" },
-                                            category: { type: "STRING", enum: ["Gaya Kontak", "Gaya Tak Kontak", "Belum Terkategorikan"] }
+                                "identitasLKPD": {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "mataPelajaran": { "type": "STRING" },
+                                        "kelas": { "type": "STRING" },
+                                        "semester": { "type": "STRING" },
+                                        "materiPokok": { "type": "STRING" },
+                                        "namaGuru": { "type": "STRING" }
+                                    },
+                                    "propertyOrdering": ["mataPelajaran", "kelas", "semester", "materiPokok", "namaGuru"]
+                                },
+                                "tujuanPembelajaran": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "pengantarApersepsi": { "type": "STRING" },
+                                "petunjukKerja": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "kegiatanInti": {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "instruksiUmum": { "type": "STRING" },
+                                        "pertanyaanBertingkat": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                        "tabelObservasi": {
+                                            type: "ARRAY",
+                                            items: {
+                                                type: "OBJECT",
+                                                properties: {
+                                                    "No.": { "type": "STRING" },
+                                                    "Skenario/Poin": { "type": "STRING" },
+                                                    "Analisis": { "type": "STRING" },
+                                                    "Kesimpulan Singkat": { "type": "STRING" }
+                                                }
+                                            }
                                         }
                                     }
                                 },
-                                activity2OpeningStatement: { type: "STRING" },
-                                activity2Steps: {
-                                    type: "ARRAY",
-                                    items: { type: "STRING" }
+                                "refleksiSiswa": {
+                                    type: "OBJECT",
+                                    properties: {
+                                        "pertanyaan1": { "type": "STRING" },
+                                        "pertanyaan2": { "type": "STRING" },
+                                        "pertanyaan3": { "type": "STRING" }
+                                    }
                                 },
-                                practiceQuestions: {
-                                    type: "ARRAY",
-                                    items: { type: "STRING" }
-                                },
-                                studentSelfReflection: { type: "STRING" },
-                                teacherClosingRemarks: { type: "STRING" }
+                                "penilaianDiri": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "kesimpulanTugasTambahan": { "type": "STRING" },
+                                "ruangCatatanBebas": { "type": "STRING" }
                             }
                         }
                     }
@@ -579,161 +697,198 @@ PETUNJUK PENGGUNAAN LEMBAR AKTIVITAS SISWA:
                     result.candidates[0].content.parts.length > 0) {
 
                     const jsonString = result.candidates[0].content.parts[0].text;
-                    // Hapus backticks dan kata 'json' jika AI mengembalikan dalam format code block
                     const cleanedJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '').trim();
-                    
+
                     console.log("Respons JSON mentah dari Gemini:", cleanedJsonString); // Untuk debugging
 
-                    const parsedResponse = JSON.parse(cleanedJsonString); // Parse string yang sudah bersih
+                    const parsedResponse = JSON.parse(cleanedJsonString);
                     console.log("Respons JSON yang diurai:", parsedResponse); // Untuk debugging
 
-                    const {
-                        learningObjectives,
-                        contextualIntroduction,
-                        coreActivityGuidance,
-                        activity1Instruction,
-                        activity1Categorization,
-                        activity2OpeningStatement,
-                        activity2Steps,
-                        practiceQuestions,
-                        studentSelfReflection,
-                        teacherClosingRemarks
-                    } = parsedResponse;
+                    // --- Mulai membangun HTML Lembar Aktivitas Siswa ---
+                    worksheetOutputContainer.innerHTML = ''; // Bersihkan konten sebelumnya
 
-                    // Pastikan activity1Categorization adalah array yang valid
-                    const finalActivity1Categorization = Array.isArray(activity1Categorization) ? activity1Categorization : [];
-
-                    // --- Mulai membangun teks Lembar Aktivitas Siswa ---
-                    let worksheetText = `
-LEMBAR AKTIVITAS SISWA (LAS)
-
-Lembaga Pendidikan : ${schoolName || '[Nama Lembaga Pendidikan]'}
-Nama Pengajar        : ${teacherName || '[Nama Pengajar]'}
-Mata Pelajaran      : ${subject || '[Mata Pelajaran]'}
-Tingkat/Semester    : ${gradeSemester || '[Tingkat / Semester]'}
-Pokok Pembelajaran  : ${learningTopic || '[Pokok Pembelajaran]'}
-Model Pembelajaran  : ${learningModel || '[Model Pembelajaran]'}
-Alokasi Waktu       : ${timeAllocation || '[Alokasi Waktu]'}
-
----
-
-Kompetensi Inti & Indikator Pencapaian (KI & IP):
-${competenceIndicators || '[KI & IP belum terisi]'}
-
----
-
-Tujuan Pembelajaran:
-${learningObjectives || '[Tujuan Pembelajaran belum dihasilkan]'}
-
----
-
-Pengantar:
-${contextualIntroduction || '[Pengantar kontekstual belum dihasilkan]'}
-
----
-
-${usageInstructions}
-
----
-
-AKTIVITAS INTI (Model Pembelajaran: ${learningModel || '[Model Pembelajaran]'})
-${coreActivityGuidance || '[Panduan Aktivitas Inti belum dihasilkan]'}
-
----
-
-AKTIVITAS 1: Mengategorikan Jenis Gaya
-${activity1Instruction || 'Kategorikanlah skenario atau kegiatan berikut berdasarkan apakah ia termasuk gaya kontak atau gaya tak kontak, dan berikan penjelasan singkat.'}
-
-+-----+--------------------------------------+-----------------------+-----------------------+
-| No. | Skenario / Kegiatan                  | Gaya Kontak           | Gaya Tak Kontak       |
-+-----+--------------------------------------+-----------------------+-----------------------+
-`;
-                    // Tambahkan baris kategorisasi dari AI
-                    finalActivity1Categorization.forEach((item, index) => {
-                        if (item && typeof item.scenario === 'string' && typeof item.category === 'string') {
-                            const no = String(index + 1).padEnd(3);
-                            const scenario = item.scenario.padEnd(36).substring(0, 36);
-                            const isKontak = item.category === "Gaya Kontak" ? "    X    " : "         "; 
-                            const isTakKontak = item.category === "Gaya Tak Kontak" ? "    X    " : "         "; 
-                            worksheetText += `| ${no}| ${scenario} | ${isKontak.padEnd(21)} | ${isTakKontak.padEnd(21)} |\n`;
-                            worksheetText += `+-----+--------------------------------------+-----------------------+-----------------------+\n`;
-                        } else {
-                            console.warn("Elemen malformed dalam activity1Categorization, dilewati:", item);
+                    const addElement = (tag, content, className = '') => {
+                        const elem = document.createElement(tag);
+                        elem.className = className;
+                        if (typeof content === 'string') {
+                            elem.innerHTML = content.replace(/\n/g, '<br>'); // Handle newlines in string content
+                        } else if (Array.isArray(content)) {
+                            content.forEach(item => {
+                                const li = document.createElement('li');
+                                li.innerHTML = item.replace(/^- /, ''); // Remove hyphen for list items
+                                elem.appendChild(li);
+                            });
                         }
-                    });
+                        return elem;
+                    };
 
-                    worksheetText += `
+                    const addLine = (container, count = 1) => {
+                        for (let i = 0; i < count; i++) {
+                            const line = document.createElement('p');
+                            line.className = 'text-sm text-gray-700 leading-tight';
+                            line.textContent = '........................................................................................................................................................';
+                            container.appendChild(line);
+                        }
+                    };
 
----
+                    // Judul Utama LKPD
+                    worksheetOutputContainer.appendChild(addElement('h1', 'LEMBAR KERJA PESERTA DIDIK', 'text-xl font-bold text-center mb-4'));
+                    worksheetOutputContainer.appendChild(document.createElement('hr')); // Garis pemisah
 
-AKTIVITAS 2: Mengkaji Penerapan Hukum Newton dalam Kehidupan Sehari-hari
+                    // 1. Identitas LKPD
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Identitas LKPD', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    const identitasDiv = addElement('div', '', 'mb-4 text-base');
+                    identitasDiv.innerHTML = `
+                        <p><strong>Mata Pelajaran:</strong> ${parsedResponse.identitasLKPD.mataPelajaran || '-'}</p>
+                        <p><strong>Kelas/Semester:</strong> ${parsedResponse.identitasLKPD.kelas || '-'} / ${parsedResponse.identitasLKPD.semester || '-'}</p>
+                        <p><strong>Materi Pokok:</strong> ${parsedResponse.identitasLKPD.materiPokok || '-'}</p>
+                        <p><strong>Nama Guru:</strong> ${parsedResponse.identitasLKPD.namaGuru || '-'}</p>
+                    `;
+                    worksheetOutputContainer.appendChild(identitasDiv);
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
 
-Langkah-langkah Kegiatan:
-1. Perhatikan pernyataan berikut.
-    ${activity2OpeningStatement || '[Pernyataan pembuka belum dihasilkan]'}
+                    // 2. Tujuan Pembelajaran
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Tujuan Pembelajaran', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    worksheetOutputContainer.appendChild(addElement('ul', parsedResponse.tujuanPembelajaran, 'list-disc list-inside mb-4 text-base leading-relaxed'));
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
 
-`;
-                    // Tambahkan langkah kegiatan dari AI
-                    const finalActivity2Steps = Array.isArray(activity2Steps) ? activity2Steps : [];
-                    finalActivity2Steps.forEach((step, index) => {
-                        worksheetText += `${index + 2}. ${step}\n`; // Dimulai dari nomor 2 karena nomor 1 sudah pernyataan pembuka
-                    });
+                    // 3. Pengantar / Apersepsi
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Pengantar', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.pengantarApersepsi, 'mb-4 text-base leading-relaxed'));
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
 
-                    // Tambahkan area kosong untuk jawaban
-                    worksheetText += `\n(Gunakan ruang di bawah ini untuk mencatat hasil diskusi dan analisis kelompok Anda)\n`;
-                    for (let i = 0; i < 6; i++) { // Jumlah baris kosong sedikit berbeda
-                        worksheetText += "........................................................................................................................................................\n";
+                    // 4. Petunjuk Kerja
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Petunjuk Kerja', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    worksheetOutputContainer.appendChild(addElement('ol', parsedResponse.petunjukKerja, 'list-decimal list-inside mb-4 text-base leading-relaxed'));
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
+
+                    // 5. Kegiatan Inti
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Kegiatan Inti', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.kegiatanInti.instruksiUmum, 'mb-4 text-base leading-relaxed'));
+
+                    // Pertanyaan Bertingkat
+                    if (parsedResponse.kegiatanInti.pertanyaanBertingkat && parsedResponse.kegiatanInti.pertanyaanBertingkat.length > 0) {
+                        const qList = document.createElement('ol');
+                        qList.className = 'list-decimal list-inside ml-4 mb-4 text-base leading-relaxed';
+                        parsedResponse.kegiatanInti.pertanyaanBertingkat.forEach(q => {
+                            const li = document.createElement('li');
+                            li.innerHTML = `${q.replace(/^\d+\.\s*/, '')}<br>`; // Remove numbering if AI includes it
+                            addLine(li, 2); // 2 garis kosong untuk jawaban
+                            qList.appendChild(li);
+                        });
+                        worksheetOutputContainer.appendChild(qList);
                     }
-                    worksheetText += "\n"; // Spasi setelah garis
 
-                    worksheetText += `
+                    // Tabel Observasi (jika ada)
+                    if (parsedResponse.kegiatanInti.tabelObservasi && parsedResponse.kegiatanInti.tabelObservasi.length > 0) {
+                        worksheetOutputContainer.appendChild(addElement('p', 'Lengkapi tabel observasi di bawah ini:', 'font-medium mb-2 text-base'));
+                        const table = document.createElement('table');
+                        table.className = 'w-full border-collapse border border-gray-400 mb-4 text-base';
 
----
-SOAL LATIHAN & TUGAS:
-${practiceQuestions && Array.isArray(practiceQuestions) && practiceQuestions.length > 0 ? practiceQuestions.map((question, index) => `${index + 1}. ${question}`).join('\n\n') : '[Daftar soal latihan belum dihasilkan]'}
+                        const thead = document.createElement('thead');
+                        const headerRow = document.createElement('tr');
+                        ["No.", "Skenario/Poin", "Analisis", "Kesimpulan Singkat"].forEach(headerText => {
+                            const th = document.createElement('th');
+                            th.className = 'border border-gray-300 p-2 text-left bg-gray-100';
+                            th.textContent = headerText;
+                            headerRow.appendChild(th);
+                        });
+                        thead.appendChild(headerRow);
+                        table.appendChild(thead);
 
----
-REFLEKSI DIRI SISWA:
-${studentSelfReflection || '[Refleksi diri siswa belum dihasilkan]'}
+                        const tbody = document.createElement('tbody');
+                        parsedResponse.kegiatanInti.tabelObservasi.forEach(rowData => {
+                            const row = document.createElement('tr');
+                            ["No.", "Skenario/Poin", "Analisis", "Kesimpulan Singkat"].forEach(key => {
+                                const td = document.createElement('td');
+                                td.className = 'border border-gray-300 p-2';
+                                td.textContent = rowData[key] || '';
+                                if (key === "Analisis" || key === "Kesimpulan Singkat") {
+                                    addLine(td, 2); // Tambah garis untuk jawaban di kolom ini
+                                }
+                                row.appendChild(td);
+                            });
+                            tbody.appendChild(row);
+                        });
+                        table.appendChild(tbody);
+                        worksheetOutputContainer.appendChild(table);
+                    }
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
 
----
-RUBRIK PENILAIAN KELOMPOK:
-(Diisi oleh Pengajar)
+                    // 6. Refleksi Siswa
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Refleksi Diri Siswa', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    const reflectionList = document.createElement('ul');
+                    reflectionList.className = 'list-none mb-4 text-base leading-relaxed';
+                    for (const key in parsedResponse.refleksiSiswa) {
+                        if (parsedResponse.refleksiSiswa.hasOwnProperty(key)) {
+                            const li = document.createElement('li');
+                            li.innerHTML = `<strong>${key.replace('pertanyaan', 'Pertanyaan ')}:</strong> ${parsedResponse.refleksiSiswa[key]}<br>`;
+                            addLine(li, 2); // 2 garis kosong untuk jawaban
+                            reflectionList.appendChild(li);
+                        }
+                    }
+                    worksheetOutputContainer.appendChild(reflectionList);
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
 
-+-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
-| No. | Aspek Penilaian                          | Skor 4 (Sangat Baik)| Skor 3 (Baik)       | Skor 2 (Cukup)      | Skor 1 (Kurang)     |
-+-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
-| 1   | Keaktifan Partisipasi                    | Selalu aktif &      | Sering aktif        | Cukup aktif         | Jarang/tidak aktif  |
-|     |                                          | memimpin diskusi    |                     |                     |                     |
-+-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
-| 2   | Kolaborasi Tim                           | Sangat harmonis,    | Baik, ada           | Cukup kooperatif    | Sulit berkolaborasi |
-|     |                                          | saling mendukung    | koordinasi          |                     |                     |
-+-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
-| 3   | Akurasi Jawaban/Hasil                    | Jawaban/hasil       | Jawaban/hasil akurat| Jawaban/hasil kurang| Jawaban/hasil tidak |
-|     |                                          | sangat tepat        |                     | akurat              | akurat              |
-+-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
-| 4   | Kualitas Presentasi                      | Sangat jelas,       | Jelas & meyakinkan  | Cukup jelas         | Kurang jelas/ragu   |
-|     |                                          | percaya diri        |                     |                     |                     |
-+-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
+                    // 7. Penilaian Diri (Self-Assessment)
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Penilaian Diri (Berikan tanda centang pada kolom yang sesuai)', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    if (parsedResponse.penilaianDiri && parsedResponse.penilaianDiri.length > 0) {
+                        const selfAssessmentTable = document.createElement('table');
+                        selfAssessmentTable.className = 'w-full border-collapse border border-gray-400 mb-4 text-base';
 
----
-CATATAN PENGHARGAAN DARI GURU:
-${teacherClosingRemarks || '[Catatan penghargaan dari guru belum dihasilkan]'}
+                        const saThead = document.createElement('thead');
+                        const saHeaderRow = document.createElement('tr');
+                        ["Pernyataan", "Ya", "Tidak"].forEach(headerText => {
+                            const th = document.createElement('th');
+                            th.className = 'border border-gray-300 p-2 text-left bg-gray-100';
+                            if (headerText === "Ya" || headerText === "Tidak") {
+                                th.classList.add('text-center');
+                            }
+                            th.textContent = headerText;
+                            saHeaderRow.appendChild(th);
+                        });
+                        saThead.appendChild(saHeaderRow);
+                        selfAssessmentTable.appendChild(saThead);
 
----
-Informasi Pengembang LAS:
-  Nama      : ${teacherName || '[Nama Pengajar]'}
-  Institusi : ${schoolName || '[Nama Lembaga Pendidikan]'}
-  Email     : [emailanda@contoh.com (Mohon isi secara manual)]
-  Kontak HP : [08xxxxxxxxxx (Mohon isi secara manual)]
-                    `.trim();
+                        const saTbody = document.createElement('tbody');
+                        parsedResponse.penilaianDiri.forEach(statement => {
+                            const row = document.createElement('tr');
+                            const tdStatement = document.createElement('td');
+                            tdStatement.className = 'border border-gray-300 p-2';
+                            tdStatement.textContent = statement;
+                            row.appendChild(tdStatement);
 
-                    worksheetOutputElem.value = worksheetText;
+                            const tdYes = document.createElement('td');
+                            tdYes.className = 'border border-gray-300 p-2 text-center';
+                            tdYes.textContent = ''; // Kosongkan untuk dicentang manual
+                            row.appendChild(tdYes);
+
+                            const tdNo = document.createElement('td');
+                            tdNo.className = 'border border-gray-300 p-2 text-center';
+                            tdNo.textContent = ''; // Kosongkan untuk dicentang manual
+                            row.appendChild(tdNo);
+                            saTbody.appendChild(row);
+                        });
+                        selfAssessmentTable.appendChild(saTbody);
+                        worksheetOutputContainer.appendChild(selfAssessmentTable);
+                    }
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
+
+                    // 8. Kesimpulan & Tugas Tambahan (Opsional)
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Kesimpulan & Tugas Tambahan', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.kesimpulanTugasTambahan, 'mb-4 text-base leading-relaxed'));
+                    worksheetOutputContainer.appendChild(document.createElement('hr'));
+
+                    // BONUS: Ruang Catatan Bebas Siswa
+                    worksheetOutputContainer.appendChild(addElement('h2', 'Ruang Catatan Bebas Siswa', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
+                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.ruangCatatanBebas, 'text-sm italic text-gray-600 mb-2'));
+                    addLine(worksheetOutputContainer, 5); // 5 garis kosong untuk catatan bebas
+
                     displayNotificationMessage('Lembar Aktivitas Siswa berhasil dibuat!', false);
 
                 } else {
                     displayNotificationMessage("Maaf, gagal menghasilkan konten Lembar Aktivitas. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
-                    worksheetOutputElem.value = "";
+                    worksheetOutputContainer.innerHTML = `<p class="text-center text-gray-500 italic">Gagal membuat LKPD. Silakan coba lagi dengan input yang lebih jelas.</p>`;
                 }
             } catch (error) {
                 console.error('Error saat menghasilkan konten Lembar Aktivitas:', error);
@@ -742,34 +897,38 @@ Informasi Pengembang LAS:
                 } else {
                     displayNotificationMessage(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua bidang penting terisi, koneksi internet stabil, dan Kunci API Gemini Anda valid. Coba lagi.`, true);
                 }
-                worksheetOutputElem.value = "";
+                worksheetOutputContainer.innerHTML = `<p class="text-center text-red-500 italic">Terjadi kesalahan: ${error.message}. Pastikan Kunci API valid dan semua bidang wajib terisi.</p>`;
             } finally {
-                generateWorksheetBtn.disabled = false; // Aktifkan kembali tombol
+                generateWorksheetBtn.disabled = false;
+                generateWorksheetBtn.querySelector('span').textContent = 'Buat Lembar Aktivitas dengan AI';
             }
         };
 
         // Fungsi untuk menyalin teks yang dihasilkan ke clipboard
         const copyGeneratedWorksheet = () => {
-            worksheetOutputElem.select();
+            const range = document.createRange();
+            range.selectNode(worksheetOutputContainer);
+            window.getSelection().removeAllRanges(); // Clear current selection
+            window.getSelection().addRange(range); // Select the content of the div
             document.execCommand('copy');
+            window.getSelection().removeAllRanges(); // Deselect
             displayNotificationMessage('Teks Lembar Aktivitas berhasil disalin ke clipboard!', false);
         };
 
         // Fungsi untuk membersihkan semua bidang formulir
         const resetFormFields = () => {
-            schoolNameInputElem.value = '';
             teacherNameInputElem.value = '';
+            gradeInputElem.value = '';
             subjectInputElem.value = '';
-            gradeSemesterInputElem.value = '';
             learningTopicInputElem.value = '';
-            learningModelInputElem.value = '';
-            timeAllocationInputElem.value = '';
-            competenceIndicatorsInputElem.value = '';
-            activity1Scenario1InputElem.value = '';
-            activity1Scenario2InputElem.value = '';
-            activity1Scenario3InputElem.value = '';
-            questionDifficultySelectElem.value = '';
-            worksheetOutputElem.value = '';
+            competenceGoalsInputElem.value = '';
+            apersepsiInputElem.value = '';
+            petunjukKerjaInputElem.value = '';
+            kegiatanIntiScenarioInputElem.value = '';
+            questionDifficultySelectElem.value = 'menengah'; // Reset ke default
+            worksheetOutputContainer.innerHTML = '<p class="text-center text-gray-500 italic">LKPD yang dihasilkan AI akan muncul di sini setelah Anda mengklik "Buat Lembar Aktivitas dengan AI".</p>';
+            // Hapus kelas required-field jika ada
+            document.querySelectorAll('.required-field').forEach(field => field.classList.remove('required-field'));
             displayNotificationMessage('Semua bidang formulir berhasil dibersihkan.', false);
         };
 
