@@ -332,13 +332,13 @@
 
         // Fungsi untuk menampilkan pesan temporer
         function showMessageBox(message, isError = false) {
-            const messageContainer = document.querySelector('.max-w-4xl.mx-auto'); 
+            const messageContainer = document.querySelector('.max-w-4xl.mx-auto');
             let tempMessageDiv = messageContainer.querySelector('.temp-message');
             
             if (!tempMessageDiv) {
                 tempMessageDiv = document.createElement('div');
                 tempMessageDiv.className = `temp-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
-                messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild); 
+                messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild);
             }
 
             tempMessageDiv.textContent = message;
@@ -358,7 +358,7 @@
             const apiKey = modalGeminiApiKeyInput.value.trim();
             if (apiKey) {
                 localStorage.setItem('geminiApiKey', apiKey);
-                geminiApiKeyModal.classList.remove('show'); 
+                geminiApiKeyModal.classList.remove('show');
                 showMessageBox('Kunci API Gemini berhasil disimpan.', false);
             } else {
                 showMessageBox('Kunci API Gemini tidak boleh kosong.', true);
@@ -380,8 +380,8 @@
             // Validasi API Key sebelum melanjutkan
             if (!apiKey || apiKey.trim() === '') {
                 showMessageBox('Kunci API Gemini diperlukan untuk membuat LKPD. Silakan masukkan.', true);
-                geminiApiKeyModal.classList.add('show'); 
-                modalGeminiApiKeyInput.value = ''; 
+                geminiApiKeyModal.classList.add('show');
+                modalGeminiApiKeyInput.value = '';
                 return; // Berhenti eksekusi jika API Key tidak ada
             }
 
@@ -398,28 +398,28 @@
                 lk1Activity1Input.value.trim(),
                 lk1Activity2Input.value.trim(),
                 lk1Activity3Input.value.trim()
-            ].filter(Boolean); 
+            ].filter(Boolean);
 
             // Validasi input penting sebelum memanggil API
             if (!topikPembelajaran || !mataPelajaran || !kelasSemester || !kdIpk) {
                 showMessageBox("Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.", true);
-                lkpdOutput.value = ""; 
+                lkpdOutput.value = "";
                 return; // Berhenti eksekusi jika input penting tidak lengkap
             }
 
             lkpdOutput.value = "Membuat konten LKPD cerdas dengan AI... Mohon tunggu sebentar. Proses ini mungkin memakan waktu beberapa detik.";
-            buatLkpdBtn.disabled = true; 
+            buatLkpdBtn.disabled = true;
 
             try {
                 // Isi tetap untuk petunjuk penggunaan (tidak dihasilkan AI)
                 const petunjukPenggunaan = `
 PETUNJUK PENGGUNAAN LKPD:
-1.  Bacalah dan pahami setiap petunjuk pada LKPD dengan teliti.
-2.  Diskusikan setiap pertanyaan atau tugas yang diberikan bersama anggota kelompok.
-3.  Gunakan berbagai sumber belajar (buku, internet) untuk membantu menjawab pertanyaan.
-4.  Kerjakan LKPD secara jujur dan bertanggung jawab.
-5.  Jika ada kesulitan atau hal yang kurang dipahami, tanyakan kepada guru.
-6.  Presentasikan hasil diskusi kelompok Anda di depan kelas.
+1. Bacalah dan pahami setiap petunjuk pada LKPD dengan teliti.
+2. Diskusikan setiap pertanyaan atau tugas yang diberikan bersama anggota kelompok.
+3. Gunakan berbagai sumber belajar (buku, internet) untuk membantu menjawab pertanyaan.
+4. Kerjakan LKPD secara jujur dan bertanggung jawab.
+5. Jika ada kesulitan atau hal yang kurang dipahami, tanyakan kepada guru.
+6. Presentasikan hasil diskusi kelompok Anda di depan kelas.
                 `.trim();
 
                 // Prompt untuk Gemini API
@@ -428,21 +428,21 @@ PETUNJUK PENGGUNAAN LKPD:
                 "${kdIpk}"
 
                 Buatkan konten LKPD dalam format JSON, dengan detail berikut:
-                1.  **tujuanPembelajaranGenerated**: Minimal 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
-                2.  **pengantarKontekstualGenerated**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${topikPembelajaran}".
-                3.  **kegiatanIntiPanduan**: Detail panduan untuk setiap tahapan model pembelajaran ${modelPembelajaran}. Ini harus berupa satu blok teks panjang yang mencakup:
+                1. **tujuanPembelajaranGenerated**: Minimal 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
+                2. **pengantarKontekstualGenerated**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${topikPembelajaran}".
+                3. **kegiatanIntiPanduan**: Detail panduan untuk setiap tahapan model pembelajaran ${modelPembelajaran}. Ini harus berupa satu blok teks panjang yang mencakup:
                     * A. Observasi (Stimulation): Petunjuk spesifik untuk observasi terkait topik.
                     * B. Diskusi (Problem Statement): Petunjuk untuk mengidentifikasi masalah dari observasi.
                     * C. Analisis (Data Collection & Processing): Petunjuk untuk mengumpulkan dan mengolah informasi.
                     * D. Aplikasi (Verification): Petunjuk untuk menerapkan konsep.
                     * E. Refleksi (Generalization): Petunjuk untuk menyimpulkan pembelajaran.
                     Pastikan setiap sub-bagian ini diawali dengan huruf kapital (A., B., C., D., E.) dan nama tahapannya dalam kurung.
-                4.  **lk1Instruction**: Instruksi singkat (1-2 kalimat) untuk kegiatan LK I.
-                5.  **lk1Classification**: Sebuah array objek, di mana setiap objek memiliki \`activity\` (string) dan \`type\` (string, bisa "Penghematan" atau "Tidak Penghematan"). Gunakan kegiatan berikut: ${JSON.stringify(lk1Activities)}. Jika ada kegiatan yang tidak jelas, masukkan sebagai "Belum Diklasifikasikan". Tambahkan setidaknya 2-3 contoh tambahan kegiatan penghematan/tidak penghematan yang relevan dengan topik jika \`lk1Activities\` kurang dari 3.
-                6.  **lk2InitialStatement**: Sebuah pernyataan awal atau fakta (2-3 kalimat) seperti "Dalam pembuatan 1 rim kertas..." yang relevan dengan topik "${topikPembelajaran}" jika memungkinkan, atau pernyataan umum.
-                7.  **lk2Steps**: Sebuah array string berisi 5-6 langkah kegiatan untuk LK II, termasuk diskusi, penulisan hasil, dan presentasi (jika relevan).
-                8.  **daftarSoal**: Sebuah array berisi minimal 5-7 soal latihan atau tugas esai/analisis/diskusi yang mendorong berpikir kritis, bukan hanya hafalan, terkait topik "${topikPembelajaran}" dan tujuan pembelajaran. Jika tingkat kesulitan soal adalah "${tingkatKesulitanSoal}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
-                9.  **refleksiDiriSiswaGenerated**: Minimal 4 pertanyaan reflektif bagi siswa setelah mengerjakan LKPD, dalam format daftar berpoin.
+                4. **lk1Instruction**: Instruksi singkat (1-2 kalimat) untuk kegiatan LK I.
+                5. **lk1Classification**: Sebuah array objek, di mana setiap objek memiliki \`activity\` (string) dan \`type\` (string, bisa "Penghematan" atau "Tidak Penghematan"). Gunakan kegiatan berikut: ${JSON.stringify(lk1Activities)}. Jika ada kegiatan yang tidak jelas, masukkan sebagai "Belum Diklasifikasikan". Tambahkan setidaknya 2-3 contoh tambahan kegiatan penghematan/tidak penghematan yang relevan dengan topik jika \`lk1Activities\` kurang dari 3.
+                6. **lk2InitialStatement**: Sebuah pernyataan awal atau fakta (2-3 kalimat) seperti "Dalam pembuatan 1 rim kertas..." yang relevan dengan topik "${topikPembelajaran}" jika memungkinkan, atau pernyataan umum.
+                7. **lk2Steps**: Sebuah array string berisi 5-6 langkah kegiatan untuk LK II, termasuk diskusi, penulisan hasil, dan presentasi (jika relevan).
+                8. **daftarSoal**: Sebuah array berisi minimal 5-7 soal latihan atau tugas esai/analisis/diskusi yang mendorong berpikir kritis, bukan hanya hafalan, terkait topik "${topikPembelajaran}" dan tujuan pembelajaran. Jika tingkat kesulitan soal adalah "${tingkatKesulitanSoal}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
+                9. **refleksiDiriSiswaGenerated**: Minimal 4 pertanyaan reflektif bagi siswa setelah mengerjakan LKPD, dalam format daftar berpoin.
                 10. **catatanGuruMotivasi**: Satu paragraf singkat (1-2 kalimat) berisi catatan atau motivasi penutup dari guru untuk siswa.
 
                 Pastikan semua teks yang dihasilkan menggunakan bahasa Indonesia yang baik dan baku, dan sesuai untuk konteks pendidikan menengah. Jangan gunakan markdown di dalam nilai string JSON.`;
@@ -509,7 +509,7 @@ PETUNJUK PENGGUNAAN LKPD:
 
                     const jsonString = result.candidates[0].content.parts[0].text;
                     // Hapus backticks dan kata 'json' jika AI mengembalikan dalam format code block
-                    const cleanedJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '').trim(); 
+                    const cleanedJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '').trim();
                     
                     console.log("Raw JSON response from Gemini:", cleanedJsonString); // Log for debugging
 
@@ -536,26 +536,38 @@ PETUNJUK PENGGUNAAN LKPD:
                     let lkpdText = `
 LEMBAR KERJA PESERTA DIDIK (LKPD)
 
-Kelas/Semester    : ${kelasSemester || '[Kelas / Semester]'}
-Tema              : ${mataPelajaran || '[Mata Pelajaran]'}
-Sub Tema          : ${topikPembelajaran || '[Topik Pembelajaran]'}
-Pembelajaran      : [Pembelajaran AI-generated atau manual, misal: 1]
-Muatan Pelajaran  : ${mataPelajaran || '[Mata Pelajaran]'}
+Nama Sekolah     : ${namaSekolah || '[Nama Sekolah]'}
+Nama Guru        : ${namaGuru || '[Nama Guru]'}
+Mata Pelajaran   : ${mataPelajaran || '[Mata Pelajaran]'}
+Kelas/Semester   : ${kelasSemester || '[Kelas / Semester]'}
+Topik            : ${topikPembelajaran || '[Topik Pembelajaran]'}
+Model Pembelajaran: ${modelPembelajaran || '[Model Pembelajaran]'}
+Alokasi Waktu    : ${alokasiWaktu || '[Alokasi Waktu]'}
 
-Tujuan Pembelajaran
+---
 
+Kompetensi Dasar & Indikator Pencapaian (KD & IPK):
+${kdIpk || '[KD & IPK belum diisi]'}
+
+---
+
+Tujuan Pembelajaran:
 ${tujuanPembelajaranGenerated || '[Tujuan Pembelajaran belum dihasilkan]'}
 
 ---
 
-LK I
-${lk1Instruction || 'Kelompokkanlah kegiatan berikut berdasarkan apakah kegiatan tersebut menghemat penggunaan sumber daya alam atau tidak, dan berikan penjelasannya.'}
-
+Pengantar:
 ${pengantarKontekstualGenerated || '[Pengantar kontekstual belum dihasilkan]'}
 
-${kegiatanIntiPanduan ? `
+---
+
 KEGIATAN INTI (Model Pembelajaran: ${modelPembelajaran || '[Model Pembelajaran]'})
-${kegiatanIntiPanduan}` : '[Panduan Kegiatan Inti belum dihasilkan]'}
+${kegiatanIntiPanduan || '[Panduan Kegiatan Inti belum dihasilkan]'}
+
+---
+
+LK I: Mengidentifikasi Kegiatan Penghematan Sumber Daya
+${lk1Instruction || 'Kelompokkanlah kegiatan berikut berdasarkan apakah kegiatan tersebut menghemat penggunaan sumber daya alam atau tidak, dan berikan penjelasannya.'}
 
 +-----+----------------------------------+-----------------------+------------------------+
 | No. | Kegiatan Gambar                  | Melakukan Penghematan | Tidak Melakukan        |
@@ -568,8 +580,8 @@ ${kegiatanIntiPanduan}` : '[Panduan Kegiatan Inti belum dihasilkan]'}
                         if (item && typeof item.activity === 'string' && typeof item.type === 'string') {
                             const no = String(index + 1).padEnd(3);
                             const activity = item.activity.padEnd(32).substring(0, 32);
-                            const isHemat = item.type === "Penghematan" ? "  X  " : "     ";
-                            const isTidakHemat = item.type === "Tidak Penghematan" ? "  X  " : "     ";
+                            const isHemat = item.type === "Penghematan" ? "   X   " : "       "; // Sesuaikan padding
+                            const isTidakHemat = item.type === "Tidak Penghematan" ? "   X   " : "       "; // Sesuaikan padding
                             lkpdText += `| ${no}| ${activity} | ${isHemat.padEnd(21)} | ${isTidakHemat.padEnd(22)} |\n`;
                             lkpdText += `+-----+----------------------------------+-----------------------+------------------------+\n`;
                         } else {
@@ -579,8 +591,9 @@ ${kegiatanIntiPanduan}` : '[Panduan Kegiatan Inti belum dihasilkan]'}
 
                     lkpdText += `
 
-LK II
-Menghemat Kertas dalam Kehidupan Sehari-hari
+---
+
+LK II: Menghemat Kertas dalam Kehidupan Sehari-hari
 
 Langkah Kegiatan:
 1. Perhatikan pernyataan berikut.
@@ -603,6 +616,7 @@ Langkah Kegiatan:
 
                     lkpdText += `
 
+---
 SOAL LATIHAN / TUGAS:
 ${daftarSoal && Array.isArray(daftarSoal) && daftarSoal.length > 0 ? daftarSoal.map((soal, index) => `${index + 1}. ${soal}`).join('\n\n') : '[Daftar soal belum dihasilkan]'}
 
@@ -636,16 +650,17 @@ ${catatanGuruMotivasi || '[Catatan guru/motivasi penutup belum dihasilkan]'}
 
 ---
 Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
-      Instansi            : ${namaSekolah || '[Nama Sekolah]'}
-      Alamat Surel        : [email@contoh.com (Isi manual)]
-      Whatsapp            : [08xxxxxxxxxx (Isi manual)]
+      Instansi             : ${namaSekolah || '[Nama Sekolah]'}
+      Alamat Surel         : [email@contoh.com (Isi manual)]
+      Whatsapp             : [08xxxxxxxxxx (Isi manual)]
                         `.trim();
 
                     lkpdOutput.value = lkpdText;
+                    showMessageBox('LKPD berhasil dibuat!', false);
 
                 } else {
                     showMessageBox("Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
-                    lkpdOutput.value = ""; 
+                    lkpdOutput.value = "";
                 }
             } catch (error) {
                 console.error('Error generating LKPD content:', error);
@@ -654,24 +669,24 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
                 } else {
                     showMessageBox(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan koneksi internet Anda stabil, dan Kunci API Gemini Anda benar dan aktif. Coba lagi.`, true);
                 }
-                lkpdOutput.value = ""; 
+                lkpdOutput.value = "";
             } finally {
-                buatLkpdBtn.disabled = false; 
+                buatLkpdBtn.disabled = false;
             }
         };
 
         // Fungsi untuk menyalin teks LKPD ke clipboard
         const copyLkpd = () => {
-            lkpdOutput.select(); 
-            document.execCommand('copy'); 
-            showMessageBox('Teks LKPD berhasil disalin ke clipboard!', false); 
+            lkpdOutput.select();
+            document.execCommand('copy');
+            showMessageBox('Teks LKPD berhasil disalin ke clipboard!', false);
         };
 
         // Fungsi untuk membersihkan formulir
         const clearForm = () => {
             namaSekolahInput.value = '';
             namaGuruInput.value = '';
-            namaPelajaranInput.value = ''; // Memastikan semua input dibersihkan
+            mataPelajaranInput.value = ''; // Memastikan semua input dibersihkan
             kelasSemesterInput.value = '';
             topikPembelajaranInput.value = '';
             modelPembelajaranInput.value = '';
@@ -681,7 +696,8 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
             lk1Activity2Input.value = '';
             lk1Activity3Input.value = '';
             tingkatKesulitanSoalInput.value = '';
-            lkpdOutput.value = ''; 
+            lkpdOutput.value = '';
+            showMessageBox('Formulir berhasil dibersihkan.', false);
         };
 
         // Inisialisasi utama setelah DOM siap
@@ -692,26 +708,24 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
             clearFormBtn.addEventListener('click', clearForm);
 
             // Inisialisasi dan Event Listeners untuk Modal API Key
-            // Bagian ini harus berada di dalam DOMContentLoaded,
-            // tetapi saya memisahkannya ke dalam fungsi untuk kejelasan.
             const initializeModalAndListeners = () => {
                 const storedApiKey = localStorage.getItem('geminiApiKey');
                 if (!storedApiKey || storedApiKey.trim() === '') {
-                    geminiApiKeyModal.classList.add('show'); 
+                    geminiApiKeyModal.classList.add('show');
                 }
-                modalGeminiApiKeyInput.value = storedApiKey || ''; 
+                modalGeminiApiKeyInput.value = storedApiKey || '';
 
                 // Event Listeners tombol modal
                 modalSaveGeminiApiKeyBtn.addEventListener('click', saveGeminiApiKey);
                 modalClearGeminiApiKeyBtn.addEventListener('click', clearGeminiApiKey);
                 modalCloseGeminiApiKeyBtn.addEventListener('click', () => {
-                    geminiApiKeyModal.classList.remove('show'); 
+                    geminiApiKeyModal.classList.remove('show');
                 });
 
                 // Event Listener untuk tombol pengaturan
-                settingsButton.addEventListener('click', () => { // Ganti settingsIcon menjadi settingsButton
-                    geminiApiKeyModal.classList.add('show'); 
-                    modalGeminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || ''; 
+                settingsButton.addEventListener('click', () => {
+                    geminiApiKeyModal.classList.add('show');
+                    modalGeminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || '';
                 });
             };
             
