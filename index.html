@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pembuat LKPD Otomatis</title>
+    <title>Asisten Pembuat Lembar Aktivitas Siswa</title>
+    <!-- Tailwind CSS CDN untuk styling yang mudah dan responsif -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         /* Custom styles untuk font Inter jika tersedia, fallback ke sans-serif */
@@ -11,15 +12,17 @@
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-smoothing: grayscale;
-            background-color: #f0f8ff; /* Light blue pastel background */
+            background-color: #e6f7ff; /* Warna latar belakang biru pastel yang berbeda */
+            color: #333; /* Warna teks dasar */
         }
-        /* Mengatur agar textarea hasil LKPD bisa di-scroll dan terlihat rapi */
-        #lkpdOutput {
+        /* Mengatur agar textarea hasil bisa di-scroll dan terlihat rapi */
+        #worksheetOutput {
             white-space: pre-wrap; /* Mempertahankan spasi dan baris baru */
             word-wrap: break-word; /* Memecah kata panjang */
             min-height: 400px; /* Tinggi minimal untuk area output */
             font-family: 'Consolas', 'Menlo', 'monospace'; /* Font monospace untuk tabel ASCII agar rapi */
-            font-size: 0.85rem; /* Ukuran font lebih kecil untuk kerapian */
+            font-size: 0.875rem; /* Ukuran font lebih kecil untuk kerapian */
+            line-height: 1.4; /* Spasi baris untuk keterbacaan */
         }
         /* Styling untuk mode cetak */
         @media print {
@@ -27,10 +30,10 @@
                 background-color: white; /* Hapus background di mode cetak */
                 margin: 0; /* Hapus margin body */
             }
-            .no-print {
+            .hide-on-print {
                 display: none !important; /* Sembunyikan elemen yang tidak perlu dicetak */
             }
-            .print-area {
+            .printable-area {
                 width: 21cm; /* Lebar A4 */
                 height: 29.7cm; /* Tinggi A4 */
                 margin: 0.5cm auto; /* Margin atas/bawah 0.5cm, tengah horizontal */
@@ -41,11 +44,11 @@
                 line-height: 1.5; /* Spasi baris untuk cetak */
             }
             /* Style khusus untuk judul dan subjudul dalam cetakan */
-            .print-area h1 {
+            .printable-area h1 {
                 text-align: center;
                 margin-bottom: 1em;
             }
-            .print-area h2 {
+            .printable-area h2 {
                 text-align: left;
                 margin-top: 1.5em;
                 margin-bottom: 0.5em;
@@ -53,14 +56,14 @@
         }
 
         /* Modal Styles */
-        .api-key-modal {
+        .api-modal-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(5px);
+            background-color: rgba(0, 0, 0, 0.75); /* Sedikit lebih gelap */
+            backdrop-filter: blur(6px); /* Sedikit lebih blur */
             display: flex;
             justify-content: center;
             align-items: center;
@@ -69,386 +72,419 @@
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         }
-        .api-key-modal.show {
+        .api-modal-overlay.show {
             opacity: 1;
             visibility: visible;
         }
-        .modal-content {
+        .modal-content-card {
             background-color: #ffffff;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            width: 90%;
-            max-width: 500px;
+            padding: 2.5rem; /* Padding sedikit lebih besar */
+            border-radius: 1rem; /* Sudut lebih membulat */
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3); /* Bayangan lebih tebal */
+            width: 95%;
+            max-width: 550px; /* Lebar maksimum sedikit lebih besar */
             text-align: center;
-            transform: translateY(-20px);
+            transform: translateY(-30px); /* Efek masuk sedikit lebih jauh */
             transition: transform 0.3s ease-in-out;
         }
-        .api-key-modal.show .modal-content {
+        .api-modal-overlay.show .modal-content-card {
             transform: translateY(0);
         }
-        .modal-content h2 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #3b82f6; /* Blue-500 */
-            margin-bottom: 1rem;
+        .modal-content-card h2 {
+            font-size: 1.75rem; /* Ukuran font lebih besar */
+            font-weight: 800; /* Lebih tebal */
+            color: #4f46e5; /* Indigo-600 */
+            margin-bottom: 1.25rem;
         }
-        .modal-content p {
-            color: #4b5563;
-            margin-bottom: 1.5rem;
+        .modal-content-card p {
+            color: #6b7280; /* Gray-600 */
+            margin-bottom: 1.75rem;
         }
-        .modal-content input[type="password"] {
-            margin-bottom: 1.5rem;
+        .modal-content-card input[type="password"] {
+            margin-bottom: 1.75rem;
             border: 1px solid #d1d5db;
-            border-radius: 0.5rem;
-            padding: 0.75rem 1rem;
+            border-radius: 0.625rem; /* Sedikit lebih membulat */
+            padding: 0.875rem 1.25rem; /* Padding lebih besar */
             width: 100%;
+            font-size: 1rem;
         }
-        .modal-content .button-group {
+        .modal-actions-group {
             display: flex;
-            gap: 1rem;
+            gap: 1.25rem; /* Jarak antar tombol lebih besar */
             justify-content: center;
-            flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+            flex-wrap: wrap;
         }
-        .modal-content .button-group button {
-            flex-grow: 1; /* Allow buttons to grow */
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
+        .modal-actions-group button {
+            flex-grow: 1;
+            padding: 0.875rem 1.75rem; /* Padding lebih besar */
+            border-radius: 0.625rem;
+            font-weight: 700; /* Lebih tebal */
             cursor: pointer;
-            transition: background-color 0.2s;
+            transition: all 0.2s ease-in-out; /* Transisi untuk semua properti */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Bayangan tombol */
         }
-        .modal-content .button-group .btn-save {
-            background-color: #3b82f6;
+        .modal-actions-group .btn-action-save {
+            background-color: #4f46e5; /* Indigo-600 */
             color: white;
         }
-        .modal-content .button-group .btn-save:hover {
-            background-color: #2563eb;
+        .modal-actions-group .btn-action-save:hover {
+            background-color: #4338ca; /* Indigo-700 */
+            transform: translateY(-2px); /* Efek angkat */
         }
-        .modal-content .button-group .btn-clear {
-            background-color: #ef4444; /* Red-500 */
+        .modal-actions-group .btn-action-clear {
+            background-color: #ef4444; /* Rose-500 */
             color: white;
         }
-        .modal-content .button-group .btn-clear:hover {
-            background-color: #dc2626; /* Red-600 */
+        .modal-actions-group .btn-action-clear:hover {
+            background-color: #dc2626; /* Rose-600 */
+            transform: translateY(-2px);
         }
-        .modal-content .button-group .btn-close {
-            background-color: #6b7280; /* Gray-500 */
+        .modal-actions-group .btn-action-close {
+            background-color: #6b7280; /* Slate-500 */
             color: white;
         }
-        .modal-content .button-group .btn-close:hover {
-            background-color: #4b5563; /* Gray-600 */
+        .modal-actions-group .btn-action-close:hover {
+            background-color: #4b5563; /* Slate-600 */
+            transform: translateY(-2px);
         }
 
-        /* Settings Button Styles - NEW */
-        #settingsButton { /* Ganti #settingsIcon jadi #settingsButton */
+        /* Settings Button Styles */
+        #settingsControlBtn {
             position: absolute;
-            top: 1.5rem; /* Sesuaikan jarak dari atas */
-            right: 1.5rem; /* Sesuaikan jarak dari kanan */
+            top: 1.75rem; /* Jarak sedikit lebih jauh dari atas */
+            right: 1.75rem; /* Jarak sedikit lebih jauh dari kanan */
             cursor: pointer;
-            padding: 0.5rem 1rem; /* Padding tombol */
+            padding: 0.625rem 1.25rem; /* Padding sedikit lebih besar */
             background-color: #e0f2fe; /* Warna latar belakang tombol */
             color: #2563eb; /* Warna teks tombol */
             border: 1px solid #93c5fd; /* Border tombol */
-            border-radius: 0.5rem; /* Sudut tombol membulat */
-            font-size: 0.875rem; /* Ukuran font */
+            border-radius: 0.625rem; /* Sudut tombol lebih membulat */
+            font-size: 0.9rem; /* Ukuran font sedikit lebih besar */
             font-weight: 600; /* Ketebalan font */
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
             z-index: 10; /* Pastikan tombol di atas elemen lain */
-            display: flex; /* Agar teks dan ikon (jika ada) bisa diatur dengan flexbox */
-            align-items: center; /* Vertikal tengah */
-            gap: 0.5rem; /* Jarak antara teks dan ikon (jika ditambahkan) */
+            display: flex;
+            align-items: center;
+            gap: 0.625rem; /* Jarak antara teks dan ikon (jika ada) */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08); /* Bayangan ringan */
         }
-        #settingsButton:hover {
+        #settingsControlBtn:hover {
             background-color: #bfdbfe; /* Warna latar belakang saat hover */
             color: #1e40af; /* Warna teks saat hover */
-            transform: scale(1.02); /* Efek membesar sedikit saat hover */
+            transform: scale(1.03); /* Efek membesar sedikit saat hover */
         }
 
-        /* Temporary Message Box for showMessageBox function */
-        .temp-message {
-            position: fixed; /* Use fixed for global placement */
-            top: 1rem; /* Adjust as needed */
+        /* Notification Message Box */
+        .notification-message {
+            position: fixed; /* Gunakan fixed untuk penempatan global */
+            top: 1.5rem; /* Sesuaikan posisi */
             left: 50%;
             transform: translateX(-50%);
-            z-index: 1001; /* Above modal */
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            z-index: 1001; /* Di atas modal */
+            box-shadow: 0 6px 12px rgba(0,0,0,0.15); /* Bayangan lebih jelas */
             max-width: 90%;
+            padding: 0.8rem 1.5rem; /* Padding lebih besar */
+            border-radius: 0.75rem; /* Sudut lebih membulat */
+            font-size: 0.95rem; /* Ukuran font sedikit lebih besar */
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
         }
-        .temp-message.show {
+        .notification-message.show {
             opacity: 1;
             visibility: visible;
         }
+        /* Warna untuk notifikasi sukses */
+        .notification-success {
+            background-color: #d1fae5; /* Green-100 */
+            color: #065f46; /* Green-800 */
+            border: 1px solid #6ee7b7; /* Green-300 */
+        }
+        /* Warna untuk notifikasi error */
+        .notification-error {
+            background-color: #fee2e2; /* Red-100 */
+            color: #991b1b; /* Red-800 */
+            border: 1px solid #fca5a5; /* Red-300 */
+        }
     </style>
 </head>
-<body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-blue-200" style="position: relative;">
-        <button id="settingsButton" class="no-print">
-            Pengaturan Kunci
+<body class="p-5 md:p-10">
+    <div class="max-w-5xl mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-indigo-200 relative">
+        <!-- Tombol Pengaturan Kunci API -->
+        <button id="settingsControlBtn" class="hide-on-print">
+            Kelola Kunci API
         </button>
-        <h1 class="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-6">Pembuat LKPD Otomatis</h1>
-        <p class="text-center text-gray-600 mb-8">Isi formulir di bawah ini untuk membuat Lembar Kerja Peserta Didik (LKPD) mengikuti format referensi.</p>
+        <h1 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-800 mb-7">Asisten Pembuat Lembar Aktivitas Siswa</h1>
+        <p class="text-center text-gray-700 mb-9">Isi detail di bawah untuk menghasilkan Lembar Aktivitas Siswa (LAS) dengan bantuan AI, mengikuti format standar.</p>
 
-        <div class="no-print space-y-4 mb-10">
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div class="hide-on-print space-y-5 mb-12">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label for="namaSekolah" class="block text-sm font-medium text-gray-700">Nama Sekolah</label>
-                    <input type="text" id="namaSekolah" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: SMPN 5 Harapan Bangsa">
+                    <label for="schoolNameInput" class="block text-sm font-medium text-gray-700">Nama Lembaga Pendidikan</label>
+                    <input type="text" id="schoolNameInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: SMA Negeri 1 Maju Bersama">
                 </div>
                 <div>
-                    <label for="namaGuru" class="block text-sm font-medium text-gray-700">Nama Guru</label>
-                    <input type="text" id="namaGuru" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Ibu Siti Aminah, S.Pd.">
+                    <label for="teacherNameInput" class="block text-sm font-medium text-gray-700">Nama Pengajar</label>
+                    <input type="text" id="teacherNameInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Bpk. Andi Susanto, M.Pd.">
                 </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                    <label for="mataPelajaran" class="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
-                    <input type="text" id="mataPelajaran" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Ilmu Pengetahuan Alam (IPA)">
+                    <label for="subjectInput" class="block text-sm font-medium text-gray-700">Mata Pelajaran</label>
+                    <input type="text" id="subjectInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Fisika">
                 </div>
                 <div>
-                    <label for="kelasSemester" class="block text-sm font-medium text-gray-700">Kelas/Semester</label>
-                    <input type="text" id="kelasSemester" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: VII / Genap">
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                    <label for="topikPembelajaran" class="block text-sm font-medium text-gray-700">Topik Pembelajaran</label>
-                    <input type="text" id="topikPembelajaran" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Perubahan Wujud Zat">
-                </div>
-                <div>
-                    <label for="modelPembelajaran" class="block text-sm font-medium text-gray-700">Model Pembelajaran</label>
-                    <input type="text" id="modelPembelajaran" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Discovery Learning">
+                    <label for="gradeSemesterInput" class="block text-sm font-medium text-gray-700">Tingkat/Semester</label>
+                    <input type="text" id="gradeSemesterInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: X / Ganjil">
                 </div>
             </div>
 
-            <div>
-                <label for="alokasiWaktu" class="block text-sm font-medium text-gray-700">Alokasi Waktu</label>
-                <input type="text" id="alokasiWaktu" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: 2 x 40 menit">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div>
+                    <label for="learningTopicInput" class="block text-sm font-medium text-gray-700">Pokok Pembelajaran</label>
+                    <input type="text" id="learningTopicInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Hukum Newton tentang Gerak">
+                </div>
+                <div>
+                    <label for="learningModelInput" class="block text-sm font-medium text-gray-700">Model Pembelajaran</label>
+                    <input type="text" id="learningModelInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: Problem-Based Learning">
+                </div>
             </div>
 
             <div>
-                <label for="kdIpk" class="block text-sm font-medium text-gray-700">Kompetensi Dasar & Indikator Pencapaian (KD & IPK)</label>
-                <textarea id="kdIpk" rows="4" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh:&#10;KD: 3.3 Menganalisis konsep suhu...&#10;IPK: 3.3.1 Menjelaskan konsep perubahan wujud zat..."></textarea>
+                <label for="timeAllocationInput" class="block text-sm font-medium text-gray-700">Alokasi Waktu</label>
+                <input type="text" id="timeAllocationInput" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh: 3 x 45 menit">
             </div>
 
-            <div class="mt-4 p-4 border border-blue-200 rounded-md bg-blue-50">
-                <p class="text-sm font-semibold text-blue-800 mb-2">Input untuk "LK I" (Kegiatan Pengelompokan)</p>
-                <p class="text-xs text-gray-600 mb-2">Deskripsikan kegiatan atau gambar yang ingin Anda klasifikasikan di LK I. Contoh: "Sedang mencuci mobil", "Merobek-robek kertas". AI akan membantu mengelompokkannya.</p>
+            <div>
+                <label for="competenceIndicatorsInput" class="block text-sm font-medium text-gray-700">Kompetensi Inti & Indikator Pencapaian (KI & IP)</label>
+                <textarea id="competenceIndicatorsInput" rows="5" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base" placeholder="Contoh:&#10;KI: 3.4 Menganalisis pengaruh gaya terhadap percepatan benda...&#10;IP: 3.4.1 Mengidentifikasi jenis-jenis gaya..."></textarea>
+            </div>
+
+            <div class="mt-5 p-5 border border-indigo-300 rounded-xl bg-indigo-50">
+                <p class="text-sm font-semibold text-indigo-800 mb-3">Input untuk "Aktivitas 1" (Kegiatan Kategorisasi)</p>
+                <p class="text-xs text-gray-600 mb-3">Jelaskan kegiatan atau skenario yang ingin Anda klasifikasikan pada bagian Aktivitas 1. AI akan membantu mengategorikannya. Contoh: "Buah apel jatuh dari pohon", "Mendorong lemari".</p>
                 <div>
-                    <label for="lk1Activity1" class="block text-sm font-medium text-gray-700">Kegiatan/Gambar 1</label>
-                    <input type="text" id="lk1Activity1" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Sedang mencuci mobil">
+                    <label for="activity1Scenario1" class="block text-sm font-medium text-gray-700">Skenario/Kegiatan 1</label>
+                    <input type="text" id="activity1Scenario1" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Buah apel jatuh dari pohon">
                 </div>
                 <div class="mt-2">
-                    <label for="lk1Activity2" class="block text-sm font-medium text-gray-700">Kegiatan/Gambar 2</label>
-                    <input type="text" id="lk1Activity2" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Menyalakan semua alat elektronik di rumah">
+                    <label for="activity1Scenario2" class="block text-sm font-medium text-gray-700">Skenario/Kegiatan 2</label>
+                    <input type="text" id="activity1Scenario2" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Mengayuh sepeda">
                 </div>
                 <div class="mt-2">
-                    <label for="lk1Activity3" class="block text-sm font-medium text-gray-700">Kegiatan/Gambar 3</label>
-                    <input type="text" id="lk1Activity3" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm" placeholder="Contoh: Mendaur ulang bahan bekas menjadi tas">
+                    <label for="activity1Scenario3" class="block text-sm font-medium text-gray-700">Skenario/Kegiatan 3</label>
+                    <input type="text" id="activity1Scenario3" class="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm" placeholder="Contoh: Menarik tali tambang">
                 </div>
-                <div class="mt-2">
-                    <label for="tingkatKesulitanSoal" class="block text-sm font-medium text-gray-700">Tingkat Kesulitan Soal (Untuk Soal Latihan)</label>
-                    <select id="tingkatKesulitanSoal" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
-                        <option value="">Pilih Tingkat Kesulitan</option>
-                        <option value="mudah">Mudah</option>
-                        <option value="sedang">Sedang</option>
-                        <option value="sulit">Sulit</option>
+                <div class="mt-4">
+                    <label for="questionDifficulty" class="block text-sm font-medium text-gray-700">Level Kesulitan Soal (untuk Latihan)</label>
+                    <select id="questionDifficulty" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 text-base">
+                        <option value="">Pilih Level Kesulitan</option>
+                        <option value="pemula">Pemula</option>
+                        <option value="menengah">Menengah</option>
+                        <option value="mahir">Mahir</option>
                     </select>
                 </div>
             </div>
             
-            <button id="buatLkpdBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
-                Buat LKPD dengan AI
+            <button id="generateWorksheetBtn" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-5 rounded-lg shadow-lg transition duration-300 ease-in-out transform hover:scale-105">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                Buat Lembar Aktivitas dengan AI
             </button>
         </div>
 
-        <div class="mt-8">
-            <h2 class="text-2xl font-semibold text-blue-700 mb-4 text-center no-print">Hasil LKPD Anda</h2>
-            <textarea id="lkpdOutput" readonly class="w-full p-4 border border-green-300 rounded-md bg-green-50 text-gray-800 overflow-auto shadow-inner"></textarea>
-            <div class="mt-4 flex justify-center no-print">
-                <button id="copyLkpdBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out mr-2">
-                    Salin LKPD
+        <div class="mt-10 printable-area">
+            <h2 class="text-2xl font-semibold text-indigo-700 mb-5 text-center hide-on-print">Hasil Lembar Aktivitas Anda</h2>
+            <textarea id="worksheetOutput" readonly class="w-full p-5 border border-teal-300 rounded-lg bg-teal-50 text-gray-800 overflow-auto shadow-inner"></textarea>
+            <div class="mt-5 flex justify-center hide-on-print">
+                <button id="copyWorksheetBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105 mr-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M8 3a1 1 0 011-1h2a1 1 0 110 2H9a1 1 0 01-1-1z" />
+                        <path d="M6 3a2 2 0 00-2 2v11a2 2 0 002 2h8a2 2 0 002-2V5a2 2 0 00-2-2H6zM5 9.3V7a1 1 0 011-1h8a1 1 0 011 1v2.3l2.353 2.354a1 1 0 000-1.414l-4.95-4.95a1 1 0 00-1.414 0L3.646 9.3a1 1 0 000 1.414l4.95 4.95a1 1 0 001.414 0L17 10.3V13a2 2 0 01-2 2H6a2 2 0 01-2-2v-3.7z" />
+                    </svg>
+                    Salin Teks
                 </button>
-                <button id="clearFormBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-md shadow-md transition duration-300 ease-in-out">
+                <button id="clearFormBtn" class="bg-rose-500 hover:bg-rose-600 text-white font-bold py-3 px-5 rounded-lg shadow-md transition duration-300 ease-in-out transform hover:scale-105">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                    </svg>
                     Bersihkan Formulir
                 </button>
             </div>
-            <p class="text-sm text-gray-500 mt-4 text-center no-print">
-                Salin teks di atas, lalu tempel ke aplikasi pengolah kata (MS Word/Google Docs) untuk pengaturan tata letak cetak (margin, spasi, font A4) agar hasil cetak maksimal.
+            <p class="text-sm text-gray-600 mt-5 text-center hide-on-print">
+                Salin teks di atas, lalu tempel ke aplikasi pengolah kata (MS Word/Google Docs) untuk penyesuaian tata letak dan pencetakan optimal.
             </p>
         </div>
     </div>
 
-    <div id="geminiApiKeyModal" class="api-key-modal">
-        <div class="modal-content">
-            <h2>Masukkan Kunci API Gemini Anda</h2>
+    <!-- Modal untuk input Kunci API Gemini -->
+    <div id="geminiApiModal" class="api-modal-overlay">
+        <div class="modal-content-card">
+            <h2>Konfigurasi Kunci API Gemini</h2>
             <p>
-                Untuk menggunakan fitur pembuatan LKPD, Anda perlu memasukkan Kunci API Gemini Anda.
-                Kunci ini akan disimpan secara lokal di browser Anda dan tidak akan dikirim ke server mana pun.
+                Untuk memanfaatkan kapabilitas AI, Anda perlu memasukkan Kunci API Gemini Anda.
+                Kunci ini akan disimpan secara lokal di browser Anda dan tidak akan dikirimkan ke server eksternal.
             </p>
-            <input type="password" id="modalGeminiApiKeyInput" placeholder="Contoh: AIzaSyC_..." class="focus:ring-2 focus:ring-blue-300">
-            <div class="button-group">
-                <button id="modalSaveGeminiApiKeyBtn" class="btn-save">Simpan Kunci</button>
-                <button id="modalClearGeminiApiKeyBtn" class="btn-clear">Hapus Kunci</button>
-                <button id="modalCloseGeminiApiKeyBtn" class="btn-close">Tutup</button>
+            <input type="password" id="modalApiInput" placeholder="Contoh: AIzaSyC_..." class="focus:ring-2 focus:ring-indigo-300">
+            <div class="modal-actions-group">
+                <button id="saveApiBtn" class="btn-action-save">Simpan Kunci</button>
+                <button id="clearApiBtn" class="btn-action-clear">Hapus Kunci</button>
+                <button id="closeApiModalBtn" class="btn-action-close">Tutup</button>
             </div>
-            <p class="mt-4 text-sm text-gray-500">
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Dapatkan Kunci API Gemini Anda di sini</a>
+            <p class="mt-5 text-sm text-gray-500">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-indigo-500 hover:underline">Dapatkan Kunci API Gemini Anda di sini</a>
             </p>
         </div>
     </div>
+
     <script>
-        // Global references for elements accessed by multiple functions or early during load
-        const namaSekolahInput = document.getElementById('namaSekolah');
-        const namaGuruInput = document.getElementById('namaGuru');
-        const mataPelajaranInput = document.getElementById('mataPelajaran');
-        const kelasSemesterInput = document.getElementById('kelasSemester');
-        const topikPembelajaranInput = document.getElementById('topikPembelajaran');
-        const modelPembelajaranInput = document.getElementById('modelPembelajaran');
-        const alokasiWaktuInput = document.getElementById('alokasiWaktu');
-        const kdIpkInput = document.getElementById('kdIpk');
-        const lk1Activity1Input = document.getElementById('lk1Activity1');
-        const lk1Activity2Input = document.getElementById('lk1Activity2');
-        const lk1Activity3Input = document.getElementById('lk1Activity3');
-        const tingkatKesulitanSoalInput = document.getElementById('tingkatKesulitanSoal');
-        const lkpdOutput = document.getElementById('lkpdOutput');
-        const buatLkpdBtn = document.getElementById('buatLkpdBtn');
-        const copyLkpdBtn = document.getElementById('copyLkpdBtn');
+        // Mendapatkan referensi elemen-elemen DOM
+        const schoolNameInputElem = document.getElementById('schoolNameInput');
+        const teacherNameInputElem = document.getElementById('teacherNameInput');
+        const subjectInputElem = document.getElementById('subjectInput');
+        const gradeSemesterInputElem = document.getElementById('gradeSemesterInput');
+        const learningTopicInputElem = document.getElementById('learningTopicInput');
+        const learningModelInputElem = document.getElementById('learningModelInput');
+        const timeAllocationInputElem = document.getElementById('timeAllocationInput');
+        const competenceIndicatorsInputElem = document.getElementById('competenceIndicatorsInput');
+        const activity1Scenario1InputElem = document.getElementById('activity1Scenario1');
+        const activity1Scenario2InputElem = document.getElementById('activity1Scenario2');
+        const activity1Scenario3InputElem = document.getElementById('activity1Scenario3');
+        const questionDifficultySelectElem = document.getElementById('questionDifficulty');
+        const worksheetOutputElem = document.getElementById('worksheetOutput');
+        const generateWorksheetBtn = document.getElementById('generateWorksheetBtn');
+        const copyWorksheetBtn = document.getElementById('copyWorksheetBtn');
         const clearFormBtn = document.getElementById('clearFormBtn');
 
-        const geminiApiKeyModal = document.getElementById('geminiApiKeyModal');
-        const modalGeminiApiKeyInput = document.getElementById('modalGeminiApiKeyInput');
-        const modalSaveGeminiApiKeyBtn = document.getElementById('modalSaveGeminiApiKeyBtn');
-        const modalClearGeminiApiKeyBtn = document.getElementById('modalClearGeminiApiKeyBtn');
-        const modalCloseGeminiApiKeyBtn = document.getElementById('modalCloseGeminiApiKeyBtn');
+        const geminiApiModal = document.getElementById('geminiApiModal');
+        const modalApiInputElem = document.getElementById('modalApiInput');
+        const saveApiBtn = document.getElementById('saveApiBtn');
+        const clearApiBtn = document.getElementById('clearApiBtn');
+        const closeApiModalBtn = document.getElementById('closeApiModalBtn');
+        const settingsControlBtn = document.getElementById('settingsControlBtn');
 
-        // NEW: Settings Button Element (Ganti dari settingsIcon)
-        const settingsButton = document.getElementById('settingsButton');
-
-        // Fungsi untuk menampilkan pesan temporer
-        function showMessageBox(message, isError = false) {
-            const messageContainer = document.querySelector('.max-w-4xl.mx-auto');
-            let tempMessageDiv = messageContainer.querySelector('.temp-message');
+        // Fungsi untuk menampilkan pesan notifikasi temporer
+        function displayNotificationMessage(message, isError = false) {
+            const container = document.querySelector('.max-w-5xl.mx-auto');
+            let notificationDiv = container.querySelector('.notification-message');
             
-            if (!tempMessageDiv) {
-                tempMessageDiv = document.createElement('div');
-                tempMessageDiv.className = `temp-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
-                messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild);
+            // Buat elemen notifikasi jika belum ada
+            if (!notificationDiv) {
+                notificationDiv = document.createElement('div');
+                notificationDiv.className = `notification-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
+                container.insertBefore(notificationDiv, container.firstChild);
             }
 
-            tempMessageDiv.textContent = message;
-            tempMessageDiv.classList.remove('bg-red-100', 'text-red-800', 'border-red-300', 'bg-blue-100', 'text-blue-800', 'border-blue-300', 'hidden', 'show'); // Remove 'show' if it was there
-            tempMessageDiv.classList.add(isError ? 'bg-red-100', 'text-red-800', 'border-red-300' : 'bg-blue-100', 'text-blue-800', 'border-blue-300');
-            tempMessageDiv.classList.add('show'); // Add 'show' to trigger transition
+            notificationDiv.textContent = message;
+            // Hapus kelas warna sebelumnya dan tambahkan yang sesuai
+            notificationDiv.classList.remove('notification-success', 'notification-error', 'hidden', 'show'); 
+            notificationDiv.classList.add(isError ? 'notification-error' : 'notification-success');
+            notificationDiv.classList.add('show'); // Tampilkan dengan transisi
 
-            // Hapus pesan setelah 3 detik
+            // Sembunyikan pesan setelah 3 detik
             setTimeout(() => {
-                tempMessageDiv.classList.remove('show'); // Remove 'show' for fade out
-                setTimeout(() => tempMessageDiv.classList.add('hidden'), 300); // Hide after transition
+                notificationDiv.classList.remove('show'); // Mulai transisi fade out
+                setTimeout(() => notificationDiv.classList.add('hidden'), 300); // Sembunyikan setelah transisi selesai
             }, 3000);
         }
 
-        // Function to save Gemini API Key
-        function saveGeminiApiKey() {
-            const apiKey = modalGeminiApiKeyInput.value.trim();
+        // Fungsi untuk menyimpan Kunci API Gemini ke localStorage
+        function storeApiKeyLocally() {
+            const apiKey = modalApiInputElem.value.trim();
             if (apiKey) {
                 localStorage.setItem('geminiApiKey', apiKey);
-                geminiApiKeyModal.classList.remove('show');
-                showMessageBox('Kunci API Gemini berhasil disimpan.', false);
+                geminiApiModal.classList.remove('show');
+                displayNotificationMessage('Kunci API Gemini berhasil disimpan.', false);
             } else {
-                showMessageBox('Kunci API Gemini tidak boleh kosong.', true);
+                displayNotificationMessage('Kunci API Gemini tidak boleh kosong.', true);
             }
         }
 
-        // Function to clear Gemini API Key
-        function clearGeminiApiKey() {
+        // Fungsi untuk menghapus Kunci API Gemini dari localStorage
+        function removeApiKeyLocally() {
             localStorage.removeItem('geminiApiKey');
-            modalGeminiApiKeyInput.value = '';
-            showMessageBox('Kunci API Gemini telah dihapus.', false);
+            modalApiInputElem.value = '';
+            displayNotificationMessage('Kunci API Gemini telah dihapus.', false);
         }
 
-        // Fungsi untuk membuat teks LKPD dengan Gemini AI
-        const generateLkpd = async () => {
-            // Ambil API Key dari localStorage
+        // Fungsi utama untuk menghasilkan konten Lembar Aktivitas Siswa dengan AI
+        const generateWorksheetContent = async () => {
             const apiKey = localStorage.getItem('geminiApiKey');
 
-            // Validasi API Key sebelum melanjutkan
+            // Validasi Kunci API sebelum melanjutkan
             if (!apiKey || apiKey.trim() === '') {
-                showMessageBox('Kunci API Gemini diperlukan untuk membuat LKPD. Silakan masukkan.', true);
-                geminiApiKeyModal.classList.add('show');
-                modalGeminiApiKeyInput.value = '';
-                return; // Berhenti eksekusi jika API Key tidak ada
+                displayNotificationMessage('Kunci API Gemini diperlukan untuk membuat Lembar Aktivitas. Silakan masukkan di pengaturan.', true);
+                geminiApiModal.classList.add('show');
+                modalApiInputElem.value = ''; // Kosongkan input di modal
+                return; // Berhenti eksekusi jika Kunci API tidak ada
             }
 
-            const namaSekolah = namaSekolahInput.value.trim();
-            const namaGuru = namaGuruInput.value.trim();
-            const mataPelajaran = mataPelajaranInput.value.trim();
-            const kelasSemester = kelasSemesterInput.value.trim();
-            const topikPembelajaran = topikPembelajaranInput.value.trim();
-            const modelPembelajaran = modelPembelajaranInput.value.trim();
-            const alokasiWaktu = alokasiWaktuInput.value.trim();
-            const kdIpk = kdIpkInput.value.trim();
-            const tingkatKesulitanSoal = tingkatKesulitanSoalInput.value.trim();
-            const lk1Activities = [
-                lk1Activity1Input.value.trim(),
-                lk1Activity2Input.value.trim(),
-                lk1Activity3Input.value.trim()
-            ].filter(Boolean);
+            const schoolName = schoolNameInputElem.value.trim();
+            const teacherName = teacherNameInputElem.value.trim();
+            const subject = subjectInputElem.value.trim();
+            const gradeSemester = gradeSemesterInputElem.value.trim();
+            const learningTopic = learningTopicInputElem.value.trim();
+            const learningModel = learningModelInputElem.value.trim();
+            const timeAllocation = timeAllocationInputElem.value.trim();
+            const competenceIndicators = competenceIndicatorsInputElem.value.trim();
+            const questionDifficulty = questionDifficultySelectElem.value.trim();
+            const activity1Scenarios = [
+                activity1Scenario1InputElem.value.trim(),
+                activity1Scenario2InputElem.value.trim(),
+                activity1Scenario3InputElem.value.trim()
+            ].filter(Boolean); // Filter out empty strings
 
-            // Validasi input penting sebelum memanggil API
-            if (!topikPembelajaran || !mataPelajaran || !kelasSemester || !kdIpk) {
-                showMessageBox("Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.", true);
-                lkpdOutput.value = "";
-                return; // Berhenti eksekusi jika input penting tidak lengkap
+            // Validasi input wajib
+            if (!learningTopic || !subject || !gradeSemester || !competenceIndicators) {
+                displayNotificationMessage("Mohon lengkapi bidang 'Pokok Pembelajaran', 'Mata Pelajaran', 'Tingkat/Semester', dan 'Kompetensi Inti & Indikator Pencapaian' untuk hasil terbaik dari AI.", true);
+                worksheetOutputElem.value = "";
+                return;
             }
 
-            lkpdOutput.value = "Membuat konten LKPD cerdas dengan AI... Mohon tunggu sebentar. Proses ini mungkin memakan waktu beberapa detik.";
-            buatLkpdBtn.disabled = true;
+            worksheetOutputElem.value = "Menyiapkan konten Lembar Aktivitas cerdas dengan AI... Harap bersabar, proses ini mungkin membutuhkan waktu beberapa detik.";
+            generateWorksheetBtn.disabled = true; // Nonaktifkan tombol saat proses berlangsung
 
             try {
-                // Isi tetap untuk petunjuk penggunaan (tidak dihasilkan AI)
-                const petunjukPenggunaan = `
-PETUNJUK PENGGUNAAN LKPD:
-1. Bacalah dan pahami setiap petunjuk pada LKPD dengan teliti.
-2. Diskusikan setiap pertanyaan atau tugas yang diberikan bersama anggota kelompok.
-3. Gunakan berbagai sumber belajar (buku, internet) untuk membantu menjawab pertanyaan.
-4. Kerjakan LKPD secara jujur dan bertanggung jawab.
-5. Jika ada kesulitan atau hal yang kurang dipahami, tanyakan kepada guru.
-6. Presentasikan hasil diskusi kelompok Anda di depan kelas.
+                // Teks statis petunjuk penggunaan
+                const usageInstructions = `
+PETUNJUK PENGGUNAAN LEMBAR AKTIVITAS SISWA:
+1. Baca dan pahami setiap instruksi pada Lembar Aktivitas dengan seksama.
+2. Diskusikan setiap pertanyaan atau tugas yang diberikan bersama anggota kelompok Anda.
+3. Manfaatkan berbagai sumber belajar (buku, internet, dll.) untuk membantu menjawab.
+4. Kerjakan aktivitas secara jujur dan penuh tanggung jawab.
+5. Jika menemui kesulitan atau hal yang belum jelas, jangan ragu bertanya kepada guru.
+6. Siapkan diri untuk mempresentasikan hasil diskusi kelompok di depan kelas.
                 `.trim();
 
                 // Prompt untuk Gemini API
-                const prompt = `Sebagai seorang guru yang ingin membuat Lembar Kerja Peserta Didik (LKPD) untuk mata pelajaran ${mataPelajaran} dengan topik "${topikPembelajaran}" untuk kelas ${kelasSemester}, dan model pembelajaran ${modelPembelajaran}.
-                Berdasarkan Kompetensi Dasar & Indikator Pencapaian berikut:
-                "${kdIpk}"
+                const aiPrompt = `Sebagai seorang pendidik yang akan menyusun Lembar Aktivitas Siswa (LAS) untuk mata pelajaran ${subject} dengan pokok bahasan "${learningTopic}" bagi siswa kelas ${gradeSemester}, menggunakan model pembelajaran ${learningModel}.
+                Berdasarkan Kompetensi Inti & Indikator Pencapaian berikut:
+                "${competenceIndicators}"
 
-                Buatkan konten LKPD dalam format JSON, dengan detail berikut:
-                1. **tujuanPembelajaranGenerated**: Minimal 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
-                2. **pengantarKontekstualGenerated**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${topikPembelajaran}".
-                3. **kegiatanIntiPanduan**: Detail panduan untuk setiap tahapan model pembelajaran ${modelPembelajaran}. Ini harus berupa satu blok teks panjang yang mencakup:
-                    * A. Observasi (Stimulation): Petunjuk spesifik untuk observasi terkait topik.
-                    * B. Diskusi (Problem Statement): Petunjuk untuk mengidentifikasi masalah dari observasi.
-                    * C. Analisis (Data Collection & Processing): Petunjuk untuk mengumpulkan dan mengolah informasi.
-                    * D. Aplikasi (Verification): Petunjuk untuk menerapkan konsep.
-                    * E. Refleksi (Generalization): Petunjuk untuk menyimpulkan pembelajaran.
+                Mohon hasilkan konten LAS dalam format JSON, dengan poin-poin sebagai berikut:
+                1. **learningObjectives**: Minimum 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
+                2. **contextualIntroduction**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${learningTopic}".
+                3. **coreActivityGuidance**: Detail panduan untuk setiap tahapan model pembelajaran ${learningModel}. Ini harus berupa satu blok teks panjang yang mencakup:
+                    * A. Orientasi (Stimulation): Petunjuk spesifik untuk observasi atau pemicu terkait topik.
+                    * B. Identifikasi Masalah (Problem Statement): Petunjuk untuk merumuskan masalah dari observasi.
+                    * C. Pengumpulan & Pengolahan Data (Data Collection & Processing): Petunjuk untuk mengumpulkan dan mengolah informasi.
+                    * D. Verifikasi (Verification): Petunjuk untuk mengaplikasikan konsep atau solusi.
+                    * E. Generalisasi (Generalization): Petunjuk untuk merangkum atau menyimpulkan pembelajaran.
                     Pastikan setiap sub-bagian ini diawali dengan huruf kapital (A., B., C., D., E.) dan nama tahapannya dalam kurung.
-                4. **lk1Instruction**: Instruksi singkat (1-2 kalimat) untuk kegiatan LK I.
-                5. **lk1Classification**: Sebuah array objek, di mana setiap objek memiliki \`activity\` (string) dan \`type\` (string, bisa "Penghematan" atau "Tidak Penghematan"). Gunakan kegiatan berikut: ${JSON.stringify(lk1Activities)}. Jika ada kegiatan yang tidak jelas, masukkan sebagai "Belum Diklasifikasikan". Tambahkan setidaknya 2-3 contoh tambahan kegiatan penghematan/tidak penghematan yang relevan dengan topik jika \`lk1Activities\` kurang dari 3.
-                6. **lk2InitialStatement**: Sebuah pernyataan awal atau fakta (2-3 kalimat) seperti "Dalam pembuatan 1 rim kertas..." yang relevan dengan topik "${topikPembelajaran}" jika memungkinkan, atau pernyataan umum.
-                7. **lk2Steps**: Sebuah array string berisi 5-6 langkah kegiatan untuk LK II, termasuk diskusi, penulisan hasil, dan presentasi (jika relevan).
-                8. **daftarSoal**: Sebuah array berisi minimal 5-7 soal latihan atau tugas esai/analisis/diskusi yang mendorong berpikir kritis, bukan hanya hafalan, terkait topik "${topikPembelajaran}" dan tujuan pembelajaran. Jika tingkat kesulitan soal adalah "${tingkatKesulitanSoal}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
-                9. **refleksiDiriSiswaGenerated**: Minimal 4 pertanyaan reflektif bagi siswa setelah mengerjakan LKPD, dalam format daftar berpoin.
-                10. **catatanGuruMotivasi**: Satu paragraf singkat (1-2 kalimat) berisi catatan atau motivasi penutup dari guru untuk siswa.
+                4. **activity1Instruction**: Instruksi singkat (1-2 kalimat) untuk kegiatan Aktivitas 1.
+                5. **activity1Categorization**: Sebuah array objek, di mana setiap objek memiliki \`scenario\` (string) dan \`category\` (string, bisa "Gaya Kontak" atau "Gaya Tak Kontak"). Gunakan skenario berikut: ${JSON.stringify(activity1Scenarios)}. Jika ada skenario yang tidak jelas, masukkan sebagai "Belum Terkategorikan". Tambahkan setidaknya 2-3 contoh tambahan skenario gaya kontak/tak kontak yang relevan dengan topik jika \`activity1Scenarios\` kurang dari 3.
+                6. **activity2OpeningStatement**: Sebuah pernyataan pembuka atau fakta (2-3 kalimat) seperti "Ketika sebuah benda bergerak..." yang relevan dengan topik "${learningTopic}" jika memungkinkan, atau pernyataan umum.
+                7. **activity2Steps**: Sebuah array string berisi 5-6 langkah kegiatan untuk Aktivitas 2, termasuk diskusi, pencatatan hasil, dan presentasi (jika sesuai).
+                8. **practiceQuestions**: Sebuah array berisi minimal 5-7 soal latihan atau pertanyaan esai/analisis/diskusi yang mendorong pemikiran kritis, bukan hanya hafalan, terkait topik "${learningTopic}" dan tujuan pembelajaran. Jika level kesulitan soal adalah "${questionDifficulty}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
+                9. **studentSelfReflection**: Minimum 4 pertanyaan reflektif bagi siswa setelah menyelesaikan LAS, dalam format daftar berpoin.
+                10. **teacherClosingRemarks**: Satu paragraf singkat (1-2 kalimat) berisi catatan atau motivasi penutup dari pengajar untuk siswa.
 
-                Pastikan semua teks yang dihasilkan menggunakan bahasa Indonesia yang baik dan baku, dan sesuai untuk konteks pendidikan menengah. Jangan gunakan markdown di dalam nilai string JSON.`;
+                Pastikan semua teks yang dihasilkan menggunakan bahasa Indonesia yang formal dan tepat untuk konteks pendidikan menengah. Jangan gunakan markdown di dalam nilai string JSON, kecuali untuk list items yang diawali tanda hubung.`;
 
                 let chatHistory = [];
-                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                chatHistory.push({ role: "user", parts: [{ text: aiPrompt }] });
 
                 const payload = {
                     contents: chatHistory,
@@ -457,37 +493,36 @@ PETUNJUK PENGGUNAAN LKPD:
                         responseSchema: {
                             type: "OBJECT",
                             properties: {
-                                tujuanPembelajaranGenerated: { type: "STRING" },
-                                pengantarKontekstualGenerated: { type: "STRING" },
-                                kegiatanIntiPanduan: { type: "STRING" },
-                                lk1Instruction: { type: "STRING" },
-                                lk1Classification: {
+                                learningObjectives: { type: "STRING" },
+                                contextualIntroduction: { type: "STRING" },
+                                coreActivityGuidance: { type: "STRING" },
+                                activity1Instruction: { type: "STRING" },
+                                activity1Categorization: {
                                     type: "ARRAY",
                                     items: {
                                         type: "OBJECT",
                                         properties: {
-                                            activity: { type: "STRING" },
-                                            type: { type: "STRING", enum: ["Penghematan", "Tidak Penghematan", "Belum Diklasifikasikan"] }
+                                            scenario: { type: "STRING" },
+                                            category: { type: "STRING", enum: ["Gaya Kontak", "Gaya Tak Kontak", "Belum Terkategorikan"] }
                                         }
                                     }
                                 },
-                                lk2InitialStatement: { type: "STRING" },
-                                lk2Steps: {
+                                activity2OpeningStatement: { type: "STRING" },
+                                activity2Steps: {
                                     type: "ARRAY",
                                     items: { type: "STRING" }
                                 },
-                                daftarSoal: {
+                                practiceQuestions: {
                                     type: "ARRAY",
                                     items: { type: "STRING" }
                                 },
-                                refleksiDiriSiswaGenerated: { type: "STRING" },
-                                catatanGuruMotivasi: { type: "STRING" }
+                                studentSelfReflection: { type: "STRING" },
+                                teacherClosingRemarks: { type: "STRING" }
                             }
                         }
                     }
                 };
 
-                // Menggunakan apiKey dari localStorage yang sudah divalidasi di awal fungsi
                 const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                 const response = await fetch(apiUrl, {
@@ -498,7 +533,7 @@ PETUNJUK PENGGUNAAN LKPD:
 
                 if (!response.ok) {
                     const errorData = await response.json();
-                    throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
+                    throw new Error(`Kesalahan API: ${response.status} - ${errorData.error.message || 'Kesalahan tak dikenal'}`);
                 }
 
                 const result = await response.json();
@@ -511,225 +546,227 @@ PETUNJUK PENGGUNAAN LKPD:
                     // Hapus backticks dan kata 'json' jika AI mengembalikan dalam format code block
                     const cleanedJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '').trim();
                     
-                    console.log("Raw JSON response from Gemini:", cleanedJsonString); // Log for debugging
+                    console.log("Respons JSON mentah dari Gemini:", cleanedJsonString); // Untuk debugging
 
-                    const jsonResponse = JSON.parse(cleanedJsonString); // Parse string yang sudah bersih
-                    console.log("Parsed JSON response:", jsonResponse); // Log for debugging
+                    const parsedResponse = JSON.parse(cleanedJsonString); // Parse string yang sudah bersih
+                    console.log("Respons JSON yang diurai:", parsedResponse); // Untuk debugging
 
                     const {
-                        tujuanPembelajaranGenerated,
-                        pengantarKontekstualGenerated,
-                        kegiatanIntiPanduan,
-                        lk1Instruction,
-                        lk1Classification,
-                        lk2InitialStatement,
-                        lk2Steps,
-                        daftarSoal,
-                        refleksiDiriSiswaGenerated,
-                        catatanGuruMotivasi
-                    } = jsonResponse;
+                        learningObjectives,
+                        contextualIntroduction,
+                        coreActivityGuidance,
+                        activity1Instruction,
+                        activity1Categorization,
+                        activity2OpeningStatement,
+                        activity2Steps,
+                        practiceQuestions,
+                        studentSelfReflection,
+                        teacherClosingRemarks
+                    } = parsedResponse;
 
-                    // Pastikan lk1Classification adalah array yang valid
-                    const finalLk1Classification = Array.isArray(lk1Classification) ? lk1Classification : [];
+                    // Pastikan activity1Categorization adalah array yang valid
+                    const finalActivity1Categorization = Array.isArray(activity1Categorization) ? activity1Categorization : [];
 
-                    // --- Mulai membangun teks LKPD dengan format PDF referensi ---
-                    let lkpdText = `
-LEMBAR KERJA PESERTA DIDIK (LKPD)
+                    // --- Mulai membangun teks Lembar Aktivitas Siswa ---
+                    let worksheetText = `
+LEMBAR AKTIVITAS SISWA (LAS)
 
-Nama Sekolah     : ${namaSekolah || '[Nama Sekolah]'}
-Nama Guru        : ${namaGuru || '[Nama Guru]'}
-Mata Pelajaran   : ${mataPelajaran || '[Mata Pelajaran]'}
-Kelas/Semester   : ${kelasSemester || '[Kelas / Semester]'}
-Topik            : ${topikPembelajaran || '[Topik Pembelajaran]'}
-Model Pembelajaran: ${modelPembelajaran || '[Model Pembelajaran]'}
-Alokasi Waktu    : ${alokasiWaktu || '[Alokasi Waktu]'}
+Lembaga Pendidikan : ${schoolName || '[Nama Lembaga Pendidikan]'}
+Nama Pengajar       : ${teacherName || '[Nama Pengajar]'}
+Mata Pelajaran      : ${subject || '[Mata Pelajaran]'}
+Tingkat/Semester    : ${gradeSemester || '[Tingkat / Semester]'}
+Pokok Pembelajaran  : ${learningTopic || '[Pokok Pembelajaran]'}
+Model Pembelajaran  : ${learningModel || '[Model Pembelajaran]'}
+Alokasi Waktu       : ${timeAllocation || '[Alokasi Waktu]'}
 
 ---
 
-Kompetensi Dasar & Indikator Pencapaian (KD & IPK):
-${kdIpk || '[KD & IPK belum diisi]'}
+Kompetensi Inti & Indikator Pencapaian (KI & IP):
+${competenceIndicators || '[KI & IP belum terisi]'}
 
 ---
 
 Tujuan Pembelajaran:
-${tujuanPembelajaranGenerated || '[Tujuan Pembelajaran belum dihasilkan]'}
+${learningObjectives || '[Tujuan Pembelajaran belum dihasilkan]'}
 
 ---
 
 Pengantar:
-${pengantarKontekstualGenerated || '[Pengantar kontekstual belum dihasilkan]'}
+${contextualIntroduction || '[Pengantar kontekstual belum dihasilkan]'}
 
 ---
 
-KEGIATAN INTI (Model Pembelajaran: ${modelPembelajaran || '[Model Pembelajaran]'})
-${kegiatanIntiPanduan || '[Panduan Kegiatan Inti belum dihasilkan]'}
+${usageInstructions}
 
 ---
 
-LK I: Mengidentifikasi Kegiatan Penghematan Sumber Daya
-${lk1Instruction || 'Kelompokkanlah kegiatan berikut berdasarkan apakah kegiatan tersebut menghemat penggunaan sumber daya alam atau tidak, dan berikan penjelasannya.'}
+AKTIVITAS INTI (Model Pembelajaran: ${learningModel || '[Model Pembelajaran]'})
+${coreActivityGuidance || '[Panduan Aktivitas Inti belum dihasilkan]'}
 
-+-----+----------------------------------+-----------------------+------------------------+
-| No. | Kegiatan Gambar                  | Melakukan Penghematan | Tidak Melakukan        |
-|     |                                  |                       | Penghematan            |
-+-----+----------------------------------+-----------------------+------------------------+
+---
+
+AKTIVITAS 1: Mengategorikan Jenis Gaya
+${activity1Instruction || 'Kategorikanlah skenario atau kegiatan berikut berdasarkan apakah ia termasuk gaya kontak atau gaya tak kontak, dan berikan penjelasan singkat.'}
+
++-----+--------------------------------------+-----------------------+-----------------------+
+| No. | Skenario / Kegiatan                  | Gaya Kontak           | Gaya Tak Kontak       |
++-----+--------------------------------------+-----------------------+-----------------------+
 `;
-                    // Tambahkan baris klasifikasi dari AI
-                    finalLk1Classification.forEach((item, index) => {
-                        // Tambahkan pengecekan null/undefined untuk item dan item.activity
-                        if (item && typeof item.activity === 'string' && typeof item.type === 'string') {
+                    // Tambahkan baris kategorisasi dari AI
+                    finalActivity1Categorization.forEach((item, index) => {
+                        if (item && typeof item.scenario === 'string' && typeof item.category === 'string') {
                             const no = String(index + 1).padEnd(3);
-                            const activity = item.activity.padEnd(32).substring(0, 32);
-                            const isHemat = item.type === "Penghematan" ? "   X   " : "       "; // Sesuaikan padding
-                            const isTidakHemat = item.type === "Tidak Penghematan" ? "   X   " : "       "; // Sesuaikan padding
-                            lkpdText += `| ${no}| ${activity} | ${isHemat.padEnd(21)} | ${isTidakHemat.padEnd(22)} |\n`;
-                            lkpdText += `+-----+----------------------------------+-----------------------+------------------------+\n`;
+                            const scenario = item.scenario.padEnd(36).substring(0, 36);
+                            const isKontak = item.category === "Gaya Kontak" ? "   X   " : "       "; 
+                            const isTakKontak = item.category === "Gaya Tak Kontak" ? "   X   " : "       "; 
+                            worksheetText += `| ${no}| ${scenario} | ${isKontak.padEnd(21)} | ${isTakKontak.padEnd(21)} |\n`;
+                            worksheetText += `+-----+--------------------------------------+-----------------------+-----------------------+\n`;
                         } else {
-                            console.warn("Item malformed in lk1Classification, skipping:", item);
+                            console.warn("Elemen malformed dalam activity1Categorization, dilewati:", item);
                         }
                     });
 
-                    lkpdText += `
+                    worksheetText += `
 
 ---
 
-LK II: Menghemat Kertas dalam Kehidupan Sehari-hari
+AKTIVITAS 2: Mengkaji Penerapan Hukum Newton dalam Kehidupan Sehari-hari
 
-Langkah Kegiatan:
+Langkah-langkah Kegiatan:
 1. Perhatikan pernyataan berikut.
-    ${lk2InitialStatement || '[Pernyataan awal belum dihasilkan]'}
+    ${activity2OpeningStatement || '[Pernyataan pembuka belum dihasilkan]'}
 
 `;
                     // Tambahkan langkah kegiatan dari AI
-                    // Pastikan lk2Steps adalah array yang valid
-                    const finalLk2Steps = Array.isArray(lk2Steps) ? lk2Steps : [];
-                    finalLk2Steps.forEach((step, index) => {
-                        lkpdText += `${index + 2}. ${step}\n`; // Dimulai dari nomor 2 karena nomor 1 sudah pernyataan awal
+                    const finalActivity2Steps = Array.isArray(activity2Steps) ? activity2Steps : [];
+                    finalActivity2Steps.forEach((step, index) => {
+                        worksheetText += `${index + 2}. ${step}\n`; // Dimulai dari nomor 2 karena nomor 1 sudah pernyataan pembuka
                     });
 
                     // Tambahkan area kosong untuk jawaban
-                    lkpdText += `\n(Gunakan area di bawah ini untuk menulis hasil diskusimu)\n`;
-                    for (let i = 0; i < 5; i++) {
-                        lkpdText += ".......................................................................................................................................................\n";
+                    worksheetText += `\n(Gunakan ruang di bawah ini untuk mencatat hasil diskusi dan analisis kelompok Anda)\n`;
+                    for (let i = 0; i < 6; i++) { // Jumlah baris kosong sedikit berbeda
+                        worksheetText += "........................................................................................................................................................\n";
                     }
-                    lkpdText += "\n"; // Spasi setelah garis
+                    worksheetText += "\n"; // Spasi setelah garis
 
-                    lkpdText += `
+                    worksheetText += `
 
 ---
-SOAL LATIHAN / TUGAS:
-${daftarSoal && Array.isArray(daftarSoal) && daftarSoal.length > 0 ? daftarSoal.map((soal, index) => `${index + 1}. ${soal}`).join('\n\n') : '[Daftar soal belum dihasilkan]'}
+SOAL LATIHAN & TUGAS:
+${practiceQuestions && Array.isArray(practiceQuestions) && practiceQuestions.length > 0 ? practiceQuestions.map((question, index) => `${index + 1}. ${question}`).join('\n\n') : '[Daftar soal latihan belum dihasilkan]'}
 
 ---
 REFLEKSI DIRI SISWA:
-${refleksiDiriSiswaGenerated || '[Refleksi diri siswa belum dihasilkan]'}
+${studentSelfReflection || '[Refleksi diri siswa belum dihasilkan]'}
 
 ---
-RUBRIK PENILAIAN KEGIATAN KELOMPOK:
-(Untuk diisi guru)
+RUBRIK PENILAIAN KELOMPOK:
+(Diisi oleh Pengajar)
 
-+-----+----------------------------------+-----------------------+-----------------------+-----------------------+-----------------------+
-| No. | Aspek Penilaian                  | Skor 4 (Sangat Baik)  | Skor 3 (Baik)         | Skor 2 (Cukup)        | Skor 1 (Kurang)       |
-+-----+----------------------------------+-----------------------+-----------------------+-----------------------+-----------------------+
-| 1   | Partisipasi dalam Diskusi        | Aktif berkontribusi & | Aktif berkontribusi   | Cukup berpartisipasi  | Kurang/tidak          |
-|     |                                  | membantu              |                       |                       | berpartisipasi        |
-+-----+----------------------------------+-----------------------+-----------------------+-----------------------+-----------------------+
-| 2   | Kerja Sama Kelompok              | Sangat baik, saling   | Baik, ada kolaborasi  | Cukup kooperatif      | Kurang/tidak kooperatif|
-|     |                                  | mendukung             |                       |                       |                       |
-+-----+----------------------------------+-----------------------+-----------------------+-----------------------+-----------------------+
-| 3   | Kualitas Jawaban/Hasil           | Jawaban/hasil         | Jawaban/hasil akurat  | Jawaban/hasil kurang  | Jawaban/hasil tidak   |
-|     |                                  | sangat akurat         |                       | akurat                | akurat                |
-+-----+----------------------------------+-----------------------+-----------------------+-----------------------+-----------------------+
-| 4   | Presentasi Kelompok              | Sangat jelas,         | Jelas & percaya diri  | Cukup jelas           | Kurang jelas/tidak    |
-|     |                                  | percaya diri          |                       |                       | percaya diri          |
-+-----+----------------------------------+-----------------------+-----------------------+-----------------------+-----------------------+
-
----
-CATATAN GURU/MOTIVASI PENUTUP:
-${catatanGuruMotivasi || '[Catatan guru/motivasi penutup belum dihasilkan]'}
++-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
+| No. | Aspek Penilaian                          | Skor 4 (Sangat Baik)| Skor 3 (Baik)       | Skor 2 (Cukup)      | Skor 1 (Kurang)     |
++-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
+| 1   | Keaktifan Partisipasi                    | Selalu aktif &      | Sering aktif        | Cukup aktif         | Jarang/tidak aktif  |
+|     |                                          | memimpin diskusi    |                     |                     |                     |
++-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
+| 2   | Kolaborasi Tim                           | Sangat harmonis,    | Baik, ada           | Cukup kooperatif    | Sulit berkolaborasi |
+|     |                                          | saling mendukung    | koordinasi          |                     |                     |
++-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
+| 3   | Akurasi Jawaban/Hasil                    | Jawaban/hasil       | Jawaban/hasil akurat| Jawaban/hasil kurang| Jawaban/hasil tidak |
+|     |                                          | sangat tepat        |                     | akurat              | akurat              |
++-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
+| 4   | Kualitas Presentasi                      | Sangat jelas,       | Jelas & meyakinkan  | Cukup jelas         | Kurang jelas/ragu   |
+|     |                                          | percaya diri        |                     |                     |                     |
++-----+------------------------------------------+---------------------+---------------------+---------------------+---------------------+
 
 ---
-Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
-      Instansi             : ${namaSekolah || '[Nama Sekolah]'}
-      Alamat Surel         : [email@contoh.com (Isi manual)]
-      Whatsapp             : [08xxxxxxxxxx (Isi manual)]
-                        `.trim();
+CATATAN PENGHARGAAN DARI GURU:
+${teacherClosingRemarks || '[Catatan penghargaan dari guru belum dihasilkan]'}
 
-                    lkpdOutput.value = lkpdText;
-                    showMessageBox('LKPD berhasil dibuat!', false);
+---
+Informasi Pengembang LAS:
+  Nama      : ${teacherName || '[Nama Pengajar]'}
+  Institusi : ${schoolName || '[Nama Lembaga Pendidikan]'}
+  Email     : [emailanda@contoh.com (Mohon isi secara manual)]
+  Kontak HP : [08xxxxxxxxxx (Mohon isi secara manual)]
+                    `.trim();
+
+                    worksheetOutputElem.value = worksheetText;
+                    displayNotificationMessage('Lembar Aktivitas Siswa berhasil dibuat!', false);
 
                 } else {
-                    showMessageBox("Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
-                    lkpdOutput.value = "";
+                    displayNotificationMessage("Maaf, gagal menghasilkan konten Lembar Aktivitas. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
+                    worksheetOutputElem.value = "";
                 }
             } catch (error) {
-                console.error('Error generating LKPD content:', error);
+                console.error('Error saat menghasilkan konten Lembar Aktivitas:', error);
                 if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                    showMessageBox(`Terjadi kesalahan saat memproses respons AI (JSON Error): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi atau sesuaikan prompt.`, true);
+                    displayNotificationMessage(`Terjadi kesalahan saat memproses respons AI (Kesalahan JSON): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi.`, true);
                 } else {
-                    showMessageBox(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan koneksi internet Anda stabil, dan Kunci API Gemini Anda benar dan aktif. Coba lagi.`, true);
+                    displayNotificationMessage(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua bidang penting terisi, koneksi internet stabil, dan Kunci API Gemini Anda valid. Coba lagi.`, true);
                 }
-                lkpdOutput.value = "";
+                worksheetOutputElem.value = "";
             } finally {
-                buatLkpdBtn.disabled = false;
+                generateWorksheetBtn.disabled = false; // Aktifkan kembali tombol
             }
         };
 
-        // Fungsi untuk menyalin teks LKPD ke clipboard
-        const copyLkpd = () => {
-            lkpdOutput.select();
+        // Fungsi untuk menyalin teks yang dihasilkan ke clipboard
+        const copyGeneratedWorksheet = () => {
+            worksheetOutputElem.select();
             document.execCommand('copy');
-            showMessageBox('Teks LKPD berhasil disalin ke clipboard!', false);
+            displayNotificationMessage('Teks Lembar Aktivitas berhasil disalin ke clipboard!', false);
         };
 
-        // Fungsi untuk membersihkan formulir
-        const clearForm = () => {
-            namaSekolahInput.value = '';
-            namaGuruInput.value = '';
-            mataPelajaranInput.value = ''; // Memastikan semua input dibersihkan
-            kelasSemesterInput.value = '';
-            topikPembelajaranInput.value = '';
-            modelPembelajaranInput.value = '';
-            alokasiWaktuInput.value = '';
-            kdIpkInput.value = '';
-            lk1Activity1Input.value = '';
-            lk1Activity2Input.value = '';
-            lk1Activity3Input.value = '';
-            tingkatKesulitanSoalInput.value = '';
-            lkpdOutput.value = '';
-            showMessageBox('Formulir berhasil dibersihkan.', false);
+        // Fungsi untuk membersihkan semua bidang formulir
+        const resetFormFields = () => {
+            schoolNameInputElem.value = '';
+            teacherNameInputElem.value = '';
+            subjectInputElem.value = '';
+            gradeSemesterInputElem.value = '';
+            learningTopicInputElem.value = '';
+            learningModelInputElem.value = '';
+            timeAllocationInputElem.value = '';
+            competenceIndicatorsInputElem.value = '';
+            activity1Scenario1InputElem.value = '';
+            activity1Scenario2InputElem.value = '';
+            activity1Scenario3InputElem.value = '';
+            questionDifficultySelectElem.value = '';
+            worksheetOutputElem.value = '';
+            displayNotificationMessage('Semua bidang formulir berhasil dibersihkan.', false);
         };
 
-        // Inisialisasi utama setelah DOM siap
+        // Inisialisasi utama setelah DOM dimuat sepenuhnya
         document.addEventListener('DOMContentLoaded', () => {
-            // Event Listeners tombol utama
-            buatLkpdBtn.addEventListener('click', generateLkpd);
-            copyLkpdBtn.addEventListener('click', copyLkpd);
-            clearFormBtn.addEventListener('click', clearForm);
+            // Event Listeners untuk tombol utama aplikasi
+            generateWorksheetBtn.addEventListener('click', generateWorksheetContent);
+            copyWorksheetBtn.addEventListener('click', copyGeneratedWorksheet);
+            clearFormBtn.addEventListener('click', resetFormFields);
 
-            // Inisialisasi dan Event Listeners untuk Modal API Key
-            const initializeModalAndListeners = () => {
+            // Fungsi untuk mengatur modal Kunci API dan event listeners terkait
+            const setupModalAndEventListeners = () => {
                 const storedApiKey = localStorage.getItem('geminiApiKey');
                 if (!storedApiKey || storedApiKey.trim() === '') {
-                    geminiApiKeyModal.classList.add('show');
+                    geminiApiModal.classList.add('show'); // Tampilkan modal jika API Key kosong
                 }
-                modalGeminiApiKeyInput.value = storedApiKey || '';
+                modalApiInputElem.value = storedApiKey || ''; // Isi input dengan kunci yang tersimpan (jika ada)
 
-                // Event Listeners tombol modal
-                modalSaveGeminiApiKeyBtn.addEventListener('click', saveGeminiApiKey);
-                modalClearGeminiApiKeyBtn.addEventListener('click', clearGeminiApiKey);
-                modalCloseGeminiApiKeyBtn.addEventListener('click', () => {
-                    geminiApiKeyModal.classList.remove('show');
+                // Event Listeners untuk tombol di dalam modal
+                saveApiBtn.addEventListener('click', storeApiKeyLocally);
+                clearApiBtn.addEventListener('click', removeApiKeyLocally);
+                closeApiModalBtn.addEventListener('click', () => {
+                    geminiApiModal.classList.remove('show'); // Sembunyikan modal
                 });
 
-                // Event Listener untuk tombol pengaturan
-                settingsButton.addEventListener('click', () => {
-                    geminiApiKeyModal.classList.add('show');
-                    modalGeminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || '';
+                // Event Listener untuk tombol pengaturan (ikon gear)
+                settingsControlBtn.addEventListener('click', () => {
+                    geminiApiModal.classList.add('show'); // Tampilkan modal saat tombol pengaturan diklik
+                    modalApiInputElem.value = localStorage.getItem('geminiApiKey') || ''; // Perbarui nilai input modal
                 });
             };
             
-            initializeModalAndListeners(); // Panggil fungsi inisialisasi modal
+            setupModalAndEventListeners(); // Panggil fungsi inisialisasi modal saat DOM siap
         });
     </script>
 </body>
