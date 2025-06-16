@@ -287,7 +287,6 @@
 </head>
 <body class="p-5 md:p-10">
     <div class="max-w-5xl mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-indigo-200 relative">
-        <!-- Tombol Pengaturan -->
         <button id="settingsControlBtn" class="hide-on-print">
             <svg class="w-6 h-6 hidden md:block" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 15.375a3.375 3.375 0 100-6.75 3.375 3.375 0 000 6.75z" />
@@ -299,7 +298,6 @@
         <p class="text-center text-gray-700 mb-9">Isi detail di bawah untuk menghasilkan Lembar Aktivitas siswa (LKPD) yang siap cetak dan berbasis teks.</p>
 
         <div class="hide-on-print space-y-6 mb-12">
-            <!-- DATA GURU -->
             <div class="p-6 border border-indigo-300 rounded-xl bg-indigo-50">
                 <p class="text-lg font-bold text-indigo-800 mb-4">✅ Data Guru & Informasi LKPD</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-4">
@@ -324,35 +322,30 @@
                 </div>
             </div>
 
-            <!-- Kompetensi Dasar / Tujuan Pembelajaran -->
             <div class="p-6 border border-teal-300 rounded-xl bg-teal-50">
                 <label for="competenceGoalsInput" class="block text-lg font-bold text-teal-800 mb-3">Kompetensi Dasar / Tujuan Pembelajaran <span class="text-red-500">*</span></label>
                 <p class="text-sm text-gray-600 mb-3">Sebutkan Kompetensi Dasar atau Tujuan Pembelajaran yang ingin dicapai. AI akan mengubahnya menjadi Tujuan Pembelajaran yang berorientasi siswa.</p>
                 <textarea id="competenceGoalsInput" rows="4" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-teal-500 focus:border-teal-500 text-base" placeholder="Contoh:&#10;- Menganalisis pengaruh gaya terhadap percepatan benda&#10;- Mengidentifikasi jenis-jenis gaya berdasarkan kontak/non-kontak"></textarea>
             </div>
 
-            <!-- Pengantar / Apersepsi -->
             <div class="p-6 border border-purple-300 rounded-xl bg-purple-50">
                 <label for="apersepsiInput" class="block text-lg font-bold text-purple-800 mb-3">Ide Pengantar / Apersepsi (Opsional)</label>
                 <p class="text-sm text-gray-600 mb-3">Berikan ide atau pertanyaan pemantik terkait kehidupan sehari-hari untuk memulai LKPD. AI akan mengembangkannya.</p>
                 <textarea id="apersepsiInput" rows="3" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-purple-500 focus:border-purple-500 text-base" placeholder="Contoh:&#10;Pernahkah kamu memperhatikan mengapa bola yang ditendang akhirnya berhenti?&#10;Bagaimana gaya bekerja dalam olahraga tim?"></textarea>
             </div>
 
-            <!-- Petunjuk Kerja -->
             <div class="p-6 border border-orange-300 rounded-xl bg-orange-50">
                 <label for="petunjukKerjaInput" class="block text-lg font-bold text-orange-800 mb-3">Petunjuk Kerja Umum (Opsional)</label>
                 <p class="text-sm text-gray-600 mb-3">Sebutkan poin-poin instruksi umum yang ingin siswa ikuti. AI akan menyusunnya menjadi petunjuk yang sistematis.</p>
                 <textarea id="petunjukKerjaInput" rows="3" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-orange-500 focus:border-orange-500 text-base" placeholder="Contoh:&#10;- Baca materi ini dengan seksama.&#10;- Diskusikan dengan kelompokmu.&#10;- Presentasikan hasil diskusi."></textarea>
             </div>
 
-            <!-- Kegiatan Inti -->
             <div class="p-6 border border-red-300 rounded-xl bg-red-50">
                 <label for="kegiatanIntiScenarioInput" class="block text-lg font-bold text-red-800 mb-3">Skenario/Poin untuk Kegiatan Inti (Opsional)</label>
                 <p class="text-sm text-gray-600 mb-3">Berikan beberapa skenario, konsep, atau poin yang ingin dijadikan dasar pertanyaan terbuka dan aktivitas. Setiap poin satu baris.</p>
                 <textarea id="kegiatanIntiScenarioInput" rows="5" class="mt-1 block w-full px-4 py-2.5 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-red-500 focus:border-red-500 text-base" placeholder="Contoh:&#10;- Bola menggelinding di lantai lalu berhenti.&#10;- Dua orang mendorong meja yang sama dari arah berlawanan.&#10;- Mengapa roket bisa terbang ke luar angkasa?"></textarea>
             </div>
 
-            <!-- Pilihan Level Kesulitan Soal -->
             <div class="p-6 border border-gray-300 rounded-xl bg-gray-50">
                 <label for="questionDifficulty" class="block text-lg font-bold text-gray-800 mb-3">Level Kesulitan Soal (untuk Kegiatan Inti)</label>
                 <p class="text-sm text-gray-600 mb-3">Pilih level kesulitan untuk pertanyaan dan aktivitas yang akan dihasilkan AI.</p>
@@ -373,7 +366,6 @@
 
         <div class="mt-10 printable-area">
             <h2 class="text-2xl font-semibold text-indigo-700 mb-5 text-center hide-on-print">Hasil Lembar Aktivitas Anda</h2>
-            <!-- Output LKPD akan dirender di dalam div ini -->
             <div id="worksheetOutputContainer" class="w-full p-5 border border-teal-300 rounded-lg bg-teal-50 text-gray-800 shadow-inner">
                 <p class="text-center text-gray-500 italic">LKPD yang dihasilkan AI akan muncul di sini setelah Anda mengklik "Buat Lembar Aktivitas dengan AI".</p>
             </div>
@@ -545,7 +537,7 @@
                 Sebagai Asisten AI Pendidikan, tugas Anda adalah membantu guru membuat LKPD (Lembar Kerja Peserta Didik) yang siap cetak, berbasis teks, tanpa gambar, tanpa digitalisasi, dan tanpa ikon/QR code, namun tetap efektif secara pedagogis.
 
                 Format LKPD harus ringkas, jelas, dan memuat elemen penting untuk pembelajaran aktif dan reflektif.
-                Output Anda harus dalam format JSON sesuai skema yang diberikan, dan semua konten harus berupa teks murni yang dikembangkan oleh AI berdasarkan data guru dan permintaan struktur.
+                Output Anda harus dalam format JSON sesuai skema yang diberikan. PASTIKAN SEMUA PROPERTI JSON ADA, walaupun nilainya kosong atau array kosong jika tidak ada kontennya. Jangan hilangkan properti apa pun.
 
                 DATA GURU:
                 - Nama Guru: "${teacherName}"
@@ -566,7 +558,7 @@
                     "identitasLKPD": {
                         "mataPelajaran": "[Mata Pelajaran]",
                         "kelas": "[Kelas]",
-                        "semester": "[Semester, tebak jika tidak disebutkan]",
+                        "semester": "[Semester, tebak jika tidak disebutkan, misal: Ganjil/Genap]",
                         "materiPokok": "[Materi Pokok]",
                         "namaGuru": "[Nama Guru]"
                     },
@@ -590,7 +582,7 @@
                             "3. [Pertanyaan 3]",
                             "4. [Pertanyaan 4]"
                         ],
-                        "tabelObservasi": [ // Hasilkan ini HANYA jika skenario guru sangat mendukung format observasi/kategorisasi. Jika tidak, hasilkan array kosong []
+                        "tabelObservasi": [ // Selalu hasilkan array ini, bisa kosong jika tidak relevan, atau berisi contoh jika skenario guru sangat mendukung.
                             {"No.": "1.", "Skenario/Poin": "[Skenario 1 dari input guru atau AI]", "Analisis": "", "Kesimpulan Singkat": ""},
                             {"No.": "2.", "Skenario/Poin": "[Skenario 2 dari input guru atau AI]", "Analisis": "", "Kesimpulan Singkat": ""}
                         ]
@@ -647,7 +639,7 @@
                                     properties: {
                                         "instruksiUmum": { "type": "STRING" },
                                         "pertanyaanBertingkat": { "type": "ARRAY", "items": { "type": "STRING" } },
-                                        "tabelObservasi": {
+                                        "tabelObservasi": { // Pastikan properti ini selalu ada di skema
                                             type: "ARRAY",
                                             items: {
                                                 type: "OBJECT",
@@ -697,11 +689,17 @@
                     result.candidates[0].content.parts.length > 0) {
 
                     const jsonString = result.candidates[0].content.parts[0].text;
+                    // Hapus backticks dan kata 'json' jika AI mengembalikan dalam format code block
                     const cleanedJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '').trim();
 
                     console.log("Respons JSON mentah dari Gemini:", cleanedJsonString); // Untuk debugging
 
-                    const parsedResponse = JSON.parse(cleanedJsonString);
+                    let parsedResponse;
+                    try {
+                        parsedResponse = JSON.parse(cleanedJsonString);
+                    } catch (e) {
+                        throw new Error(`Gagal mengurai respons JSON dari AI. Respons tidak valid: ${e.message}. Respons mentah: ${cleanedJsonString.substring(0, 200)}...`);
+                    }
                     console.log("Respons JSON yang diurai:", parsedResponse); // Untuk debugging
 
                     // --- Mulai membangun HTML Lembar Aktivitas Siswa ---
@@ -731,6 +729,12 @@
                         }
                     };
 
+                    // Defensif check for main sections
+                    const identitasLKPD = parsedResponse.identitasLKPD || {};
+                    const kegiatanInti = parsedResponse.kegiatanInti || {};
+                    const refleksiSiswa = parsedResponse.refleksiSiswa || {};
+
+
                     // Judul Utama LKPD
                     worksheetOutputContainer.appendChild(addElement('h1', 'LEMBAR KERJA PESERTA DIDIK', 'text-xl font-bold text-center mb-4'));
                     worksheetOutputContainer.appendChild(document.createElement('hr')); // Garis pemisah
@@ -739,48 +743,59 @@
                     worksheetOutputContainer.appendChild(addElement('h2', 'Identitas LKPD', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
                     const identitasDiv = addElement('div', '', 'mb-4 text-base');
                     identitasDiv.innerHTML = `
-                        <p><strong>Mata Pelajaran:</strong> ${parsedResponse.identitasLKPD.mataPelajaran || '-'}</p>
-                        <p><strong>Kelas/Semester:</strong> ${parsedResponse.identitasLKPD.kelas || '-'} / ${parsedResponse.identitasLKPD.semester || '-'}</p>
-                        <p><strong>Materi Pokok:</strong> ${parsedResponse.identitasLKPD.materiPokok || '-'}</p>
-                        <p><strong>Nama Guru:</strong> ${parsedResponse.identitasLKPD.namaGuru || '-'}</p>
+                        <p><strong>Mata Pelajaran:</strong> ${identitasLKPD.mataPelajaran || '-'}</p>
+                        <p><strong>Kelas/Semester:</strong> ${identitasLKPD.kelas || '-'} / ${identitasLKPD.semester || '-'}</p>
+                        <p><strong>Materi Pokok:</strong> ${identitasLKPD.materiPokok || '-'}</p>
+                        <p><strong>Nama Guru:</strong> ${identitasLKPD.namaGuru || '-'}</p>
                     `;
                     worksheetOutputContainer.appendChild(identitasDiv);
                     worksheetOutputContainer.appendChild(document.createElement('hr'));
 
                     // 2. Tujuan Pembelajaran
                     worksheetOutputContainer.appendChild(addElement('h2', 'Tujuan Pembelajaran', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
-                    worksheetOutputContainer.appendChild(addElement('ul', parsedResponse.tujuanPembelajaran, 'list-disc list-inside mb-4 text-base leading-relaxed'));
+                    if (Array.isArray(parsedResponse.tujuanPembelajaran) && parsedResponse.tujuanPembelajaran.length > 0) {
+                        worksheetOutputContainer.appendChild(addElement('ul', parsedResponse.tujuanPembelajaran, 'list-disc list-inside mb-4 text-base leading-relaxed'));
+                    } else {
+                        worksheetOutputContainer.appendChild(addElement('p', '[Tujuan Pembelajaran belum dihasilkan]', 'italic text-gray-500'));
+                    }
                     worksheetOutputContainer.appendChild(document.createElement('hr'));
 
                     // 3. Pengantar / Apersepsi
                     worksheetOutputContainer.appendChild(addElement('h2', 'Pengantar', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
-                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.pengantarApersepsi, 'mb-4 text-base leading-relaxed'));
+                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.pengantarApersepsi || '[Pengantar/Apersepsi belum dihasilkan]', 'mb-4 text-base leading-relaxed'));
                     worksheetOutputContainer.appendChild(document.createElement('hr'));
 
                     // 4. Petunjuk Kerja
                     worksheetOutputContainer.appendChild(addElement('h2', 'Petunjuk Kerja', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
-                    worksheetOutputContainer.appendChild(addElement('ol', parsedResponse.petunjukKerja, 'list-decimal list-inside mb-4 text-base leading-relaxed'));
+                    if (Array.isArray(parsedResponse.petunjukKerja) && parsedResponse.petunjukKerja.length > 0) {
+                        worksheetOutputContainer.appendChild(addElement('ol', parsedResponse.petunjukKerja, 'list-decimal list-inside mb-4 text-base leading-relaxed'));
+                    } else {
+                        worksheetOutputContainer.appendChild(addElement('p', '[Petunjuk Kerja belum dihasilkan]', 'italic text-gray-500'));
+                    }
                     worksheetOutputContainer.appendChild(document.createElement('hr'));
 
                     // 5. Kegiatan Inti
                     worksheetOutputContainer.appendChild(addElement('h2', 'Kegiatan Inti', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
-                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.kegiatanInti.instruksiUmum, 'mb-4 text-base leading-relaxed'));
+                    worksheetOutputContainer.appendChild(addElement('p', kegiatanInti.instruksiUmum || '[Instruksi umum kegiatan inti belum dihasilkan]', 'mb-4 text-base leading-relaxed'));
 
                     // Pertanyaan Bertingkat
-                    if (parsedResponse.kegiatanInti.pertanyaanBertingkat && parsedResponse.kegiatanInti.pertanyaanBertingkat.length > 0) {
+                    if (Array.isArray(kegiatanInti.pertanyaanBertingkat) && kegiatanInti.pertanyaanBertingkat.length > 0) {
+                        worksheetOutputContainer.appendChild(addElement('p', 'Jawablah pertanyaan-pertanyaan berikut dengan berdiskusi:', 'font-medium mb-2 text-base'));
                         const qList = document.createElement('ol');
                         qList.className = 'list-decimal list-inside ml-4 mb-4 text-base leading-relaxed';
-                        parsedResponse.kegiatanInti.pertanyaanBertingkat.forEach(q => {
+                        kegiatanInti.pertanyaanBertingkat.forEach(q => {
                             const li = document.createElement('li');
                             li.innerHTML = `${q.replace(/^\d+\.\s*/, '')}<br>`; // Remove numbering if AI includes it
                             addLine(li, 2); // 2 garis kosong untuk jawaban
                             qList.appendChild(li);
                         });
                         worksheetOutputContainer.appendChild(qList);
+                    } else {
+                        worksheetOutputContainer.appendChild(addElement('p', '[Pertanyaan bertingkat belum dihasilkan]', 'italic text-gray-500'));
                     }
 
-                    // Tabel Observasi (jika ada)
-                    if (parsedResponse.kegiatanInti.tabelObservasi && parsedResponse.kegiatanInti.tabelObservasi.length > 0) {
+                    // Tabel Observasi (jika ada dan relevan)
+                    if (Array.isArray(kegiatanInti.tabelObservasi) && kegiatanInti.tabelObservasi.length > 0) {
                         worksheetOutputContainer.appendChild(addElement('p', 'Lengkapi tabel observasi di bawah ini:', 'font-medium mb-2 text-base'));
                         const table = document.createElement('table');
                         table.className = 'w-full border-collapse border border-gray-400 mb-4 text-base';
@@ -797,7 +812,7 @@
                         table.appendChild(thead);
 
                         const tbody = document.createElement('tbody');
-                        parsedResponse.kegiatanInti.tabelObservasi.forEach(rowData => {
+                        kegiatanInti.tabelObservasi.forEach(rowData => {
                             const row = document.createElement('tr');
                             ["No.", "Skenario/Poin", "Analisis", "Kesimpulan Singkat"].forEach(key => {
                                 const td = document.createElement('td');
@@ -819,20 +834,28 @@
                     worksheetOutputContainer.appendChild(addElement('h2', 'Refleksi Diri Siswa', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
                     const reflectionList = document.createElement('ul');
                     reflectionList.className = 'list-none mb-4 text-base leading-relaxed';
-                    for (const key in parsedResponse.refleksiSiswa) {
-                        if (parsedResponse.refleksiSiswa.hasOwnProperty(key)) {
+                    const reflectionQuestions = [
+                        refleksiSiswa.pertanyaan1,
+                        refleksiSiswa.pertanyaan2,
+                        refleksiSiswa.pertanyaan3
+                    ].filter(Boolean); // Filter undefined/null
+
+                    if (reflectionQuestions.length > 0) {
+                        reflectionQuestions.forEach((q, index) => {
                             const li = document.createElement('li');
-                            li.innerHTML = `<strong>${key.replace('pertanyaan', 'Pertanyaan ')}:</strong> ${parsedResponse.refleksiSiswa[key]}<br>`;
+                            li.innerHTML = `<strong>${index + 1}.</strong> ${q}<br>`;
                             addLine(li, 2); // 2 garis kosong untuk jawaban
                             reflectionList.appendChild(li);
-                        }
+                        });
+                        worksheetOutputContainer.appendChild(reflectionList);
+                    } else {
+                        worksheetOutputContainer.appendChild(addElement('p', '[Pertanyaan refleksi belum dihasilkan]', 'italic text-gray-500'));
                     }
-                    worksheetOutputContainer.appendChild(reflectionList);
                     worksheetOutputContainer.appendChild(document.createElement('hr'));
 
                     // 7. Penilaian Diri (Self-Assessment)
                     worksheetOutputContainer.appendChild(addElement('h2', 'Penilaian Diri (Berikan tanda centang pada kolom yang sesuai)', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
-                    if (parsedResponse.penilaianDiri && parsedResponse.penilaianDiri.length > 0) {
+                    if (Array.isArray(parsedResponse.penilaianDiri) && parsedResponse.penilaianDiri.length > 0) {
                         const selfAssessmentTable = document.createElement('table');
                         selfAssessmentTable.className = 'w-full border-collapse border border-gray-400 mb-4 text-base';
 
@@ -871,17 +894,19 @@
                         });
                         selfAssessmentTable.appendChild(saTbody);
                         worksheetOutputContainer.appendChild(selfAssessmentTable);
+                    } else {
+                        worksheetOutputContainer.appendChild(addElement('p', '[Pernyataan penilaian diri belum dihasilkan]', 'italic text-gray-500'));
                     }
                     worksheetOutputContainer.appendChild(document.createElement('hr'));
 
                     // 8. Kesimpulan & Tugas Tambahan (Opsional)
                     worksheetOutputContainer.appendChild(addElement('h2', 'Kesimpulan & Tugas Tambahan', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
-                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.kesimpulanTugasTambahan, 'mb-4 text-base leading-relaxed'));
+                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.kesimpulanTugasTambahan || '[Kesimpulan dan tugas tambahan belum dihasilkan]', 'mb-4 text-base leading-relaxed'));
                     worksheetOutputContainer.appendChild(document.createElement('hr'));
 
                     // BONUS: Ruang Catatan Bebas Siswa
                     worksheetOutputContainer.appendChild(addElement('h2', 'Ruang Catatan Bebas Siswa', 'text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1'));
-                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.ruangCatatanBebas, 'text-sm italic text-gray-600 mb-2'));
+                    worksheetOutputContainer.appendChild(addElement('p', parsedResponse.ruangCatatanBebas || '[Ruang catatan bebas siswa belum dihasilkan]', 'text-sm italic text-gray-600 mb-2'));
                     addLine(worksheetOutputContainer, 5); // 5 garis kosong untuk catatan bebas
 
                     displayNotificationMessage('Lembar Aktivitas Siswa berhasil dibuat!', false);
@@ -892,12 +917,16 @@
                 }
             } catch (error) {
                 console.error('Error saat menghasilkan konten Lembar Aktivitas:', error);
-                if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                    displayNotificationMessage(`Terjadi kesalahan saat memproses respons AI (Kesalahan JSON): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi.`, true);
-                } else {
-                    displayNotificationMessage(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua bidang penting terisi, koneksi internet stabil, dan Kunci API Gemini Anda valid. Coba lagi.`, true);
+                // Menangkap error JSON parsing secara spesifik
+                if (error.message.includes("Gagal mengurai respons JSON dari AI")) {
+                    displayNotificationMessage(`${error.message}. Pastikan Kunci API Gemini Anda valid dan coba lagi.`, true);
+                } else if (error.message.includes("Kesalahan API:")) {
+                    displayNotificationMessage(`${error.message}. Pastikan Kunci API Anda valid dan memiliki kuota yang cukup.`, true);
                 }
-                worksheetOutputContainer.innerHTML = `<p class="text-center text-red-500 italic">Terjadi kesalahan: ${error.message}. Pastikan Kunci API valid dan semua bidang wajib terisi.</p>`;
+                else {
+                    displayNotificationMessage(`Terjadi kesalahan tak terduga: ${error.message}. Pastikan semua bidang penting terisi dan koneksi internet stabil. Coba lagi.`, true);
+                }
+                worksheetOutputContainer.innerHTML = `<p class="text-center text-red-500 italic">Terjadi kesalahan: ${error.message}. Cek konsol browser untuk detail.</p>`;
             } finally {
                 generateWorksheetBtn.disabled = false;
                 generateWorksheetBtn.querySelector('span').textContent = 'Buat Lembar Aktivitas dengan AI';
@@ -907,7 +936,7 @@
         // Fungsi untuk menyalin teks yang dihasilkan ke clipboard
         const copyGeneratedWorksheet = () => {
             const range = document.createRange();
-            range.selectNode(worksheetOutputContainer);
+            range.selectNodeContents(worksheetOutputContainer); // Ubah dari selectNode menjadi selectNodeContents
             window.getSelection().removeAllRanges(); // Clear current selection
             window.getSelection().addRange(range); // Select the content of the div
             document.execCommand('copy');
