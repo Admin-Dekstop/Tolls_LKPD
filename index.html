@@ -51,10 +51,120 @@
                 margin-bottom: 0.5em;
             }
         }
+
+        /* Modal Styles - NEW */
+        .api-key-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .api-key-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #ffffff;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+            transform: translateY(-20px);
+            transition: transform 0.3s ease-in-out;
+        }
+        .api-key-modal.show .modal-content {
+            transform: translateY(0);
+        }
+        .modal-content h2 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #3b82f6; /* Blue-500 */
+            margin-bottom: 1rem;
+        }
+        .modal-content p {
+            color: #4b5563;
+            margin-bottom: 1.5rem;
+        }
+        .modal-content input[type="password"] {
+            margin-bottom: 1.5rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+        }
+        .modal-content .button-group {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            flex-wrap: wrap; /* Allow buttons to wrap on small screens */
+        }
+        .modal-content .button-group button {
+            flex-grow: 1; /* Allow buttons to grow */
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        .modal-content .button-group .btn-save {
+            background-color: #3b82f6;
+            color: white;
+        }
+        .modal-content .button-group .btn-save:hover {
+            background-color: #2563eb;
+        }
+        .modal-content .button-group .btn-clear {
+            background-color: #ef4444; /* Red-500 */
+            color: white;
+        }
+        .modal-content .button-group .btn-clear:hover {
+            background-color: #dc2626; /* Red-600 */
+        }
+        .modal-content .button-group .btn-close {
+            background-color: #6b7280; /* Gray-500 */
+            color: white;
+        }
+        .modal-content .button-group .btn-close:hover {
+            background-color: #4b5563; /* Gray-600 */
+        }
+
+        /* Settings Icon Styles - NEW */
+        #settingsIcon {
+            position: absolute;
+            top: 1.5rem; /* Sesuaikan jarak dari atas */
+            right: 1.5rem; /* Sesuaikan jarak dari kanan */
+            cursor: pointer;
+            width: 32px; /* Ukuran ikon */
+            height: 32px;
+            color: #4b5563; /* Warna ikon */
+            transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
+            z-index: 10; /* Pastikan ikon di atas elemen lain */
+        }
+        #settingsIcon:hover {
+            transform: scale(1.1); /* Efek membesar sedikit saat hover */
+            color: #3b82f6; /* Warna saat hover */
+        }
     </style>
 </head>
 <body class="p-4 md:p-8">
-    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-blue-200">
+    <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-blue-200" style="position: relative;">
+        <div id="settingsIcon" class="no-print">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-full h-full">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v4.5a2.25 2.25 0 0 0 2.25 2.25Z" />
+            </svg>
+        </div>
         <h1 class="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-6">Pembuat LKPD Otomatis</h1>
         <p class="text-center text-gray-600 mb-8">Isi formulir di bawah ini untuk membuat Lembar Kerja Peserta Didik (LKPD) mengikuti format referensi.</p>
 
@@ -150,6 +260,24 @@
         </div>
     </div>
 
+    <div id="geminiApiKeyModal" class="api-key-modal">
+        <div class="modal-content">
+            <h2>Masukkan Kunci API Gemini Anda</h2>
+            <p>
+                Untuk menggunakan fitur pembuatan LKPD, Anda perlu memasukkan Kunci API Gemini Anda.
+                Kunci ini akan disimpan secara lokal di browser Anda dan tidak akan dikirim ke server mana pun.
+            </p>
+            <input type="password" id="modalGeminiApiKeyInput" placeholder="Contoh: AIzaSyC_..." class="focus:ring-2 focus:ring-blue-300">
+            <div class="button-group">
+                <button id="modalSaveGeminiApiKeyBtn" class="btn-save">Simpan Kunci</button>
+                <button id="modalClearGeminiApiKeyBtn" class="btn-clear">Hapus Kunci</button>
+                <button id="modalCloseGeminiApiKeyBtn" class="btn-close">Tutup</button>
+            </div>
+            <p class="mt-4 text-sm text-gray-500">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-blue-500 hover:underline">Dapatkan Kunci API Gemini Anda di sini</a>
+            </p>
+        </div>
+    </div>
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // Mengambil elemen-elemen dari DOM
@@ -170,8 +298,70 @@
             const copyLkpdBtn = document.getElementById('copyLkpdBtn');
             const clearFormBtn = document.getElementById('clearFormBtn');
 
+            // NEW: Modal Elements
+            const geminiApiKeyModal = document.getElementById('geminiApiKeyModal');
+            const modalGeminiApiKeyInput = document.getElementById('modalGeminiApiKeyInput');
+            const modalSaveGeminiApiKeyBtn = document.getElementById('modalSaveGeminiApiKeyBtn');
+            const modalClearGeminiApiKeyBtn = document.getElementById('modalClearGeminiApiKeyBtn');
+            const modalCloseGeminiApiKeyBtn = document.getElementById('modalCloseGeminiApiKeyBtn');
+
+            // NEW: Settings Icon Element
+            const settingsIcon = document.getElementById('settingsIcon');
+
+            // NEW: Fungsi untuk menampilkan pesan temporer (mengganti alert)
+            function showMessageBox(message, isError = false) {
+                // Menemukan tempat yang cocok untuk menampilkan pesan sementara
+                const messageContainer = document.querySelector('.max-w-4xl.mx-auto'); // Container utama
+                let tempMessageDiv = messageContainer.querySelector('.temp-message');
+                
+                if (!tempMessageDiv) {
+                    tempMessageDiv = document.createElement('div');
+                    tempMessageDiv.className = `temp-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
+                    messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild); // Insert at the top
+                }
+
+                tempMessageDiv.textContent = message;
+                tempMessageDiv.classList.remove('bg-red-100', 'text-red-800', 'border-red-300', 'bg-blue-100', 'text-blue-800', 'border-blue-300', 'hidden');
+                tempMessageDiv.classList.add(isError ? 'bg-red-100', 'text-red-800', 'border-red-300' : 'bg-blue-100', 'text-blue-800', 'border-blue-300');
+                
+                // Hapus pesan setelah 3 detik
+                setTimeout(() => {
+                    tempMessageDiv.classList.add('hidden');
+                }, 3000);
+            }
+
+            // NEW: Function to save Gemini API Key
+            function saveGeminiApiKey() {
+                const apiKey = modalGeminiApiKeyInput.value.trim();
+                if (apiKey) {
+                    localStorage.setItem('geminiApiKey', apiKey);
+                    geminiApiKeyModal.classList.remove('show'); // Hide modal by removing 'show' class
+                    showMessageBox('Kunci API Gemini berhasil disimpan.', false);
+                } else {
+                    showMessageBox('Kunci API Gemini tidak boleh kosong.', true);
+                }
+            }
+
+            // NEW: Function to clear Gemini API Key
+            function clearGeminiApiKey() {
+                localStorage.removeItem('geminiApiKey');
+                modalGeminiApiKeyInput.value = '';
+                showMessageBox('Kunci API Gemini telah dihapus.', false);
+            }
+
             // Fungsi untuk membuat teks LKPD dengan Gemini AI
             const generateLkpd = async () => {
+                // NEW: Ambil API Key dari localStorage
+                const apiKey = localStorage.getItem('geminiApiKey');
+
+                // NEW: Validasi API Key sebelum melanjutkan
+                if (!apiKey || apiKey.trim() === '') {
+                    showMessageBox('Kunci API Gemini diperlukan untuk membuat LKPD. Silakan masukkan.', true);
+                    geminiApiKeyModal.classList.add('show'); // Tampilkan modal jika kunci hilang
+                    modalGeminiApiKeyInput.value = ''; // Kosongkan input modal untuk memaksa pengisian ulang
+                    return;
+                }
+
                 const namaSekolah = namaSekolahInput.value.trim();
                 const namaGuru = namaGuruInput.value.trim();
                 const mataPelajaran = mataPelajaranInput.value.trim();
@@ -189,7 +379,8 @@
 
                 // Validasi input penting sebelum memanggil API
                 if (!topikPembelajaran || !mataPelajaran || !kelasSemester || !kdIpk) {
-                    lkpdOutput.value = "Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.";
+                    showMessageBox("Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.", true);
+                    lkpdOutput.value = ""; // Clear output if validation fails
                     return;
                 }
 
@@ -273,7 +464,7 @@ PETUNJUK PENGGUNAAN LKPD:
                         }
                     };
 
-                    const apiKey = ""; // API key akan otomatis disediakan oleh lingkungan Canvas
+                    // Menggunakan apiKey dari localStorage yang sudah divalidasi di awal fungsi
                     const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
                     const response = await fetch(apiUrl, {
@@ -367,7 +558,7 @@ Menghemat Kertas dalam Kehidupan Sehari-hari
 
 Langkah Kegiatan:
 1. Perhatikan pernyataan berikut.
-   ${lk2InitialStatement || '[Pernyataan awal belum dihasilkan]'}
+    ${lk2InitialStatement || '[Pernyataan awal belum dihasilkan]'}
 
 `;
                         // Tambahkan langkah kegiatan dari AI
@@ -418,25 +609,27 @@ CATATAN GURU/MOTIVASI PENUTUP:
 ${catatanGuruMotivasi || '[Catatan guru/motivasi penutup belum dihasilkan]'}
 
 ---
-Note: Nama Pembuat LKPD  : ${namaGuru || '[Nama Guru]'}
-        Instansi         : ${namaSekolah || '[Nama Sekolah]'}
-        Alamat Surel     : [email@contoh.com (Isi manual)]
-        Whatsapp         : [08xxxxxxxxxx (Isi manual)]
+Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
+      Instansi            : ${namaSekolah || '[Nama Sekolah]'}
+      Alamat Surel        : [email@contoh.com (Isi manual)]
+      Whatsapp            : [08xxxxxxxxxx (Isi manual)]
                         `.trim();
 
                         lkpdOutput.value = lkpdText;
 
                     } else {
-                        lkpdOutput.value = "Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.";
+                        showMessageBox("Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
+                        lkpdOutput.value = ""; // Clear output if no valid content
                     }
                 } catch (error) {
                     console.error('Error generating LKPD content:', error);
                     // Lebih detail untuk JSON parse error
                     if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                        lkpdOutput.value = `Terjadi kesalahan saat memproses respons AI (JSON Error): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi atau sesuaikan prompt.`;
+                        showMessageBox(`Terjadi kesalahan saat memproses respons AI (JSON Error): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi atau sesuaikan prompt.`, true);
                     } else {
-                        lkpdOutput.value = `Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan koneksi internet Anda stabil. Coba lagi.`;
+                        showMessageBox(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan koneksi internet Anda stabil, dan Kunci API Gemini Anda benar dan aktif. Coba lagi.`, true);
                     }
+                    lkpdOutput.value = ""; // Clear output on error
                 } finally {
                     buatLkpdBtn.disabled = false; // Aktifkan kembali tombol
                 }
@@ -446,7 +639,8 @@ Note: Nama Pembuat LKPD  : ${namaGuru || '[Nama Guru]'}
             const copyLkpd = () => {
                 lkpdOutput.select(); // Pilih semua teks di textarea
                 document.execCommand('copy'); // Salin teks yang dipilih
-                alert('Teks LKPD berhasil disalin ke clipboard!');
+                // Mengganti alert dengan showMessageBox untuk konsistensi
+                showMessageBox('Teks LKPD berhasil disalin ke clipboard!', false); 
             };
 
             // Fungsi untuk membersihkan formulir
@@ -470,6 +664,32 @@ Note: Nama Pembuat LKPD  : ${namaGuru || '[Nama Guru]'}
             buatLkpdBtn.addEventListener('click', generateLkpd);
             copyLkpdBtn.addEventListener('click', copyLkpd);
             clearFormBtn.addEventListener('click', clearForm);
+
+            // NEW: Inisialisasi dan Event Listeners untuk Modal API Key
+            // Pastikan kode ini berada di dalam document.addEventListener('DOMContentLoaded', ...)
+            // atau dijalankan setelah semua elemen DOM tersedia.
+            const initializeApiKeyModal = () => {
+                const storedApiKey = localStorage.getItem('geminiApiKey');
+                if (!storedApiKey || storedApiKey.trim() === '') {
+                    geminiApiKeyModal.classList.add('show'); // Tambahkan 'show' class untuk menampilkan modal
+                }
+                modalGeminiApiKeyInput.value = storedApiKey || ''; // Isi input modal dengan kunci yang ada (jika ada)
+            };
+            
+            initializeApiKeyModal(); // Panggil saat DOMContentLoaded
+
+            // Event Listeners tombol modal
+            modalSaveGeminiApiKeyBtn.addEventListener('click', saveGeminiApiKey);
+            modalClearGeminiApiKeyBtn.addEventListener('click', clearGeminiApiKey);
+            modalCloseGeminiApiKeyBtn.addEventListener('click', () => {
+                geminiApiKeyModal.classList.remove('show'); // Sembunyikan modal
+            });
+
+            // Event Listener untuk ikon pengaturan
+            settingsIcon.addEventListener('click', () => {
+                geminiApiKeyModal.classList.add('show'); // Tampilkan modal saat ikon diklik
+                modalGeminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || ''; // Pastikan input modal terisi
+            });
         });
     </script>
 </body>
