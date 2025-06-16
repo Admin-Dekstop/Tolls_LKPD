@@ -140,21 +140,29 @@
             background-color: #4b5563; /* Gray-600 */
         }
 
-        /* Settings Icon Styles */
-        #settingsIcon {
+        /* Settings Button Styles - NEW */
+        #settingsButton { /* Ganti #settingsIcon jadi #settingsButton */
             position: absolute;
             top: 1.5rem; /* Sesuaikan jarak dari atas */
             right: 1.5rem; /* Sesuaikan jarak dari kanan */
             cursor: pointer;
-            width: 32px; /* Ukuran ikon */
-            height: 32px;
-            color: #4b5563; /* Warna ikon */
-            transition: transform 0.2s ease-in-out, color 0.2s ease-in-out;
-            z-index: 10; /* Pastikan ikon di atas elemen lain */
+            padding: 0.5rem 1rem; /* Padding tombol */
+            background-color: #e0f2fe; /* Warna latar belakang tombol */
+            color: #2563eb; /* Warna teks tombol */
+            border: 1px solid #93c5fd; /* Border tombol */
+            border-radius: 0.5rem; /* Sudut tombol membulat */
+            font-size: 0.875rem; /* Ukuran font */
+            font-weight: 600; /* Ketebalan font */
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
+            z-index: 10; /* Pastikan tombol di atas elemen lain */
+            display: flex; /* Agar teks dan ikon (jika ada) bisa diatur dengan flexbox */
+            align-items: center; /* Vertikal tengah */
+            gap: 0.5rem; /* Jarak antara teks dan ikon (jika ditambahkan) */
         }
-        #settingsIcon:hover {
-            transform: scale(1.1); /* Efek membesar sedikit saat hover */
-            color: #3b82f6; /* Warna saat hover */
+        #settingsButton:hover {
+            background-color: #bfdbfe; /* Warna latar belakang saat hover */
+            color: #1e40af; /* Warna teks saat hover */
+            transform: scale(1.02); /* Efek membesar sedikit saat hover */
         }
 
         /* Temporary Message Box for showMessageBox function */
@@ -166,16 +174,21 @@
             z-index: 1001; /* Above modal */
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             max-width: 90%;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+        }
+        .temp-message.show {
+            opacity: 1;
+            visibility: visible;
         }
     </style>
 </head>
 <body class="p-4 md:p-8">
     <div class="max-w-4xl mx-auto bg-white p-6 md:p-8 rounded-xl shadow-lg border border-blue-200" style="position: relative;">
-        <div id="settingsIcon" class="no-print">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-full h-full">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 1.5h10.5a2.25 2.25 0 0 0 2.25-2.25V6.75a2.25 2.25 0 0 0-2.25-2.25H6.75A2.25 2.25 0 0 0 4.5 6.75v4.5a2.25 2.25 0 0 0 2.25 2.25Z" />
-            </svg>
-        </div>
+        <button id="settingsButton" class="no-print">
+            Pengaturan Kunci
+        </button>
         <h1 class="text-3xl md:text-4xl font-bold text-center text-blue-700 mb-6">Pembuat LKPD Otomatis</h1>
         <p class="text-center text-gray-600 mb-8">Isi formulir di bawah ini untuk membuat Lembar Kerja Peserta Didik (LKPD) mengikuti format referensi.</p>
 
@@ -290,116 +303,116 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            // Mengambil elemen-elemen dari DOM
-            const namaSekolahInput = document.getElementById('namaSekolah');
-            const namaGuruInput = document.getElementById('namaGuru');
-            const mataPelajaranInput = document.getElementById('mataPelajaran');
-            const kelasSemesterInput = document.getElementById('kelasSemester');
-            const topikPembelajaranInput = document.getElementById('topikPembelajaran');
-            const modelPembelajaranInput = document.getElementById('modelPembelajaran');
-            const alokasiWaktuInput = document.getElementById('alokasiWaktu');
-            const kdIpkInput = document.getElementById('kdIpk');
-            const lk1Activity1Input = document.getElementById('lk1Activity1');
-            const lk1Activity2Input = document.getElementById('lk1Activity2');
-            const lk1Activity3Input = document.getElementById('lk1Activity3');
-            const tingkatKesulitanSoalInput = document.getElementById('tingkatKesulitanSoal');
-            const lkpdOutput = document.getElementById('lkpdOutput');
-            const buatLkpdBtn = document.getElementById('buatLkpdBtn');
-            const copyLkpdBtn = document.getElementById('copyLkpdBtn');
-            const clearFormBtn = document.getElementById('clearFormBtn');
+        // Global references for elements accessed by multiple functions or early during load
+        const namaSekolahInput = document.getElementById('namaSekolah');
+        const namaGuruInput = document.getElementById('namaGuru');
+        const mataPelajaranInput = document.getElementById('mataPelajaran');
+        const kelasSemesterInput = document.getElementById('kelasSemester');
+        const topikPembelajaranInput = document.getElementById('topikPembelajaran');
+        const modelPembelajaranInput = document.getElementById('modelPembelajaran');
+        const alokasiWaktuInput = document.getElementById('alokasiWaktu');
+        const kdIpkInput = document.getElementById('kdIpk');
+        const lk1Activity1Input = document.getElementById('lk1Activity1');
+        const lk1Activity2Input = document.getElementById('lk1Activity2');
+        const lk1Activity3Input = document.getElementById('lk1Activity3');
+        const tingkatKesulitanSoalInput = document.getElementById('tingkatKesulitanSoal');
+        const lkpdOutput = document.getElementById('lkpdOutput');
+        const buatLkpdBtn = document.getElementById('buatLkpdBtn');
+        const copyLkpdBtn = document.getElementById('copyLkpdBtn');
+        const clearFormBtn = document.getElementById('clearFormBtn');
 
-            // Modal Elements
-            const geminiApiKeyModal = document.getElementById('geminiApiKeyModal');
-            const modalGeminiApiKeyInput = document.getElementById('modalGeminiApiKeyInput');
-            const modalSaveGeminiApiKeyBtn = document.getElementById('modalSaveGeminiApiKeyBtn');
-            const modalClearGeminiApiKeyBtn = document.getElementById('modalClearGeminiApiKeyBtn');
-            const modalCloseGeminiApiKeyBtn = document.getElementById('modalCloseGeminiApiKeyBtn');
+        const geminiApiKeyModal = document.getElementById('geminiApiKeyModal');
+        const modalGeminiApiKeyInput = document.getElementById('modalGeminiApiKeyInput');
+        const modalSaveGeminiApiKeyBtn = document.getElementById('modalSaveGeminiApiKeyBtn');
+        const modalClearGeminiApiKeyBtn = document.getElementById('modalClearGeminiApiKeyBtn');
+        const modalCloseGeminiApiKeyBtn = document.getElementById('modalCloseGeminiApiKeyBtn');
 
-            // Settings Icon Element
-            const settingsIcon = document.getElementById('settingsIcon');
+        // NEW: Settings Button Element (Ganti dari settingsIcon)
+        const settingsButton = document.getElementById('settingsButton');
 
-            // Fungsi untuk menampilkan pesan temporer
-            function showMessageBox(message, isError = false) {
-                const messageContainer = document.querySelector('.max-w-4xl.mx-auto'); 
-                let tempMessageDiv = messageContainer.querySelector('.temp-message');
-                
-                if (!tempMessageDiv) {
-                    tempMessageDiv = document.createElement('div');
-                    tempMessageDiv.className = `temp-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
-                    messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild); 
-                }
-
-                tempMessageDiv.textContent = message;
-                tempMessageDiv.classList.remove('bg-red-100', 'text-red-800', 'border-red-300', 'bg-blue-100', 'text-blue-800', 'border-blue-300', 'hidden');
-                tempMessageDiv.classList.add(isError ? 'bg-red-100', 'text-red-800', 'border-red-300' : 'bg-blue-100', 'text-blue-800', 'border-blue-300');
-                
-                // Hapus pesan setelah 3 detik
-                setTimeout(() => {
-                    tempMessageDiv.classList.add('hidden');
-                }, 3000);
+        // Fungsi untuk menampilkan pesan temporer
+        function showMessageBox(message, isError = false) {
+            const messageContainer = document.querySelector('.max-w-4xl.mx-auto'); 
+            let tempMessageDiv = messageContainer.querySelector('.temp-message');
+            
+            if (!tempMessageDiv) {
+                tempMessageDiv = document.createElement('div');
+                tempMessageDiv.className = `temp-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
+                messageContainer.insertBefore(tempMessageDiv, messageContainer.firstChild); 
             }
 
-            // Function to save Gemini API Key
-            function saveGeminiApiKey() {
-                const apiKey = modalGeminiApiKeyInput.value.trim();
-                if (apiKey) {
-                    localStorage.setItem('geminiApiKey', apiKey);
-                    geminiApiKeyModal.classList.remove('show'); 
-                    showMessageBox('Kunci API Gemini berhasil disimpan.', false);
-                } else {
-                    showMessageBox('Kunci API Gemini tidak boleh kosong.', true);
-                }
+            tempMessageDiv.textContent = message;
+            tempMessageDiv.classList.remove('bg-red-100', 'text-red-800', 'border-red-300', 'bg-blue-100', 'text-blue-800', 'border-blue-300', 'hidden', 'show'); // Remove 'show' if it was there
+            tempMessageDiv.classList.add(isError ? 'bg-red-100', 'text-red-800', 'border-red-300' : 'bg-blue-100', 'text-blue-800', 'border-blue-300');
+            tempMessageDiv.classList.add('show'); // Add 'show' to trigger transition
+
+            // Hapus pesan setelah 3 detik
+            setTimeout(() => {
+                tempMessageDiv.classList.remove('show'); // Remove 'show' for fade out
+                setTimeout(() => tempMessageDiv.classList.add('hidden'), 300); // Hide after transition
+            }, 3000);
+        }
+
+        // Function to save Gemini API Key
+        function saveGeminiApiKey() {
+            const apiKey = modalGeminiApiKeyInput.value.trim();
+            if (apiKey) {
+                localStorage.setItem('geminiApiKey', apiKey);
+                geminiApiKeyModal.classList.remove('show'); 
+                showMessageBox('Kunci API Gemini berhasil disimpan.', false);
+            } else {
+                showMessageBox('Kunci API Gemini tidak boleh kosong.', true);
+            }
+        }
+
+        // Function to clear Gemini API Key
+        function clearGeminiApiKey() {
+            localStorage.removeItem('geminiApiKey');
+            modalGeminiApiKeyInput.value = '';
+            showMessageBox('Kunci API Gemini telah dihapus.', false);
+        }
+
+        // Fungsi untuk membuat teks LKPD dengan Gemini AI
+        const generateLkpd = async () => {
+            // Ambil API Key dari localStorage
+            const apiKey = localStorage.getItem('geminiApiKey');
+
+            // Validasi API Key sebelum melanjutkan
+            if (!apiKey || apiKey.trim() === '') {
+                showMessageBox('Kunci API Gemini diperlukan untuk membuat LKPD. Silakan masukkan.', true);
+                geminiApiKeyModal.classList.add('show'); 
+                modalGeminiApiKeyInput.value = ''; 
+                return; // Berhenti eksekusi jika API Key tidak ada
             }
 
-            // Function to clear Gemini API Key
-            function clearGeminiApiKey() {
-                localStorage.removeItem('geminiApiKey');
-                modalGeminiApiKeyInput.value = '';
-                showMessageBox('Kunci API Gemini telah dihapus.', false);
+            const namaSekolah = namaSekolahInput.value.trim();
+            const namaGuru = namaGuruInput.value.trim();
+            const mataPelajaran = mataPelajaranInput.value.trim();
+            const kelasSemester = kelasSemesterInput.value.trim();
+            const topikPembelajaran = topikPembelajaranInput.value.trim();
+            const modelPembelajaran = modelPembelajaranInput.value.trim();
+            const alokasiWaktu = alokasiWaktuInput.value.trim();
+            const kdIpk = kdIpkInput.value.trim();
+            const tingkatKesulitanSoal = tingkatKesulitanSoalInput.value.trim();
+            const lk1Activities = [
+                lk1Activity1Input.value.trim(),
+                lk1Activity2Input.value.trim(),
+                lk1Activity3Input.value.trim()
+            ].filter(Boolean); 
+
+            // Validasi input penting sebelum memanggil API
+            if (!topikPembelajaran || !mataPelajaran || !kelasSemester || !kdIpk) {
+                showMessageBox("Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.", true);
+                lkpdOutput.value = ""; 
+                return; // Berhenti eksekusi jika input penting tidak lengkap
             }
 
-            // Fungsi untuk membuat teks LKPD dengan Gemini AI
-            const generateLkpd = async () => {
-                // Ambil API Key dari localStorage
-                const apiKey = localStorage.getItem('geminiApiKey');
+            lkpdOutput.value = "Membuat konten LKPD cerdas dengan AI... Mohon tunggu sebentar. Proses ini mungkin memakan waktu beberapa detik.";
+            buatLkpdBtn.disabled = true; 
 
-                // Validasi API Key sebelum melanjutkan
-                if (!apiKey || apiKey.trim() === '') {
-                    showMessageBox('Kunci API Gemini diperlukan untuk membuat LKPD. Silakan masukkan.', true);
-                    geminiApiKeyModal.classList.add('show'); 
-                    modalGeminiApiKeyInput.value = ''; 
-                    return;
-                }
-
-                const namaSekolah = namaSekolahInput.value.trim();
-                const namaGuru = namaGuruInput.value.trim();
-                const mataPelajaran = mataPelajaranInput.value.trim();
-                const kelasSemester = kelasSemesterInput.value.trim();
-                const topikPembelajaran = topikPembelajaranInput.value.trim();
-                const modelPembelajaran = modelPembelajaranInput.value.trim();
-                const alokasiWaktu = alokasiWaktuInput.value.trim();
-                const kdIpk = kdIpkInput.value.trim();
-                const tingkatKesulitanSoal = tingkatKesulitanSoalInput.value.trim();
-                const lk1Activities = [
-                    lk1Activity1Input.value.trim(),
-                    lk1Activity2Input.value.trim(),
-                    lk1Activity3Input.value.trim()
-                ].filter(Boolean); 
-
-                // Validasi input penting sebelum memanggil API
-                if (!topikPembelajaran || !mataPelajaran || !kelasSemester || !kdIpk) {
-                    showMessageBox("Mohon lengkapi kolom 'Topik Pembelajaran', 'Mata Pelajaran', 'Kelas/Semester', dan 'Kompetensi Dasar & IPK' untuk mendapatkan hasil yang optimal dari AI.", true);
-                    lkpdOutput.value = ""; 
-                    return;
-                }
-
-                lkpdOutput.value = "Membuat konten LKPD cerdas dengan AI... Mohon tunggu sebentar. Proses ini mungkin memakan waktu beberapa detik.";
-                buatLkpdBtn.disabled = true; 
-
-                try {
-                    // Isi tetap untuk petunjuk penggunaan (tidak dihasilkan AI)
-                    const petunjukPenggunaan = `
+            try {
+                // Isi tetap untuk petunjuk penggunaan (tidak dihasilkan AI)
+                const petunjukPenggunaan = `
 PETUNJUK PENGGUNAAN LKPD:
 1.  Bacalah dan pahami setiap petunjuk pada LKPD dengan teliti.
 2.  Diskusikan setiap pertanyaan atau tugas yang diberikan bersama anggota kelompok.
@@ -407,117 +420,120 @@ PETUNJUK PENGGUNAAN LKPD:
 4.  Kerjakan LKPD secara jujur dan bertanggung jawab.
 5.  Jika ada kesulitan atau hal yang kurang dipahami, tanyakan kepada guru.
 6.  Presentasikan hasil diskusi kelompok Anda di depan kelas.
-                    `.trim();
+                `.trim();
 
-                    // Prompt untuk Gemini API
-                    const prompt = `Sebagai seorang guru yang ingin membuat Lembar Kerja Peserta Didik (LKPD) untuk mata pelajaran ${mataPelajaran} dengan topik "${topikPembelajaran}" untuk kelas ${kelasSemester}, dan model pembelajaran ${modelPembelajaran}.
-                    Berdasarkan Kompetensi Dasar & Indikator Pencapaian berikut:
-                    "${kdIpk}"
+                // Prompt untuk Gemini API
+                const prompt = `Sebagai seorang guru yang ingin membuat Lembar Kerja Peserta Didik (LKPD) untuk mata pelajaran ${mataPelajaran} dengan topik "${topikPembelajaran}" untuk kelas ${kelasSemester}, dan model pembelajaran ${modelPembelajaran}.
+                Berdasarkan Kompetensi Dasar & Indikator Pencapaian berikut:
+                "${kdIpk}"
 
-                    Buatkan konten LKPD dalam format JSON, dengan detail berikut:
-                    1.  **tujuanPembelajaranGenerated**: Minimal 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
-                    2.  **pengantarKontekstualGenerated**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${topikPembelajaran}".
-                    3.  **kegiatanIntiPanduan**: Detail panduan untuk setiap tahapan model pembelajaran ${modelPembelajaran}. Ini harus berupa satu blok teks panjang yang mencakup:
-                        * A. Observasi (Stimulation): Petunjuk spesifik untuk observasi terkait topik.
-                        * B. Diskusi (Problem Statement): Petunjuk untuk mengidentifikasi masalah dari observasi.
-                        * C. Analisis (Data Collection & Processing): Petunjuk untuk mengumpulkan dan mengolah informasi.
-                        * D. Aplikasi (Verification): Petunjuk untuk menerapkan konsep.
-                        * E. Refleksi (Generalization): Petunjuk untuk menyimpulkan pembelajaran.
-                        Pastikan setiap sub-bagian ini diawali dengan huruf kapital (A., B., C., D., E.) dan nama tahapannya dalam kurung.
-                    4.  **lk1Instruction**: Instruksi singkat (1-2 kalimat) untuk kegiatan LK I.
-                    5.  **lk1Classification**: Sebuah array objek, di mana setiap objek memiliki \`activity\` (string) dan \`type\` (string, bisa "Penghematan" atau "Tidak Penghematan"). Gunakan kegiatan berikut: ${JSON.stringify(lk1Activities)}. Jika ada kegiatan yang tidak jelas, masukkan sebagai "Belum Diklasifikasikan". Tambahkan setidaknya 2-3 contoh tambahan kegiatan penghematan/tidak penghematan yang relevan dengan topik jika \`lk1Activities\` kurang dari 3.
-                    6.  **lk2InitialStatement**: Sebuah pernyataan awal atau fakta (2-3 kalimat) seperti "Dalam pembuatan 1 rim kertas..." yang relevan dengan topik "${topikPembelajaran}" jika memungkinkan, atau pernyataan umum.
-                    7.  **lk2Steps**: Sebuah array string berisi 5-6 langkah kegiatan untuk LK II, termasuk diskusi, penulisan hasil, dan presentasi (jika relevan).
-                    8.  **daftarSoal**: Sebuah array berisi minimal 5-7 soal latihan atau tugas esai/analisis/diskusi yang mendorong berpikir kritis, bukan hanya hafalan, terkait topik "${topikPembelajaran}" dan tujuan pembelajaran. Jika tingkat kesulitan soal adalah "${tingkatKesulitanSoal}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
-                    9.  **refleksiDiriSiswaGenerated**: Minimal 4 pertanyaan reflektif bagi siswa setelah mengerjakan LKPD, dalam format daftar berpoin.
-                    10. **catatanGuruMotivasi**: Satu paragraf singkat (1-2 kalimat) berisi catatan atau motivasi penutup dari guru untuk siswa.
+                Buatkan konten LKPD dalam format JSON, dengan detail berikut:
+                1.  **tujuanPembelajaranGenerated**: Minimal 3 tujuan pembelajaran yang spesifik, terukur, dapat dicapai, relevan, dan berbatas waktu (SMART) menggunakan kata kerja operasional yang tepat. Setiap tujuan dalam satu baris terpisah dengan diawali tanda hubung (-).
+                2.  **pengantarKontekstualGenerated**: Sebuah paragraf pengantar singkat (2-4 kalimat) yang menarik, relevan, dan kontekstual untuk siswa, terkait topik "${topikPembelajaran}".
+                3.  **kegiatanIntiPanduan**: Detail panduan untuk setiap tahapan model pembelajaran ${modelPembelajaran}. Ini harus berupa satu blok teks panjang yang mencakup:
+                    * A. Observasi (Stimulation): Petunjuk spesifik untuk observasi terkait topik.
+                    * B. Diskusi (Problem Statement): Petunjuk untuk mengidentifikasi masalah dari observasi.
+                    * C. Analisis (Data Collection & Processing): Petunjuk untuk mengumpulkan dan mengolah informasi.
+                    * D. Aplikasi (Verification): Petunjuk untuk menerapkan konsep.
+                    * E. Refleksi (Generalization): Petunjuk untuk menyimpulkan pembelajaran.
+                    Pastikan setiap sub-bagian ini diawali dengan huruf kapital (A., B., C., D., E.) dan nama tahapannya dalam kurung.
+                4.  **lk1Instruction**: Instruksi singkat (1-2 kalimat) untuk kegiatan LK I.
+                5.  **lk1Classification**: Sebuah array objek, di mana setiap objek memiliki \`activity\` (string) dan \`type\` (string, bisa "Penghematan" atau "Tidak Penghematan"). Gunakan kegiatan berikut: ${JSON.stringify(lk1Activities)}. Jika ada kegiatan yang tidak jelas, masukkan sebagai "Belum Diklasifikasikan". Tambahkan setidaknya 2-3 contoh tambahan kegiatan penghematan/tidak penghematan yang relevan dengan topik jika \`lk1Activities\` kurang dari 3.
+                6.  **lk2InitialStatement**: Sebuah pernyataan awal atau fakta (2-3 kalimat) seperti "Dalam pembuatan 1 rim kertas..." yang relevan dengan topik "${topikPembelajaran}" jika memungkinkan, atau pernyataan umum.
+                7.  **lk2Steps**: Sebuah array string berisi 5-6 langkah kegiatan untuk LK II, termasuk diskusi, penulisan hasil, dan presentasi (jika relevan).
+                8.  **daftarSoal**: Sebuah array berisi minimal 5-7 soal latihan atau tugas esai/analisis/diskusi yang mendorong berpikir kritis, bukan hanya hafalan, terkait topik "${topikPembelajaran}" dan tujuan pembelajaran. Jika tingkat kesulitan soal adalah "${tingkatKesulitanSoal}", sesuaikan kompleksitas soalnya. Setiap elemen array adalah satu soal.
+                9.  **refleksiDiriSiswaGenerated**: Minimal 4 pertanyaan reflektif bagi siswa setelah mengerjakan LKPD, dalam format daftar berpoin.
+                10. **catatanGuruMotivasi**: Satu paragraf singkat (1-2 kalimat) berisi catatan atau motivasi penutup dari guru untuk siswa.
 
-                    Pastikan semua teks yang dihasilkan menggunakan bahasa Indonesia yang baik dan baku, dan sesuai untuk konteks pendidikan menengah. Jangan gunakan markdown di dalam nilai string JSON.`;
+                Pastikan semua teks yang dihasilkan menggunakan bahasa Indonesia yang baik dan baku, dan sesuai untuk konteks pendidikan menengah. Jangan gunakan markdown di dalam nilai string JSON.`;
 
-                    let chatHistory = [];
-                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                let chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
 
-                    const payload = {
-                        contents: chatHistory,
-                        generationConfig: {
-                            responseMimeType: "application/json",
-                            responseSchema: {
-                                type: "OBJECT",
-                                properties: {
-                                    tujuanPembelajaranGenerated: { type: "STRING" },
-                                    pengantarKontekstualGenerated: { type: "STRING" },
-                                    kegiatanIntiPanduan: { type: "STRING" },
-                                    lk1Instruction: { type: "STRING" },
-                                    lk1Classification: {
-                                        type: "ARRAY",
-                                        items: {
-                                            type: "OBJECT",
-                                            properties: {
-                                                activity: { type: "STRING" },
-                                                type: { type: "STRING", enum: ["Penghematan", "Tidak Penghematan", "Belum Diklasifikasikan"] }
-                                            }
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                tujuanPembelajaranGenerated: { type: "STRING" },
+                                pengantarKontekstualGenerated: { type: "STRING" },
+                                kegiatanIntiPanduan: { type: "STRING" },
+                                lk1Instruction: { type: "STRING" },
+                                lk1Classification: {
+                                    type: "ARRAY",
+                                    items: {
+                                        type: "OBJECT",
+                                        properties: {
+                                            activity: { type: "STRING" },
+                                            type: { type: "STRING", enum: ["Penghematan", "Tidak Penghematan", "Belum Diklasifikasikan"] }
                                         }
-                                    },
-                                    lk2InitialStatement: { type: "STRING" },
-                                    lk2Steps: {
-                                        type: "ARRAY",
-                                        items: { type: "STRING" }
-                                    },
-                                    daftarSoal: {
-                                        type: "ARRAY",
-                                        items: { type: "STRING" }
-                                    },
-                                    refleksiDiriSiswaGenerated: { type: "STRING" },
-                                    catatanGuruMotivasi: { type: "STRING" }
-                                }
+                                    }
+                                },
+                                lk2InitialStatement: { type: "STRING" },
+                                lk2Steps: {
+                                    type: "ARRAY",
+                                    items: { type: "STRING" }
+                                },
+                                daftarSoal: {
+                                    type: "ARRAY",
+                                    items: { type: "STRING" }
+                                },
+                                refleksiDiriSiswaGenerated: { type: "STRING" },
+                                catatanGuruMotivasi: { type: "STRING" }
                             }
                         }
-                    };
-
-                    // Menggunakan apiKey dari localStorage yang sudah divalidasi di awal fungsi
-                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
-
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(payload)
-                    });
-
-                    if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
                     }
+                };
 
-                    const result = await response.json();
+                // Menggunakan apiKey dari localStorage yang sudah divalidasi di awal fungsi
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
+                const response = await fetch(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
 
-                        const jsonString = result.candidates[0].content.parts[0].text;
-                        console.log("Raw JSON response from Gemini:", jsonString); 
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API error: ${response.status} - ${errorData.error.message || 'Unknown error'}`);
+                }
 
-                        const jsonResponse = JSON.parse(jsonString);
-                        console.log("Parsed JSON response:", jsonResponse); 
+                const result = await response.json();
 
-                        const {
-                            tujuanPembelajaranGenerated,
-                            pengantarKontekstualGenerated,
-                            kegiatanIntiPanduan,
-                            lk1Instruction,
-                            lk1Classification,
-                            lk2InitialStatement,
-                            lk2Steps,
-                            daftarSoal,
-                            refleksiDiriSiswaGenerated,
-                            catatanGuruMotivasi
-                        } = jsonResponse;
+                if (result.candidates && result.candidates.length > 0 &&
+                    result.candidates[0].content && result.candidates[0].content.parts &&
+                    result.candidates[0].content.parts.length > 0) {
 
-                        // Pastikan lk1Classification adalah array yang valid
-                        const finalLk1Classification = Array.isArray(lk1Classification) ? lk1Classification : [];
+                    const jsonString = result.candidates[0].content.parts[0].text;
+                    // Hapus backticks dan kata 'json' jika AI mengembalikan dalam format code block
+                    const cleanedJsonString = jsonString.replace(/^```json\s*|```\s*$/g, '').trim(); 
+                    
+                    console.log("Raw JSON response from Gemini:", cleanedJsonString); // Log for debugging
 
-                        // --- Mulai membangun teks LKPD dengan format PDF referensi ---
-                        let lkpdText = `
+                    const jsonResponse = JSON.parse(cleanedJsonString); // Parse string yang sudah bersih
+                    console.log("Parsed JSON response:", jsonResponse); // Log for debugging
+
+                    const {
+                        tujuanPembelajaranGenerated,
+                        pengantarKontekstualGenerated,
+                        kegiatanIntiPanduan,
+                        lk1Instruction,
+                        lk1Classification,
+                        lk2InitialStatement,
+                        lk2Steps,
+                        daftarSoal,
+                        refleksiDiriSiswaGenerated,
+                        catatanGuruMotivasi
+                    } = jsonResponse;
+
+                    // Pastikan lk1Classification adalah array yang valid
+                    const finalLk1Classification = Array.isArray(lk1Classification) ? lk1Classification : [];
+
+                    // --- Mulai membangun teks LKPD dengan format PDF referensi ---
+                    let lkpdText = `
 LEMBAR KERJA PESERTA DIDIK (LKPD)
 
 Kelas/Semester    : ${kelasSemester || '[Kelas / Semester]'}
@@ -546,22 +562,22 @@ ${kegiatanIntiPanduan}` : '[Panduan Kegiatan Inti belum dihasilkan]'}
 |     |                                  |                       | Penghematan            |
 +-----+----------------------------------+-----------------------+------------------------+
 `;
-                        // Tambahkan baris klasifikasi dari AI
-                        finalLk1Classification.forEach((item, index) => {
-                            // Tambahkan pengecekan null/undefined untuk item dan item.activity
-                            if (item && typeof item.activity === 'string' && typeof item.type === 'string') {
-                                const no = String(index + 1).padEnd(3);
-                                const activity = item.activity.padEnd(32).substring(0, 32);
-                                const isHemat = item.type === "Penghematan" ? "  X  " : "     ";
-                                const isTidakHemat = item.type === "Tidak Penghematan" ? "  X  " : "     ";
-                                lkpdText += `| ${no}| ${activity} | ${isHemat.padEnd(21)} | ${isTidakHemat.padEnd(22)} |\n`;
-                                lkpdText += `+-----+----------------------------------+-----------------------+------------------------+\n`;
-                            } else {
-                                console.warn("Item malformed in lk1Classification, skipping:", item);
-                            }
-                        });
+                    // Tambahkan baris klasifikasi dari AI
+                    finalLk1Classification.forEach((item, index) => {
+                        // Tambahkan pengecekan null/undefined untuk item dan item.activity
+                        if (item && typeof item.activity === 'string' && typeof item.type === 'string') {
+                            const no = String(index + 1).padEnd(3);
+                            const activity = item.activity.padEnd(32).substring(0, 32);
+                            const isHemat = item.type === "Penghematan" ? "  X  " : "     ";
+                            const isTidakHemat = item.type === "Tidak Penghematan" ? "  X  " : "     ";
+                            lkpdText += `| ${no}| ${activity} | ${isHemat.padEnd(21)} | ${isTidakHemat.padEnd(22)} |\n`;
+                            lkpdText += `+-----+----------------------------------+-----------------------+------------------------+\n`;
+                        } else {
+                            console.warn("Item malformed in lk1Classification, skipping:", item);
+                        }
+                    });
 
-                        lkpdText += `
+                    lkpdText += `
 
 LK II
 Menghemat Kertas dalam Kehidupan Sehari-hari
@@ -571,21 +587,21 @@ Langkah Kegiatan:
     ${lk2InitialStatement || '[Pernyataan awal belum dihasilkan]'}
 
 `;
-                        // Tambahkan langkah kegiatan dari AI
-                        // Pastikan lk2Steps adalah array yang valid
-                        const finalLk2Steps = Array.isArray(lk2Steps) ? lk2Steps : [];
-                        finalLk2Steps.forEach((step, index) => {
-                            lkpdText += `${index + 2}. ${step}\n`; // Dimulai dari nomor 2 karena nomor 1 sudah pernyataan awal
-                        });
+                    // Tambahkan langkah kegiatan dari AI
+                    // Pastikan lk2Steps adalah array yang valid
+                    const finalLk2Steps = Array.isArray(lk2Steps) ? lk2Steps : [];
+                    finalLk2Steps.forEach((step, index) => {
+                        lkpdText += `${index + 2}. ${step}\n`; // Dimulai dari nomor 2 karena nomor 1 sudah pernyataan awal
+                    });
 
-                        // Tambahkan area kosong untuk jawaban
-                        lkpdText += `\n(Gunakan area di bawah ini untuk menulis hasil diskusimu)\n`;
-                        for (let i = 0; i < 5; i++) {
-                            lkpdText += ".......................................................................................................................................................\n";
-                        }
-                        lkpdText += "\n"; // Spasi setelah garis
+                    // Tambahkan area kosong untuk jawaban
+                    lkpdText += `\n(Gunakan area di bawah ini untuk menulis hasil diskusimu)\n`;
+                    for (let i = 0; i < 5; i++) {
+                        lkpdText += ".......................................................................................................................................................\n";
+                    }
+                    lkpdText += "\n"; // Spasi setelah garis
 
-                        lkpdText += `
+                    lkpdText += `
 
 SOAL LATIHAN / TUGAS:
 ${daftarSoal && Array.isArray(daftarSoal) && daftarSoal.length > 0 ? daftarSoal.map((soal, index) => `${index + 1}. ${soal}`).join('\n\n') : '[Daftar soal belum dihasilkan]'}
@@ -625,50 +641,52 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
       Whatsapp            : [08xxxxxxxxxx (Isi manual)]
                         `.trim();
 
-                        lkpdOutput.value = lkpdText;
+                    lkpdOutput.value = lkpdText;
 
-                    } else {
-                        showMessageBox("Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
-                        lkpdOutput.value = ""; 
-                    }
-                } catch (error) {
-                    console.error('Error generating LKPD content:', error);
-                    if (error instanceof SyntaxError && error.message.includes("JSON")) {
-                        showMessageBox(`Terjadi kesalahan saat memproses respons AI (JSON Error): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi atau sesuaikan prompt.`, true);
-                    } else {
-                        showMessageBox(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan koneksi internet Anda stabil, dan Kunci API Gemini Anda benar dan aktif. Coba lagi.`, true);
-                    }
+                } else {
+                    showMessageBox("Maaf, tidak dapat menghasilkan konten LKPD. Struktur respons dari AI tidak sesuai atau kosong. Coba lagi atau sesuaikan input Anda.", true);
                     lkpdOutput.value = ""; 
-                } finally {
-                    buatLkpdBtn.disabled = false; 
                 }
-            };
+            } catch (error) {
+                console.error('Error generating LKPD content:', error);
+                if (error instanceof SyntaxError && error.message.includes("JSON")) {
+                    showMessageBox(`Terjadi kesalahan saat memproses respons AI (JSON Error): ${error.message}. Respons AI mungkin tidak dalam format yang diharapkan. Coba lagi atau sesuaikan prompt.`, true);
+                } else {
+                    showMessageBox(`Terjadi kesalahan saat memanggil AI: ${error.message}. Pastikan semua kolom penting terisi dan koneksi internet Anda stabil, dan Kunci API Gemini Anda benar dan aktif. Coba lagi.`, true);
+                }
+                lkpdOutput.value = ""; 
+            } finally {
+                buatLkpdBtn.disabled = false; 
+            }
+        };
 
-            // Fungsi untuk menyalin teks LKPD ke clipboard
-            const copyLkpd = () => {
-                lkpdOutput.select(); 
-                document.execCommand('copy'); 
-                showMessageBox('Teks LKPD berhasil disalin ke clipboard!', false); 
-            };
+        // Fungsi untuk menyalin teks LKPD ke clipboard
+        const copyLkpd = () => {
+            lkpdOutput.select(); 
+            document.execCommand('copy'); 
+            showMessageBox('Teks LKPD berhasil disalin ke clipboard!', false); 
+        };
 
-            // Fungsi untuk membersihkan formulir
-            const clearForm = () => {
-                namaSekolahInput.value = '';
-                namaGuruInput.value = '';
-                mataPelajaranInput.value = '';
-                kelasSemesterInput.value = '';
-                topikPembelajaranInput.value = '';
-                modelPembelajaranInput.value = '';
-                alokasiWaktuInput.value = '';
-                kdIpkInput.value = '';
-                lk1Activity1Input.value = '';
-                lk1Activity2Input.value = '';
-                lk1Activity3Input.value = '';
-                tingkatKesulitanSoalInput.value = '';
-                lkpdOutput.value = ''; 
-            };
+        // Fungsi untuk membersihkan formulir
+        const clearForm = () => {
+            namaSekolahInput.value = '';
+            namaGuruInput.value = '';
+            namaPelajaranInput.value = ''; // Memastikan semua input dibersihkan
+            kelasSemesterInput.value = '';
+            topikPembelajaranInput.value = '';
+            modelPembelajaranInput.value = '';
+            alokasiWaktuInput.value = '';
+            kdIpkInput.value = '';
+            lk1Activity1Input.value = '';
+            lk1Activity2Input.value = '';
+            lk1Activity3Input.value = '';
+            tingkatKesulitanSoalInput.value = '';
+            lkpdOutput.value = ''; 
+        };
 
-            // Event Listeners
+        // Inisialisasi utama setelah DOM siap
+        document.addEventListener('DOMContentLoaded', () => {
+            // Event Listeners tombol utama
             buatLkpdBtn.addEventListener('click', generateLkpd);
             copyLkpdBtn.addEventListener('click', copyLkpd);
             clearFormBtn.addEventListener('click', clearForm);
@@ -690,8 +708,8 @@ Note: Nama Pembuat LKPD    : ${namaGuru || '[Nama Guru]'}
                     geminiApiKeyModal.classList.remove('show'); 
                 });
 
-                // Event Listener untuk ikon pengaturan
-                settingsIcon.addEventListener('click', () => {
+                // Event Listener untuk tombol pengaturan
+                settingsButton.addEventListener('click', () => { // Ganti settingsIcon menjadi settingsButton
                     geminiApiKeyModal.classList.add('show'); 
                     modalGeminiApiKeyInput.value = localStorage.getItem('geminiApiKey') || ''; 
                 });
