@@ -149,41 +149,60 @@
 
         /* Settings Button Styles - PENYESUAIAN DI SINI */
         #settingsControlBtn {
-            position: absolute;
-            /* Menggeser tombol ke kiri bawah judul atau di bawah sub-judul */
-            top: 6.5rem; /* Sesuaikan jarak dari atas, di bawah judul utama */
-            right: 1.75rem; /* Jaga jarak dari kanan */
-            /* Alternatif: top: 1.75rem; left: 1.75rem; jika ingin di kiri atas */
-            cursor: pointer;
+            /* Default styles for mobile (button with text and icon) */
+            position: static;
+            width: fit-content;
+            height: auto;
             padding: 0.625rem 1.25rem;
+            margin-top: 1.5rem;
+            margin-left: auto;
+            margin-right: auto;
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
             background-color: #e0f2fe;
             color: #2563eb;
             border: 1px solid #93c5fd;
             border-radius: 0.625rem;
             font-size: 0.9rem;
             font-weight: 600;
-            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out;
-            z-index: 10;
-            display: flex;
-            align-items: center;
-            gap: 0.625rem;
             box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            z-index: 10; /* Lower z-index for mobile flow */
+            cursor: pointer;
         }
-        @media (max-width: 768px) { /* Untuk layar yang lebih kecil */
-            #settingsControlBtn {
-                position: static; /* Kembali ke posisi normal dalam flow */
-                margin-top: 1rem; /* Tambahkan sedikit margin atas */
-                margin-left: auto;
-                margin-right: auto;
-                display: block; /* Agar mengambil lebar penuh di mobile */
-                width: fit-content; /* Sesuaikan lebar dengan konten */
-                margin-bottom: 1.5rem; /* Beri jarak ke elemen di bawahnya */
-            }
-        }
+
+        /* Hover for mobile button */
         #settingsControlBtn:hover {
             background-color: #bfdbfe;
             color: #1e40af;
             transform: scale(1.03);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        /* Media query for larger screens (desktop) */
+        @media (min-width: 768px) {
+            #settingsControlBtn {
+                position: fixed; /* Ubah dari static ke fixed */
+                top: 1.5rem; /* Jarak dari atas viewport */
+                right: 1.5rem; /* Jarak dari kanan viewport */
+                width: 3rem; /* Lebar tombol */
+                height: 3rem; /* Tinggi tombol */
+                padding: 0.5rem; /* Padding untuk ikon */
+                background-color: #4f46e5; /* Indigo-600 */
+                color: white; /* Warna ikon putih */
+                border: none; /* Hapus border */
+                border-radius: 50%; /* Membuat tombol bulat */
+                justify-content: center; /* Pusatkan ikon */
+                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2); /* Bayangan lebih kuat */
+                z-index: 1002; /* Lebih tinggi dari modal overlay (1000) dan notifikasi (1001) */
+            }
+            /* Hover for desktop button */
+            #settingsControlBtn:hover {
+                background-color: #4338ca; /* Indigo-700 on hover */
+                transform: scale(1.08); /* Efek zoom sedikit */
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3); /* Bayangan lebih kuat lagi */
+            }
         }
 
         /* Notification Message Box */
@@ -222,8 +241,15 @@
 </head>
 <body class="p-5 md:p-10">
     <div class="max-w-5xl mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-indigo-200 relative">
+        <!-- Tombol Pengaturan - Sekarang dengan ikon dan teks responsif -->
         <button id="settingsControlBtn" class="hide-on-print">
-            Kelola Kunci API
+            <!-- Ikon untuk layar besar (desktop) -->
+            <svg class="w-6 h-6 hidden md:block" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 15.375a3.375 3.375 0 100-6.75 3.375 3.375 0 000 6.75z" />
+                <path fill-rule="evenodd" d="M10.707 2.293a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.293.293a1 1 0 010 1.414l-.478.478a.75.75 0 000 1.06l.478.478a1 1 0 010 1.414l-.293.293a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.293-.293a1 1 0 010-1.414l.478-.478a.75.75 0 000-1.06l-.478-.478a1 1 0 010-1.414l.293-.293zM12 18a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" />
+            </svg>
+            <!-- Teks untuk layar kecil (mobile) -->
+            <span class="md:hidden">Kelola Kunci API</span>
         </button>
         <h1 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-800 mb-7">Asisten Pembuat Lembar Aktivitas Siswa</h1>
         <p class="text-center text-gray-700 mb-9">Isi detail di bawah untuk menghasilkan Lembar Aktivitas siswa (LKPD) mengikuti format standar.</p>
@@ -582,7 +608,7 @@ PETUNJUK PENGGUNAAN LEMBAR AKTIVITAS SISWA:
 LEMBAR AKTIVITAS SISWA (LAS)
 
 Lembaga Pendidikan : ${schoolName || '[Nama Lembaga Pendidikan]'}
-Nama Pengajar       : ${teacherName || '[Nama Pengajar]'}
+Nama Pengajar        : ${teacherName || '[Nama Pengajar]'}
 Mata Pelajaran      : ${subject || '[Mata Pelajaran]'}
 Tingkat/Semester    : ${gradeSemester || '[Tingkat / Semester]'}
 Pokok Pembelajaran  : ${learningTopic || '[Pokok Pembelajaran]'}
@@ -627,8 +653,8 @@ ${activity1Instruction || 'Kategorikanlah skenario atau kegiatan berikut berdasa
                         if (item && typeof item.scenario === 'string' && typeof item.category === 'string') {
                             const no = String(index + 1).padEnd(3);
                             const scenario = item.scenario.padEnd(36).substring(0, 36);
-                            const isKontak = item.category === "Gaya Kontak" ? "   X   " : "       "; 
-                            const isTakKontak = item.category === "Gaya Tak Kontak" ? "   X   " : "       "; 
+                            const isKontak = item.category === "Gaya Kontak" ? "    X    " : "         "; 
+                            const isTakKontak = item.category === "Gaya Tak Kontak" ? "    X    " : "         "; 
                             worksheetText += `| ${no}| ${scenario} | ${isKontak.padEnd(21)} | ${isTakKontak.padEnd(21)} |\n`;
                             worksheetText += `+-----+--------------------------------------+-----------------------+-----------------------+\n`;
                         } else {
