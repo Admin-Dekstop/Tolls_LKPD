@@ -3,81 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Asisten Pembuat Lembar Aktivitas Siswa</title>
+    <title>Aplikasi Pembantu Perancangan Modul Belajar</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom styles untuk font Inter jika tersedia, fallback ke sans-serif */
+        /* Menggunakan font Inter secara default, fallback ke sans-serif */
         body {
             font-family: 'Inter', sans-serif;
             -webkit-font-smoothing: antialiased;
             -moz-osx-smoothing: grayscale;
-            background-color: #e6f7ff; /* Warna latar belakang biru pastel yang berbeda */
-            color: #333; /* Warna teks dasar */
+            background-color: #f0fdf4; /* Warna latar belakang hijau pastel lembut */
+            color: #262626; /* Warna teks dasar abu-abu gelap */
         }
-        /* Mengatur agar area output LKPD bisa di-scroll dan terlihat rapi */
-        #worksheetOutputContainer {
+        /* Mengatur agar area output Modul bisa di-scroll dan terlihat rapi */
+        #moduleOutputContainer {
             min-height: 400px; /* Tinggi minimal untuk area output */
             font-family: 'Arial', sans-serif; /* Font umum untuk dokumen */
             font-size: 1rem; /* Ukuran font dasar */
             line-height: 1.6; /* Spasi baris untuk keterbacaan */
             overflow-y: auto; /* Agar bisa discroll jika konten panjang */
         }
-        #worksheetOutputContainer h1, #worksheetOutputContainer h2 {
+        #moduleOutputContainer h1, #moduleOutputContainer h2 {
             font-weight: bold;
             margin-bottom: 0.75rem;
         }
-        #worksheetOutputContainer h1 {
-            font-size: 1.5rem; /* Ukuran untuk judul utama LKPD */
+        #moduleOutputContainer h1 {
+            font-size: 1.6rem; /* Ukuran untuk judul utama Modul */
             text-align: center;
-            color: #1a202c; /* Hampir hitam */
+            color: #166534; /* Hijau gelap */
         }
-        #worksheetOutputContainer h2 {
-            font-size: 1.25rem; /* Ukuran untuk sub-judul bagian */
-            color: #2c5282; /* Biru tua */
-            margin-top: 1.5rem;
-            border-bottom: 1px solid #e2e8f0;
-            padding-bottom: 0.25rem;
+        #moduleOutputContainer h2 {
+            font-size: 1.35rem; /* Ukuran untuk sub-judul bagian */
+            color: #047857; /* Teal gelap */
+            margin-top: 1.75rem;
+            border-bottom: 2px solid #a7f3d0; /* Garis bawah yang lebih tebal */
+            padding-bottom: 0.4rem;
         }
-        #worksheetOutputContainer p, #worksheetOutputContainer ul, #worksheetOutputContainer ol, #worksheetOutputContainer table {
+        #moduleOutputContainer p, #moduleOutputContainer ul, #moduleOutputContainer ol, #moduleOutputContainer table {
             margin-bottom: 1rem;
         }
-        #worksheetOutputContainer ul, #worksheetOutputContainer ol {
-            padding-left: 1.5rem;
+        #moduleOutputContainer ul, #moduleOutputContainer ol {
+            padding-left: 1.8rem; /* Padding lebih besar */
         }
-        #worksheetOutputContainer table {
+        #moduleOutputContainer table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 1rem;
         }
-        #worksheetOutputContainer th, #worksheetOutputContainer td {
-            border: 1px solid #cbd5e0;
-            padding: 0.75rem;
+        #moduleOutputContainer th, #moduleOutputContainer td {
+            border: 1px solid #d1fae5; /* Border tabel lebih lembut */
+            padding: 0.8rem; /* Padding tabel lebih besar */
             text-align: left;
         }
-        #worksheetOutputContainer th {
-            background-color: #f0f4f8;
-            font-weight: 600;
+        #moduleOutputContainer th {
+            background-color: #ecfdf5; /* Background header tabel lebih terang */
+            font-weight: 700;
+            color: #065f46;
         }
 
-        /* Styling untuk mode cetak */
+        /* Styling untuk mode cetak - disembunyikan karena fungsi cetak diganti unduh */
         @media print {
             body {
-                background-color: white; /* Hapus background di mode cetak */
-                margin: 0; /* Hapus margin body */
+                background-color: white;
+                margin: 0;
                 padding: 0;
-                font-size: 10pt; /* Ukuran font lebih kecil untuk cetak */
+                font-size: 10pt;
                 line-height: 1.4;
             }
             .hide-on-print {
-                display: none !important; /* Sembunyikan elemen yang tidak perlu dicetak */
+                display: none !important;
             }
             .printable-area {
-                width: 21cm; /* Lebar A4 */
-                /* height: 29.7cm; */ /* Tinggi A4 - remove fixed height for better content flow */
-                margin: 0 auto; /* Tengah horizontal, hapus margin atas/bawah yang bisa konflik dengan padding */
-                padding: 2.5cm; /* Margin 2.5 cm di semua sisi */
-                box-sizing: border-box; /* Pastikan padding termasuk dalam lebar/tinggi */
-                font-family: 'Times New Roman', serif; /* Font untuk cetak */
+                width: 21cm;
+                margin: 0 auto;
+                padding: 2.5cm;
+                box-sizing: border-box;
+                font-family: 'Times New Roman', serif;
             }
             .printable-area h1 {
                 font-size: 18pt;
@@ -105,15 +105,15 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.75); /* Sedikit lebih gelap */
-            backdrop-filter: blur(6px); /* Sedikit lebih blur */
+            background-color: rgba(0, 0, 0, 0.8); /* Lebih gelap */
+            backdrop-filter: blur(8px); /* Lebih blur */
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 1000;
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
+            transition: opacity 0.4s ease-in-out, visibility 0.4s ease-in-out;
         }
         .api-modal-overlay.show {
             opacity: 1;
@@ -121,140 +121,145 @@
         }
         .modal-content-card {
             background-color: #ffffff;
-            padding: 2.5rem; /* Padding sedikit lebih besar */
-            border-radius: 1rem; /* Sudut lebih membulat */
-            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3); /* Bayangan lebih tebal */
+            padding: 3rem; /* Padding lebih besar */
+            border-radius: 1.25rem; /* Sudut sangat membulat */
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.4); /* Bayangan lebih tebal dan dalam */
             width: 95%;
-            max-width: 550px; /* Lebar maksimum sedikit lebih besar */
+            max-width: 600px; /* Lebar maksimum lebih besar */
             text-align: center;
-            transform: translateY(-30px); /* Efek masuk sedikit lebih jauh */
-            transition: transform 0.3s ease-in-out;
+            transform: translateY(-50px); /* Efek masuk lebih dramatis */
+            transition: transform 0.4s ease-in-out;
         }
         .api-modal-overlay.show .modal-content-card {
             transform: translateY(0);
         }
         .modal-content-card h2 {
-            font-size: 1.75rem; /* Ukuran font lebih besar */
-            font-weight: 800; /* Lebih tebal */
-            color: #4f46e5; /* Indigo-600 */
-            margin-bottom: 1.25rem;
+            font-size: 2rem; /* Ukuran font lebih besar */
+            font-weight: 900; /* Ekstra tebal */
+            color: #059669; /* Emerald-600 */
+            margin-bottom: 1.5rem;
         }
         .modal-content-card p {
-            color: #6b7280; /* Gray-600 */
-            margin-bottom: 1.75rem;
+            color: #4b5563; /* Gray-700 */
+            margin-bottom: 2rem;
+            line-height: 1.7;
         }
         .modal-content-card input[type="password"] {
-            margin-bottom: 1.75rem;
-            border: 1px solid #d1d5db;
-            border-radius: 0.625rem; /* Sedikit lebih membulat */
-            padding: 0.875rem 1.25rem; /* Padding lebih besar */
+            margin-bottom: 2rem;
+            border: 1px solid #9ca3af;
+            border-radius: 0.75rem; /* Lebih membulat */
+            padding: 1rem 1.5rem; /* Padding lebih besar */
             width: 100%;
-            font-size: 1rem;
+            font-size: 1.1rem;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
         }
         .modal-actions-group {
             display: flex;
-            gap: 1.25rem; /* Jarak antar tombol lebih besar */
+            gap: 1.5rem; /* Jarak antar tombol lebih besar */
             justify-content: center;
             flex-wrap: wrap;
         }
         .modal-actions-group button {
             flex-grow: 1;
-            padding: 0.875rem 1.75rem; /* Padding lebih besar */
-            border-radius: 0.625rem;
-            font-weight: 700; /* Lebih tebal */
+            padding: 1rem 2rem; /* Padding lebih besar */
+            border-radius: 0.75rem;
+            font-weight: 800; /* Lebih tebal */
             cursor: pointer;
-            transition: all 0.2s ease-in-out; /* Transisi untuk semua properti */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Bayangan tombol */
+            transition: all 0.25s ease-in-out; /* Transisi untuk semua properti */
+            box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15); /* Bayangan tombol lebih tebal */
         }
         .modal-actions-group .btn-action-save {
-            background-color: #4f46e5; /* Indigo-600 */
+            background-color: #059669; /* Emerald-600 */
             color: white;
         }
         .modal-actions-group .btn-action-save:hover {
-            background-color: #4338ca; /* Indigo-700 */
-            transform: translateY(-2px); /* Efek angkat */
+            background-color: #047857; /* Emerald-700 */
+            transform: translateY(-3px) scale(1.02); /* Efek angkat dan sedikit membesar */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
         .modal-actions-group .btn-action-clear {
-            background-color: #ef4444; /* Rose-500 */
+            background-color: #ef4444; /* Red-500 */
             color: white;
         }
         .modal-actions-group .btn-action-clear:hover {
-            background-color: #dc2626; /* Rose-600 */
-            transform: translateY(-2px);
+            background-color: #dc2626; /* Red-600 */
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
         .modal-actions-group .btn-action-close {
-            background-color: #6b7280; /* Slate-500 */
+            background-color: #6b7280; /* Gray-500 */
             color: white;
         }
         .modal-actions-group .btn-action-close:hover {
-            background-color: #4b5563; /* Slate-600 */
-            transform: translateY(-2px);
+            background-color: #4b5563; /* Gray-600 */
+            transform: translateY(-3px) scale(1.02);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
         /* Settings Button Styles */
-        #settingsControlBtn {
+        #apiSettingsButton {
             position: static;
             width: fit-content;
             height: auto;
-            padding: 0.625rem 1.25rem;
+            padding: 0.75rem 1.5rem;
             margin-top: 1.5rem;
             margin-left: auto;
             margin-right: auto;
             display: flex;
             align-items: center;
-            gap: 0.625rem;
-            background-color: #e0f2fe;
-            color: #2563eb;
-            border: 1px solid #93c5fd;
-            border-radius: 0.625rem;
-            font-size: 0.9rem;
-            font-weight: 600;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+            gap: 0.75rem;
+            background-color: #d1fae5; /* Hijau terang */
+            color: #065f46; /* Hijau gelap */
+            border: 1px solid #6ee7b7; /* Border hijau */
+            border-radius: 0.75rem;
+            font-size: 1rem;
+            font-weight: 700;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.1);
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
             z-index: 10;
             cursor: pointer;
         }
-        #settingsControlBtn:hover {
-            background-color: #bfdbfe;
-            color: #1e40af;
-            transform: scale(1.03);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        #apiSettingsButton:hover {
+            background-color: #a7f3d0; /* Hijau lebih gelap saat hover */
+            color: #047857;
+            transform: scale(1.04);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
         }
         @media (min-width: 768px) {
-            #settingsControlBtn {
+            #apiSettingsButton {
                 position: fixed;
-                top: 1.5rem;
-                right: 1.5rem;
-                width: 3rem;
-                height: 3rem;
-                padding: 0.5rem;
-                background-color: #4f46e5;
+                top: 1.8rem; /* Lebih ke bawah dari sebelumnya */
+                right: 1.8rem; /* Lebih ke kiri dari sebelumnya */
+                width: 3.5rem; /* Ukuran lebih besar */
+                height: 3.5rem;
+                padding: 0.7rem;
+                background-color: #059669; /* Emerald-600 */
                 color: white;
                 border: none;
                 border-radius: 50%;
                 justify-content: center;
-                box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+                box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
                 z-index: 1002;
             }
-            #settingsControlBtn:hover {
-                background-color: #4338ca;
-                transform: scale(1.08);
-                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            #apiSettingsButton:hover {
+                background-color: #047857;
+                transform: scale(1.1);
+                box-shadow: 0 10px 25px rgba(0, 0, 0, 0.35);
             }
         }
 
         /* Notification Message Box */
         .notification-message {
             position: fixed;
-            top: 1.5rem;
+            top: 2rem; /* Sedikit lebih ke bawah */
             left: 50%;
             transform: translateX(-50%);
             z-index: 1001;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2); /* Bayangan lebih jelas */
             max-width: 90%;
-            padding: 0.8rem 1.5rem;
-            border-radius: 0.75rem;
-            font-size: 0.95rem;
+            padding: 1rem 2rem; /* Padding lebih besar */
+            border-radius: 1rem; /* Sudut lebih membulat */
+            font-size: 1rem; /* Ukuran font lebih besar */
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease-in-out, visibility 0.3s ease-in-out;
@@ -264,17 +269,18 @@
             visibility: visible;
         }
         .notification-success {
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #6ee7b7;
+            background-color: #dcfce7; /* Green-100 */
+            color: #166534; /* Green-800 */
+            border: 1px solid #4ade80; /* Green-400 */
         }
         .notification-error {
-            background-color: #fee2e2;
-            color: #991b1b;
-            border: 1px solid #fca5a5;
+            background-color: #fee2e2; /* Red-100 */
+            color: #991b1b; /* Red-800 */
+            border: 1px solid #fca5a5; /* Red-400 */
         }
         .required-field {
             border-color: #ef4444 !important; /* Merah untuk field wajib yang kosong */
+            box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.3) !important; /* Glow merah */
         }
         .animate-pulse-light {
             animation: pulse-light 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
@@ -285,140 +291,144 @@
         }
     </style>
 </head>
-<body class="p-5 md:p-10">
-    <div class="max-w-5xl mx-auto bg-white p-8 md:p-10 rounded-2xl shadow-xl border border-indigo-200 relative">
-        <button id="settingsControlBtn" class="hide-on-print">
-            <svg class="w-6 h-6 hidden md:block" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+<body class="p-6 md:p-12">
+    <div class="max-w-6xl mx-auto bg-white p-8 md:p-12 rounded-3xl shadow-2xl border border-emerald-200 relative">
+        <button id="apiSettingsButton" class="hide-on-print">
+            <svg class="w-7 h-7 hidden md:block" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 15.375a3.375 3.375 0 100-6.75 3.375 3.375 0 000 6.75z" />
                 <path fill-rule="evenodd" d="M10.707 2.293a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.478.478a.75.75 0 001.06 0l.478-.478a1 1 0 011.414 0l.293.293a1 1 0 010 1.414l-.478.478a.75.75 0 000 1.06l.478.478a1 1 0 010 1.414l-.293.293a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.478-.478a.75.75 0 00-1.06 0l-.478.478a1 1 0 01-1.414 0l-.293-.293a1 1 0 010-1.414l.478-.478a.75.75 0 000-1.06l-.478-.478a1 1 0 010-1.414l.293-.293zM12 18a6 6 0 100-12 6 6 0 000 12z" clip-rule="evenodd" />
             </svg>
             <span class="md:hidden">Kelola Kunci API</span>
         </button>
-        <h1 class="text-3xl md:text-4xl font-extrabold text-center text-indigo-800 mb-7">Asisten Pembuat Lembar Aktivitas Siswa</h1>
-        <p class="text-center text-gray-700 mb-9">Halaman ini menampilkan contoh Lembar Aktivitas Siswa (LKPD). Isi detail di bawah ini untuk membuat LKPD yang disesuaikan.</p>
+        <h1 class="text-3xl md:text-5xl font-extrabold text-center text-emerald-800 mb-8 leading-tight">
+            Aplikasi Pembantu Perancangan Modul Belajar
+        </h1>
+        <p class="text-center text-gray-700 mb-10 text-lg">
+            Dirancang untuk membantu Anda menyusun materi pembelajaran dan aktivitas siswa yang terstruktur.
+        </p>
 
-        <div class="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-xl shadow-md hide-on-print">
-            <h2 class="text-2xl font-bold text-blue-700 mb-5">Detail LKPD</h2>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div class="mb-10 p-7 bg-green-50 border border-emerald-200 rounded-2xl shadow-lg hide-on-print">
+            <h2 class="text-2xl font-bold text-emerald-700 mb-6 border-b-2 border-emerald-300 pb-3">Informasi Modul Utama</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-7 mb-7">
                 <div>
-                    <label for="mataPelajaran" class="block text-gray-700 font-semibold mb-2">Mata Pelajaran <span class="text-red-500">*</span></label>
-                    <input type="text" id="mataPelajaran" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" value="IPA" placeholder="Contoh: IPA, Matematika">
+                    <label for="subjectField" class="block text-gray-800 font-semibold mb-2">Mata Ajar <span class="text-red-500">*</span></label>
+                    <input type="text" id="subjectField" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" value="Ilmu Pengetahuan Alam" placeholder="Contoh: IPA, Sejarah">
                 </div>
                 <div>
-                    <label for="kelas" class="block text-gray-700 font-semibold mb-2">Kelas <span class="text-red-500">*</span></label>
-                    <input type="text" id="kelas" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" value="VII" placeholder="Contoh: VII, X">
+                    <label for="gradeLevel" class="block text-gray-800 font-semibold mb-2">Jenjang Kelas <span class="text-red-500">*</span></label>
+                    <input type="text" id="gradeLevel" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" value="SMP Kelas VII" placeholder="Contoh: SD Kelas 4, SMA Kelas XI">
                 </div>
                 <div>
-                    <label for="semester" class="block text-gray-700 font-semibold mb-2">Semester <span class="text-red-500">*</span></label>
-                    <input type="text" id="semester" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" value="Genap" placeholder="Contoh: Ganjil, Genap">
+                    <label for="learningPeriod" class="block text-gray-800 font-semibold mb-2">Periode Belajar <span class="text-red-500">*</span></label>
+                    <input type="text" id="learningPeriod" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" value="Semester Genap" placeholder="Contoh: Semester Ganjil, Bab 3">
                 </div>
                 <div>
-                    <label for="materiPokok" class="block text-gray-700 font-semibold mb-2">Materi Pokok <span class="text-red-500">*</span></label>
-                    <input type="text" id="materiPokok" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" value="Sistem Tata Surya" placeholder="Contoh: Sistem Tata Surya, Persamaan Linear">
+                    <label for="mainTopic" class="block text-gray-800 font-semibold mb-2">Topik Utama <span class="text-red-500">*</span></label>
+                    <input type="text" id="mainTopic" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" value="Dinamika Tata Surya" placeholder="Contoh: Rantai Makanan, Revolusi Industri">
                 </div>
                 <div class="md:col-span-2">
-                    <label for="namaGuru" class="block text-gray-700 font-semibold mb-2">Nama Guru <span class="text-red-500">*</span></label>
-                    <input type="text" id="namaGuru" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" value="Bpk. Budi Cahyadi, S.Pd." placeholder="Contoh: Ibu Siti Aminah, S.Pd.">
+                    <label for="instructorName" class="block text-gray-800 font-semibold mb-2">Nama Pengajar <span class="text-red-500">*</span></label>
+                    <input type="text" id="instructorName" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" value="Ibu Ayu Lestari, M.Pd." placeholder="Contoh: Bapak Irfan Hadi, S.Kom.">
                 </div>
             </div>
 
-            <div class="mb-6">
-                <label for="tujuanPembelajaran" class="block text-gray-700 font-semibold mb-2">Tujuan Pembelajaran (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
-                <textarea id="tujuanPembelajaran" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh:
-- Peserta didik dapat menjelaskan komponen-komponen sistem tata surya.
-- Peserta didik mampu mengidentifikasi karakteristik masing-masing planet.">Peserta didik dapat menjelaskan komponen-komponen sistem tata surya dengan benar.
-Peserta didik mampu mengidentifikasi karakteristik masing-masing planet dalam tata surya.
-Peserta didik dapat menganalisis interaksi antaranggota sistem tata surya.</textarea>
+            <div class="mb-7">
+                <label for="learningOutcomes" class="block text-gray-800 font-semibold mb-2">Capaian Pembelajaran (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
+                <textarea id="learningOutcomes" rows="5" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh:
+- Siswa dapat mengidentifikasi jenis-jenis ekosistem.
+- Siswa mampu menjelaskan proses fotosintesis.">Peserta didik dapat mengidentifikasi komponen utama sistem tata surya.
+Peserta didik mampu menjelaskan pergerakan benda-benda langit.
+Peserta didik dapat menganalisis fenomena alam yang terkait dengan tata surya.</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="pengantarApersepsi" class="block text-gray-700 font-semibold mb-2">Pengantar / Apersepsi <span class="text-red-500">*</span></label>
-                <textarea id="pengantarApersepsi" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh: Pernahkah Anda melihat bintang di malam hari?">Pernahkah kamu melihat bintang-bintang di malam hari? Atau mengamati perubahan bentuk bulan? Bagaimana semua benda langit itu bisa bergerak teratur di alam semesta ini?</textarea>
+            <div class="mb-7">
+                <label for="introHook" class="block text-gray-800 font-semibold mb-2">Pengantar / Pancingan Minat <span class="text-red-500">*</span></label>
+                <textarea id="introHook" rows="4" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh: Bagaimana bintang-bintang bisa terlihat di malam hari?">Pernahkah kalian bertanya-tanya, bagaimana alam semesta kita bekerja? Dari bintang-bintang yang berkilauan hingga planet-planet yang berputar, semua memiliki cerita dan peran penting. Mari kita selami misteri tata surya bersama!</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="petunjukKerja" class="block text-gray-700 font-semibold mb-2">Petunjuk Kerja (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
-                <textarea id="petunjukKerja" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh:
-1. Bacalah materi dengan saksama.
-2. Diskusikan setiap pertanyaan dengan kelompok.">Bacalah materi tentang sistem tata surya dengan saksama dari berbagai sumber.
-Diskusikan setiap pertanyaan dan tugas dengan kelompokmu.
-Tuliskan jawaban dan hasil diskusimu pada kolom yang disediakan.
-Periksa kembali jawabanmu sebelum dikumpulkan.</textarea>
+            <div class="mb-7">
+                <label for="activityInstructions" class="block text-gray-800 font-semibold mb-2">Panduan Aktivitas (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
+                <textarea id="activityInstructions" rows="5" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh:
+1. Baca materi dengan cermat.
+2. Kerjakan tugas secara mandiri atau kelompok.">Bacalah bagian pengantar dengan teliti untuk mendapatkan gambaran umum.
+Pelajari sumber belajar yang telah disediakan, baik buku maupun tautan digital.
+Diskusikan setiap pertanyaan dan studi kasus dengan teman kelompokmu.
+Isilah kolom jawaban dan lembar evaluasi diri dengan jujur.
+Pastikan semua bagian terisi sebelum mengumpulkan modul ini.</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="kegiatanIntiPrompt" class="block text-gray-700 font-semibold mb-2">Prompt Kegiatan Inti (Studi Kasus/Pendahuluan) <span class="text-red-500">*</span></label>
-                <textarea id="kegiatanIntiPrompt" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh: Bagian ini akan menguji pemahaman Anda. Studi Kasus: Bayangkan Anda adalah seorang ilmuwan...">Bagian ini akan menguji pemahaman Anda tentang sistem tata surya.
-Studi Kasus: Bayangkan Anda adalah seorang astronom yang baru saja menemukan sebuah objek langit misterius di luar orbit Neptunus. Berdasarkan pengamatan awal, objek ini memiliki massa yang sangat besar dan orbit yang tidak biasa. Jelaskan langkah-langkah investigasi yang akan Anda lakukan untuk mengklasifikasikan objek ini, serta tantangan apa yang mungkin Anda hadapi.</textarea>
+            <div class="mb-7">
+                <label for="coreActivityPrompt" class="block text-gray-800 font-semibold mb-2">Skenario Kegiatan Utama (Stimulus/Studi Kasus) <span class="text-red-500">*</span></label>
+                <textarea id="coreActivityPrompt" rows="5" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh: Anda adalah seorang penjelajah angkasa. Tugas Anda adalah...">Skenario: Sebuah misi antariksa yang sedang memetakan planet ekstrasurya menemukan anomali gravitasi di sebuah sistem bintang ganda. Data awal menunjukkan kemungkinan keberadaan planet baru yang sangat besar. Jika Anda adalah kepala tim peneliti, strategi apa yang akan Anda rancang untuk mengonfirmasi keberadaan planet tersebut dan mengumpulkan informasi penting lainnya?</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="pertanyaanInti" class="block text-gray-700 font-semibold mb-2">Pertanyaan Inti (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
-                <textarea id="pertanyaanInti" rows="5" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh:
-1. Bagaimana fotosintesis bekerja?
-2. Apa perbedaan antara sel hewan dan sel tumbuhan?">Bagaimana posisi bumi di tata surya memengaruhi kehidupan di dalamnya?
-Mengapa Pluto tidak lagi diklasifikasikan sebagai planet? Jelaskan argumen ilmiah di baliknya.
-Bandang dan jelaskan perbedaan antara komet dan asteroid dari segi komposisi, orbit, dan asal-usulnya.</textarea>
+            <div class="mb-7">
+                <label for="discussionQuestions" class="block text-gray-800 font-semibold mb-2">Pertanyaan Diskusi (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
+                <textarea id="discussionQuestions" rows="6" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh:
+1. Apa saja perbedaan antara rotasi dan revolusi Bumi?
+2. Jelaskan dampak perubahan iklim terhadap ekosistem laut.">Bagaimana interaksi gravitasi memengaruhi kestabilan orbit planet-planet di tata surya kita?
+Mengapa para ilmuwan terus mencari planet mirip Bumi di zona habitasi bintang lain?
+Bandingkan dan kontraskan model geosentris dan heliosentris tata surya. Faktor apa yang menyebabkan perubahan pemahaman ini?</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="refleksiSiswa" class="block text-gray-700 font-semibold mb-2">Pertanyaan Refleksi Diri Siswa (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
-                <textarea id="refleksiSiswa" rows="4" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh:
-1. Apa yang saya pelajari hari ini?
-2. Bagian mana yang sulit saya pahami?">Apa yang saya pelajari hari ini tentang sistem tata surya?
-Bagian mana dari materi sistem tata surya yang paling saya pahami atau yang paling sulit saya pahami?
-Apa yang ingin saya tanyakan lebih lanjut terkait materi sistem tata surya ini?</textarea>
+            <div class="mb-7">
+                <label for="studentReflection" class="block text-gray-800 font-semibold mb-2">Pertanyaan Refleksi Belajar Siswa (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
+                <textarea id="studentReflection" rows="5" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh:
+1. Hal baru apa yang saya pelajari hari ini?
+2. Konsep apa yang masih membingungkan bagi saya?">Apa konsep paling menarik yang saya pelajari tentang tata surya hari ini?
+Bagian mana dari aktivitas ini yang membuat saya berpikir paling keras, dan mengapa?
+Bagaimana pengetahuan baru ini dapat saya hubungkan dengan kehidupan sehari-hari atau berita terkini?</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="penilaianDiriPernyataan" class="block text-gray-700 font-semibold mb-2">Pernyataan Penilaian Diri (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
-                <textarea id="penilaianDiriPernyataan" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh:
-Saya dapat menjelaskan konsep dasar.
-Saya dapat menerapkan rumus yang dipelajari.">Saya dapat menjelaskan komponen-komponen sistem tata surya.
-Saya mampu mengidentifikasi karakteristik setiap planet.
-Saya dapat menganalisis interaksi antar anggota tata surya.</textarea>
+            <div class="mb-7">
+                <label for="selfAssessmentStatements" class="block text-gray-800 font-semibold mb-2">Pernyataan Penilaian Mandiri (pisahkan dengan baris baru) <span class="text-red-500">*</span></label>
+                <textarea id="selfAssessmentStatements" rows="4" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh:
+Saya memahami konsep dasar.
+Saya dapat menyelesaikan tugas dengan bimbingan.">Saya dapat mengidentifikasi anggota sistem tata surya.
+Saya mampu menjelaskan teori terbentuknya tata surya.
+Saya bisa membedakan antara komet, asteroid, dan meteoroid.</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="kesimpulan" class="block text-gray-700 font-semibold mb-2">Kesimpulan <span class="text-red-500">*</span></label>
-                <textarea id="kesimpulan" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh: Singkatnya, tata surya kita terdiri dari...">Sistem tata surya adalah kumpulan benda langit yang terdiri dari matahari sebagai pusat, planet-planet, asteroid, komet, dan benda langit lainnya yang mengelilinginya dalam orbit masing-masing. Memahami tata surya membantu kita mengapresiasi kompleksitas dan keteraturan alam semesta.</textarea>
+            <div class="mb-7">
+                <label for="moduleSummary" class="block text-gray-800 font-semibold mb-2">Rangkuman Materi <span class="text-red-500">*</span></label>
+                <textarea id="moduleSummary" rows="4" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh: Modul ini menjelaskan tentang...">Modul ini telah membahas tentang keajaiban sistem tata surya, dari komponen-komponennya hingga dinamika pergerakannya. Pemahaman ini penting untuk mengapresiasi kompleksitas alam semesta dan peran kita di dalamnya.</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="tugasTambahan" class="block text-gray-700 font-semibold mb-2">Tugas Tambahan <span class="text-red-500">*</span></label>
-                <textarea id="tugasTambahan" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Contoh: Cari tahu lebih lanjut tentang bulan Jupiter.">Cari dan catatlah informasi menarik tentang salah satu penemuan terbaru di bidang astronomi terkait sistem tata surya, lalu presentasikan di kelas minggu depan.</textarea>
+            <div class="mb-7">
+                <label for="followUpActivities" class="block text-gray-800 font-semibold mb-2">Aktivitas Lanjutan <span class="text-red-500">*</span></label>
+                <textarea id="followUpActivities" rows="4" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Contoh: Buatlah poster tentang tata surya.">Carilah video dokumenter tentang penjelajahan luar angkasa dan buatlah ringkasan singkat tentang misi yang paling menarik perhatianmu. Presentasikan di kelas minggu depan.</textarea>
             </div>
 
-            <div class="mb-6">
-                <label for="ruangCatatan" class="block text-gray-700 font-semibold mb-2">Ruang Catatan Bebas Siswa (Opsional)</label>
-                <textarea id="ruangCatatan" rows="3" class="w-full p-3 border border-gray-300 rounded-lg focus:ring-blue-400 focus:border-blue-400" placeholder="Gunakan ruang ini untuk mencatat ide, pertanyaan, atau pemikiran lain terkait pembelajaran.">Gunakan ruang ini untuk mencatat ide, pertanyaan, atau pemikiran lain terkait pembelajaran.</textarea>
+            <div class="mb-7">
+                <label for="studentNotesArea" class="block text-gray-800 font-semibold mb-2">Ruang Catatan Pribadi Siswa (Opsional)</label>
+                <textarea id="studentNotesArea" rows="4" class="w-full p-4 border border-gray-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 shadow-sm" placeholder="Gunakan ruang ini untuk mencatat ide, pertanyaan, atau pemikiran lain terkait pembelajaran.">Ini adalah ruang bagi Anda untuk mencatat hal-hal penting, pertanyaan, atau ide-ide kreatif selama proses pembelajaran.</textarea>
             </div>
 
-            <div class="flex flex-col sm:flex-row gap-4">
-                <button id="generateWorksheetBtn" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-200 ease-in-out transform hover:scale-105 flex-1">
-                    <span id="generateBtnText">Buat LKPD</span>
-                    <span id="generateBtnSpinner" class="hidden animate-spin h-5 w-5 border-4 border-white border-t-transparent rounded-full ml-2"></span>
+            <div class="flex flex-col sm:flex-row gap-5">
+                <button id="generateModuleBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold py-3.5 px-7 rounded-xl shadow-lg transition duration-200 ease-in-out transform hover:scale-105 flex-1 text-lg">
+                    <span id="generateBtnText">Rancang Modul</span>
+                    <span id="generateBtnSpinner" class="hidden animate-spin h-6 w-6 border-4 border-white border-t-transparent rounded-full ml-3"></span>
                 </button>
-                <button id="resetFormBtn" class="bg-gray-400 hover:bg-gray-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-200 ease-in-out transform hover:scale-105 flex-1">
-                    Reset Formulir
+                <button id="clearFormBtn" class="bg-gray-500 hover:bg-gray-600 text-white font-extrabold py-3.5 px-7 rounded-xl shadow-lg transition duration-200 ease-in-out transform hover:scale-105 flex-1 text-lg">
+                    Bersihkan Formulir
                 </button>
             </div>
         </div>
 
-        <div class="mt-10 printable-area">
-            <h2 class="text-2xl font-semibold text-indigo-700 mb-5 text-center hide-on-print">Hasil Lembar Aktivitas Anda</h2>
-            <div id="worksheetOutputContainer" class="w-full p-5 border border-teal-300 rounded-lg bg-teal-50 text-gray-800 shadow-inner">
-                <p class="text-center text-gray-500 italic">Silakan isi formulir di atas dan klik "Buat LKPD" untuk menghasilkan lembar aktivitas.</p>
+        <div class="mt-12 printable-area">
+            <h2 class="text-2xl font-bold text-emerald-700 mb-6 text-center hide-on-print border-b-2 border-emerald-300 pb-3">Pratinjau Modul Pembelajaran Anda</h2>
+            <div id="moduleOutputContainer" class="w-full p-6 border border-lime-300 rounded-xl bg-lime-50 text-gray-800 shadow-inner">
+                <p class="text-center text-gray-500 italic">Silakan isi formulir di atas dan klik "Rancang Modul" untuk menghasilkan rancangan modul pembelajaran.</p>
             </div>
 
-            <div class="flex justify-center mt-5 hide-on-print">
-                <button id="printWorksheetBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition duration-200 ease-in-out transform hover:scale-105">
-                    Salin Teks LKPD
+            <div class="flex justify-center mt-6 hide-on-print">
+                <button id="downloadModuleBtn" class="bg-lime-600 hover:bg-lime-700 text-white font-bold py-3.5 px-7 rounded-xl shadow-lg transition duration-200 ease-in-out transform hover:scale-105 text-lg">
+                    Unduh Modul Teks
                 </button>
             </div>
 
-            <p class="text-sm text-gray-600 mt-5 text-center hide-on-print">
-                Salin teks di atas, lalu tempel ke aplikasi pengolah kata (MS Word/Google Docs) untuk penyesuaian tata letak dan pencetakan optimal.
+            <p class="text-base text-gray-600 mt-6 text-center hide-on-print">
+                Unduh file teks di atas, lalu buka dengan aplikasi pengolah kata (MS Word/Google Docs) untuk penyesuaian tata letak dan pencetakan optimal.
             </p>
         </div>
     </div>
@@ -430,14 +440,14 @@ Saya dapat menganalisis interaksi antar anggota tata surya.</textarea>
                 Untuk memanfaatkan kapabilitas AI, Anda perlu memasukkan Kunci API Gemini Anda.
                 Kunci ini akan disimpan secara lokal di browser Anda dan tidak akan dikirimkan ke server eksternal.
             </p>
-            <input type="password" id="modalApiInput" placeholder="Contoh: AIzaSyC_..." class="focus:ring-2 focus:ring-indigo-300">
+            <input type="password" id="modalApiInput" placeholder="Contoh: AIzaSyC_..." class="focus:ring-emerald-400">
             <div class="modal-actions-group">
                 <button id="saveApiBtn" class="btn-action-save">Simpan Kunci</button>
                 <button id="clearApiBtn" class="btn-action-clear">Hapus Kunci</button>
                 <button id="closeApiModalBtn" class="btn-action-close">Tutup</button>
             </div>
-            <p class="mt-5 text-sm text-gray-500">
-                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-indigo-500 hover:underline">Dapatkan Kunci API Gemini Anda di sini</a>
+            <p class="mt-6 text-sm text-gray-600">
+                <a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer" class="text-emerald-600 hover:underline font-semibold">Dapatkan Kunci API Gemini Anda di sini</a>
             </p>
         </div>
     </div>
@@ -449,43 +459,43 @@ Saya dapat menganalisis interaksi antar anggota tata surya.</textarea>
         const saveApiBtn = document.getElementById('saveApiBtn');
         const clearApiBtn = document.getElementById('clearApiBtn');
         const closeApiModalBtn = document.getElementById('closeApiModalBtn');
-        const settingsControlBtn = document.getElementById('settingsControlBtn');
-        const worksheetOutputContainer = document.getElementById('worksheetOutputContainer');
-        const generateWorksheetBtn = document.getElementById('generateWorksheetBtn');
-        const resetFormBtn = document.getElementById('resetFormBtn'); // FIXED: Changed 'resetForm' to 'resetFormBtn'
-        const printWorksheetBtn = document.getElementById('printWorksheetBtn');
+        const apiSettingsButton = document.getElementById('apiSettingsButton');
+        const moduleOutputContainer = document.getElementById('moduleOutputContainer');
+        const generateModuleBtn = document.getElementById('generateModuleBtn');
+        const clearFormBtn = document.getElementById('clearFormBtn');
+        const downloadModuleBtn = document.getElementById('downloadModuleBtn');
         const generateBtnText = document.getElementById('generateBtnText');
         const generateBtnSpinner = document.getElementById('generateBtnSpinner');
 
         // Input fields
-        const mataPelajaranInput = document.getElementById('mataPelajaran');
-        const kelasInput = document.getElementById('kelas');
-        const semesterInput = document.getElementById('semester');
-        const materiPokokInput = document.getElementById('materiPokok');
-        const namaGuruInput = document.getElementById('namaGuru');
-        const tujuanPembelajaranInput = document.getElementById('tujuanPembelajaran');
-        const pengantarApersepsiInput = document.getElementById('pengantarApersepsi');
-        const petunjukKerjaInput = document.getElementById('petunjukKerja');
-        const kegiatanIntiPromptInput = document.getElementById('kegiatanIntiPrompt');
-        const pertanyaanIntiInput = document.getElementById('pertanyaanInti');
-        const refleksiSiswaInput = document.getElementById('refleksiSiswa');
-        const penilaianDiriPernyataanInput = document.getElementById('penilaianDiriPernyataan');
-        const kesimpulanInput = document.getElementById('kesimpulan');
-        const tugasTambahanInput = document.getElementById('tugasTambahan');
-        const ruangCatatanInput = document.getElementById('ruangCatatan');
+        const subjectFieldInput = document.getElementById('subjectField');
+        const gradeLevelInput = document.getElementById('gradeLevel');
+        const learningPeriodInput = document.getElementById('learningPeriod');
+        const mainTopicInput = document.getElementById('mainTopic');
+        const instructorNameInput = document.getElementById('instructorName');
+        const learningOutcomesInput = document.getElementById('learningOutcomes');
+        const introHookInput = document.getElementById('introHook');
+        const activityInstructionsInput = document.getElementById('activityInstructions');
+        const coreActivityPromptInput = document.getElementById('coreActivityPrompt');
+        const discussionQuestionsInput = document.getElementById('discussionQuestions');
+        const studentReflectionInput = document.getElementById('studentReflection');
+        const selfAssessmentStatementsInput = document.getElementById('selfAssessmentStatements');
+        const moduleSummaryInput = document.getElementById('moduleSummary');
+        const followUpActivitiesInput = document.getElementById('followUpActivities');
+        const studentNotesAreaInput = document.getElementById('studentNotesArea');
 
         /**
          * Menampilkan pesan notifikasi sementara di UI.
          * @param {string} message - Pesan yang akan ditampilkan.
          * @param {boolean} isError - True jika pesan adalah error, false jika sukses.
          */
-        function displayNotificationMessage(message, isError = false) {
-            const container = document.querySelector('.max-w-5xl.mx-auto');
+        function showNotification(message, isError = false) {
+            const container = document.querySelector('.max-w-6xl.mx-auto');
             let notificationDiv = container.querySelector('.notification-message');
 
             if (!notificationDiv) {
                 notificationDiv = document.createElement('div');
-                notificationDiv.className = `notification-message p-3 rounded-md mb-4 text-center text-sm absolute top-4 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
+                notificationDiv.className = `notification-message p-4 rounded-xl text-center text-base absolute top-8 left-1/2 -translate-x-1/2 w-3/4 z-20 shadow-lg`;
                 container.insertBefore(notificationDiv, container.firstChild);
             }
 
@@ -496,31 +506,31 @@ Saya dapat menganalisis interaksi antar anggota tata surya.</textarea>
 
             setTimeout(() => {
                 notificationDiv.classList.remove('show');
-                setTimeout(() => notificationDiv.classList.add('hidden'), 300);
-            }, 3000);
+                setTimeout(() => notificationDiv.classList.add('hidden'), 400); // Penundaan untuk transisi
+            }, 3500); // Durasi tampil pesan lebih lama
         }
 
         /**
          * Menyimpan Kunci API Gemini ke localStorage.
          */
-        function storeApiKeyLocally() {
+        function storeApiKey() {
             const apiKey = modalApiInputElem.value.trim();
             if (apiKey) {
                 localStorage.setItem('geminiApiKey', apiKey);
                 geminiApiModal.classList.remove('show');
-                displayNotificationMessage('Kunci API Gemini berhasil disimpan.', false);
+                showNotification('Kunci API Gemini berhasil disimpan.', false);
             } else {
-                displayNotificationMessage('Kunci API Gemini tidak boleh kosong.', true);
+                showNotification('Kunci API Gemini tidak boleh kosong.', true);
             }
         }
 
         /**
          * Menghapus Kunci API Gemini dari localStorage.
          */
-        function removeApiKeyLocally() {
+        function removeApiKey() {
             localStorage.removeItem('geminiApiKey');
             modalApiInputElem.value = '';
-            displayNotificationMessage('Kunci API Gemini telah dihapus.', false);
+            showNotification('Kunci API Gemini telah dihapus.', false);
         }
 
         /**
@@ -529,63 +539,65 @@ Saya dapat menganalisis interaksi antar anggota tata surya.</textarea>
          */
         function setLoadingState(isLoading) {
             if (isLoading) {
-                generateBtnText.textContent = 'Membuat...';
+                generateBtnText.textContent = 'Membangun rancangan...';
                 generateBtnSpinner.classList.remove('hidden');
-                generateWorksheetBtn.disabled = true;
-                resetFormBtn.disabled = true;
+                generateModuleBtn.disabled = true;
+                clearFormBtn.disabled = true;
+                downloadModuleBtn.disabled = true; // Disable download during generation
             } else {
-                generateBtnText.textContent = 'Buat LKPD';
+                generateBtnText.textContent = 'Rancang Modul';
                 generateBtnSpinner.classList.add('hidden');
-                generateWorksheetBtn.disabled = false;
-                resetFormBtn.disabled = false;
+                generateModuleBtn.disabled = false;
+                clearFormBtn.disabled = false;
+                downloadModuleBtn.disabled = false; // Enable download after generation
             }
         }
 
         /**
          * Mengambil data dari input form.
-         * @returns {object} Objek berisi data LKPD.
+         * @returns {object} Objek berisi data modul belajar.
          */
-        function getLKPDData() {
+        function getModuleData() {
             return {
-                mataPelajaran: mataPelajaranInput.value.trim(),
-                kelas: kelasInput.value.trim(),
-                semester: semesterInput.value.trim(),
-                materiPokok: materiPokokInput.value.trim(),
-                namaGuru: namaGuruInput.value.trim(),
-                tujuanPembelajaran: tujuanPembelajaranInput.value.trim().split('\n').filter(line => line.trim() !== ''),
-                pengantarApersepsi: pengantarApersepsiInput.value.trim(),
-                petunjukKerja: petunjukKerjaInput.value.trim().split('\n').filter(line => line.trim() !== ''),
-                kegiatanIntiPrompt: kegiatanIntiPromptInput.value.trim(),
-                pertanyaanInti: pertanyaanIntiInput.value.trim().split('\n').filter(line => line.trim() !== ''),
-                refleksiSiswa: refleksiSiswaInput.value.trim().split('\n').filter(line => line.trim() !== ''),
-                penilaianDiriPernyataan: penilaianDiriPernyataanInput.value.trim().split('\n').filter(line => line.trim() !== ''),
-                kesimpulan: kesimpulanInput.value.trim(),
-                tugasTambahan: tugasTambahanInput.value.trim(),
-                ruangCatatan: ruangCatatanInput.value.trim() || 'Gunakan ruang ini untuk mencatat ide, pertanyaan, atau pemikiran lain terkait pembelajaran.'
+                subjectField: subjectFieldInput.value.trim(),
+                gradeLevel: gradeLevelInput.value.trim(),
+                learningPeriod: learningPeriodInput.value.trim(),
+                mainTopic: mainTopicInput.value.trim(),
+                instructorName: instructorNameInput.value.trim(),
+                learningOutcomes: learningOutcomesInput.value.trim().split('\n').filter(line => line.trim() !== ''),
+                introHook: introHookInput.value.trim(),
+                activityInstructions: activityInstructionsInput.value.trim().split('\n').filter(line => line.trim() !== ''),
+                coreActivityPrompt: coreActivityPromptInput.value.trim(),
+                discussionQuestions: discussionQuestionsInput.value.trim().split('\n').filter(line => line.trim() !== ''),
+                studentReflection: studentReflectionInput.value.trim().split('\n').filter(line => line.trim() !== ''),
+                selfAssessmentStatements: selfAssessmentStatementsInput.value.trim().split('\n').filter(line => line.trim() !== ''),
+                moduleSummary: moduleSummaryInput.value.trim(),
+                followUpActivities: followUpActivitiesInput.value.trim(),
+                studentNotesArea: studentNotesAreaInput.value.trim() || 'Ini adalah ruang bagi Anda untuk mencatat hal-hal penting, pertanyaan, atau ide-ide kreatif selama proses pembelajaran.'
             };
         }
 
         /**
          * Validasi input form.
-         * @param {object} data - Data LKPD.
+         * @param {object} data - Data modul belajar.
          * @returns {boolean} True jika semua input wajib terisi, false jika tidak.
          */
         function validateInputs(data) {
             const requiredInputs = [
-                { id: 'mataPelajaran', value: data.mataPelajaran },
-                { id: 'kelas', value: data.kelas },
-                { id: 'semester', value: data.semester },
-                { id: 'materiPokok', value: data.materiPokok },
-                { id: 'namaGuru', value: data.namaGuru },
-                { id: 'tujuanPembelajaran', value: data.tujuanPembelajaran },
-                { id: 'pengantarApersepsi', value: data.pengantarApersepsi },
-                { id: 'petunjukKerja', value: data.petunjukKerja },
-                { id: 'kegiatanIntiPrompt', value: data.kegiatanIntiPrompt },
-                { id: 'pertanyaanInti', value: data.pertanyaanInti },
-                { id: 'refleksiSiswa', value: data.refleksiSiswa },
-                { id: 'penilaianDiriPernyataan', value: data.penilaianDiriPernyataan },
-                { id: 'kesimpulan', value: data.kesimpulan },
-                { id: 'tugasTambahan', value: data.tugasTambahan }
+                { id: 'subjectField', value: data.subjectField },
+                { id: 'gradeLevel', value: data.gradeLevel },
+                { id: 'learningPeriod', value: data.learningPeriod },
+                { id: 'mainTopic', value: data.mainTopic },
+                { id: 'instructorName', value: data.instructorName },
+                { id: 'learningOutcomes', value: data.learningOutcomes },
+                { id: 'introHook', value: data.introHook },
+                { id: 'activityInstructions', value: data.activityInstructions },
+                { id: 'coreActivityPrompt', value: data.coreActivityPrompt },
+                { id: 'discussionQuestions', value: data.discussionQuestions },
+                { id: 'studentReflection', value: data.studentReflection },
+                { id: 'selfAssessmentStatements', value: data.selfAssessmentStatements },
+                { id: 'moduleSummary', value: data.moduleSummary },
+                { id: 'followUpActivities', value: data.followUpActivities }
             ];
 
             let allValid = true;
@@ -600,97 +612,97 @@ Saya dapat menganalisis interaksi antar anggota tata surya.</textarea>
             });
 
             if (!allValid) {
-                displayNotificationMessage('Harap lengkapi semua bidang yang ditandai dengan (*).', true);
+                showNotification('Harap lengkapi semua bidang yang ditandai dengan (*).', true);
             }
             return allValid;
         }
 
         /**
-         * Membangun prompt untuk Gemini API berdasarkan data LKPD.
-         * @param {object} data - Data LKPD.
+         * Membangun prompt untuk Gemini API berdasarkan data modul.
+         * @param {object} data - Data modul belajar.
          * @returns {string} Prompt yang diformat.
          */
-        function buildGeminiPrompt(data) {
-            const tujuanList = data.tujuanPembelajaran.map(item => `<li>${item.trim()}</li>`).join('\n');
-            const petunjukList = data.petunjukKerja.map(item => `<li>${item.trim()}</li>`).join('\n');
-            const pertanyaanList = data.pertanyaanInti.map((item, index) => `<li><strong>${index + 1}.</strong> ${item.trim()}
+        function constructGeminiPrompt(data) {
+            const learningOutcomesList = data.learningOutcomes.map(item => `<li>${item.trim()}</li>`).join('\n');
+            const instructionsList = data.activityInstructions.map(item => `<li>${item.trim()}</li>`).join('\n');
+            const discussionQuestionsList = data.discussionQuestions.map((item, index) => `<li><strong>${index + 1}.</strong> ${item.trim()}
                 <br><p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
                 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
                 </li>`).join('\n');
-            const refleksiList = data.refleksiSiswa.map((item, index) => `<li><strong>${index + 1}.</strong> ${item.trim()}
+            const reflectionQuestionsList = data.studentReflection.map((item, index) => `<li><strong>${index + 1}.</strong> ${item.trim()}
                 <br><p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
                 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
                 </li>`).join('\n');
-            const penilaianTableRows = data.penilaianDiriPernyataan.map(item => `
+            const selfAssessmentTableRows = data.selfAssessmentStatements.map(item => `
                 <tr>
-                    <td class="border border-gray-300 p-2">${item.trim()}</td>
-                    <td class="border border-gray-300 p-2 text-center">☐</td>
-                    <td class="border border-gray-300 p-2 text-center">☐</td>
+                    <td class="border border-gray-300 p-3">${item.trim()}</td>
+                    <td class="border border-gray-300 p-3 text-center">☐ Ya</td>
+                    <td class="border border-gray-300 p-3 text-center">☐ Tidak</td>
                 </tr>`).join('\n');
 
-            return `Hasilkan fragmen HTML untuk Lembar Kerja Peserta Didik (LKPD). Jangan sertakan tag HTML lengkap seperti <!DOCTYPE html>, <html>, <head>, atau <body>. HANYA hasilkan konten yang akan berada di dalam div 'worksheetOutputContainer', menggunakan kelas Tailwind CSS dan struktur gaya yang mirip dengan contoh yang Anda lihat sebelumnya. Pastikan untuk menyertakan ruang kosong untuk jawaban dan kotak centang untuk penilaian diri.
+            return `Buat fragmen HTML untuk Rancangan Modul Belajar Interaktif. Jangan sertakan tag HTML lengkap seperti <!DOCTYPE html>, <html>, <head>, atau <body>. HANYA hasilkan konten yang akan berada di dalam div 'moduleOutputContainer', menggunakan kelas Tailwind CSS dan struktur gaya yang mirip dengan contoh modul belajar. Pastikan untuk menyertakan ruang kosong untuk jawaban dan kotak centang untuk penilaian mandiri. Gunakan heading dan sub-heading yang jelas.
 
-Berikut adalah detail LKPD:
+Berikut adalah detail modul:
 
-<h1 class="text-xl font-bold text-center mb-4">LEMBAR KERJA PESERTA DIDIK</h1>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Identitas LKPD</h2>
-<div class="mb-4 text-base">
-    <p><strong>Mata Pelajaran:</strong> ${data.mataPelajaran}</p>
-    <p><strong>Kelas:</strong> ${data.kelas}</p>
-    <p><strong>Semester:</strong> ${data.semester}</p>
-    <p><strong>Materi Pokok:</strong> ${data.materiPokok}</p>
-    <p><strong>Nama Guru:</strong> ${data.namaGuru}</p>
+<h1 class="text-2xl font-bold text-center mb-5">RANCANGAN MODUL BELAJAR INTERAKTIF</h1>
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Detail Modul</h2>
+<div class="mb-5 text-lg">
+    <p><strong>Mata Ajar:</strong> ${data.subjectField}</p>
+    <p><strong>Jenjang Kelas:</strong> ${data.gradeLevel}</p>
+    <p><strong>Periode Belajar:</strong> ${data.learningPeriod}</p>
+    <p><strong>Topik Utama:</strong> ${data.mainTopic}</p>
+    <p><strong>Nama Pengajar:</strong> ${data.instructorName}</p>
 </div>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Tujuan Pembelajaran</h2>
-<ul class="list-disc list-inside mb-4 text-base leading-relaxed">
-${tujuanList}
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Capaian Pembelajaran</h2>
+<ul class="list-disc list-inside mb-5 text-lg leading-relaxed">
+${learningOutcomesList}
 </ul>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Pengantar / Apersepsi</h2>
-<p class="mb-4 text-base leading-relaxed">${data.pengantarApersepsi}</p>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Petunjuk Kerja</h2>
-<ol class="list-decimal list-inside mb-4 text-base leading-relaxed">
-${petunjukList}
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Pengantar & Pancingan Minat</h2>
+<p class="mb-5 text-lg leading-relaxed">${data.introHook}</p>
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Panduan Kegiatan</h2>
+<ol class="list-decimal list-inside mb-5 text-lg leading-relaxed">
+${instructionsList}
 </ol>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Kegiatan Inti</h2>
-<p class="mb-4 text-base leading-relaxed">${data.kegiatanIntiPrompt}</p>
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Bagian Inti Aktivitas</h2>
+<p class="mb-5 text-lg leading-relaxed">${data.coreActivityPrompt}</p>
 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
-<p class="font-medium mb-2 text-base">Jawablah pertanyaan-pertanyaan berikut dengan berdiskusi:</p>
-<ol class="list-decimal list-inside ml-4 mb-4 text-base leading-relaxed">
-${pertanyaanList}
+<p class="font-medium mb-3 text-lg">Diskusikan dan jawablah pertanyaan-pertanyaan ini:</p>
+<ol class="list-decimal list-inside ml-5 mb-5 text-lg leading-relaxed">
+${discussionQuestionsList}
 </ol>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Refleksi Diri Siswa</h2>
-<ul class="list-none mb-4 text-base leading-relaxed">
-${refleksiList}
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Refleksi Belajar</h2>
+<ul class="list-none mb-5 text-lg leading-relaxed">
+${reflectionQuestionsList}
 </ul>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Penilaian Diri (Berikan tanda centang pada kolom yang sesuai)</h2>
-<table class="w-full border-collapse border border-gray-400 mb-4 text-base">
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Penilaian Mandiri (Centang yang sesuai)</h2>
+<table class="w-full border-collapse border border-gray-400 mb-5 text-lg">
     <thead>
         <tr>
-            <th class="border border-gray-300 p-2 text-left bg-gray-100">Pernyataan</th>
-            <th class="border border-gray-300 p-2 text-left bg-gray-100 text-center">Ya</th>
-            <th class="border border-gray-300 p-2 text-left bg-gray-100 text-center">Tidak</th>
+            <th class="border border-gray-300 p-3 text-left bg-gray-100">Pernyataan</th>
+            <th class="border border-gray-300 p-3 text-center bg-gray-100">Ya</th>
+            <th class="border border-gray-300 p-3 text-center bg-gray-100">Tidak</th>
         </tr>
     </thead>
     <tbody>
-${penilaianTableRows}
+${selfAssessmentTableRows}
     </tbody>
 </table>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Kesimpulan & Tugas Tambahan</h2>
-<p class="mb-4 text-base leading-relaxed">${data.kesimpulan}</p>
-<p class="mb-4 text-base leading-relaxed"><strong>Tugas Tambahan:</strong> ${data.tugasTambahan}</p>
-<hr>
-<h2 class="text-lg font-semibold mt-6 mb-3 border-b border-gray-300 pb-1">Ruang Catatan Bebas Siswa</h2>
-<p class="text-sm italic text-gray-600 mb-2">${data.ruangCatatan}</p>
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Rangkuman & Aktivitas Lanjutan</h2>
+<p class="mb-5 text-lg leading-relaxed">${data.moduleSummary}</p>
+<p class="mb-5 text-lg leading-relaxed"><strong>Aktivitas Lanjutan:</strong> ${data.followUpActivities}</p>
+<hr class="border-t-2 border-emerald-300">
+<h2 class="text-xl font-semibold mt-8 mb-4 border-b border-gray-300 pb-2">Ruang Catatan Pribadi Siswa</h2>
+<p class="text-base italic text-gray-600 mb-3">${data.studentNotesArea}</p>
 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
 <p class="text-sm text-gray-700 leading-tight">........................................................................................................................................................</p>
@@ -700,25 +712,25 @@ ${penilaianTableRows}
         }
 
         /**
-         * Memanggil Gemini API untuk menghasilkan LKPD.
+         * Memanggil Gemini API untuk menghasilkan modul belajar.
          */
-        async function generateWorksheet() {
+        async function generateLearningModule() {
             const apiKey = localStorage.getItem('geminiApiKey');
             if (!apiKey) {
                 geminiApiModal.classList.add('show');
-                displayNotificationMessage('Kunci API Gemini tidak ditemukan. Harap masukkan kunci Anda.', true);
+                showNotification('Kunci API Gemini tidak ditemukan. Harap masukkan kunci Anda.', true);
                 return;
             }
 
-            const lkpdData = getLKPDData();
-            if (!validateInputs(lkpdData)) {
+            const moduleData = getModuleData();
+            if (!validateInputs(moduleData)) {
                 return; // Berhenti jika validasi gagal
             }
 
             setLoadingState(true);
-            worksheetOutputContainer.innerHTML = `<p class="text-center text-gray-500 italic animate-pulse-light">Sedang membuat LKPD Anda, mohon tunggu...</p>`;
+            moduleOutputContainer.innerHTML = `<p class="text-center text-gray-600 italic animate-pulse-light">Sedang membangun rancangan modul Anda, mohon tunggu...</p>`;
 
-            const prompt = buildGeminiPrompt(lkpdData);
+            const prompt = constructGeminiPrompt(moduleData);
 
             try {
                 let chatHistory = [];
@@ -738,61 +750,81 @@ ${penilaianTableRows}
                     result.candidates[0].content && result.candidates[0].content.parts &&
                     result.candidates[0].content.parts.length > 0) {
                     const generatedHtml = result.candidates[0].content.parts[0].text;
-                    worksheetOutputContainer.innerHTML = generatedHtml;
-                    displayNotificationMessage('LKPD berhasil dibuat!', false);
+                    moduleOutputContainer.innerHTML = generatedHtml;
+                    showNotification('Rancangan modul berhasil dibuat!', false);
                 } else {
-                    worksheetOutputContainer.innerHTML = `<p class="text-center text-red-600">Gagal membuat LKPD. Coba lagi atau periksa kunci API Anda.</p>`;
-                    displayNotificationMessage('Respons API tidak valid.', true);
+                    moduleOutputContainer.innerHTML = `<p class="text-center text-red-600">Gagal membuat rancangan modul. Coba lagi atau periksa kunci API Anda.</p>`;
+                    showNotification('Respons API tidak valid atau kosong.', true);
                 }
             } catch (error) {
                 console.error('Error fetching from Gemini API:', error);
-                worksheetOutputContainer.innerHTML = `<p class="text-center text-red-600">Terjadi kesalahan saat menghubungi API: ${error.message}.</p>`;
-                displayNotificationMessage('Terjadi kesalahan saat menghubungi API.', true);
+                moduleOutputContainer.innerHTML = `<p class="text-center text-red-600">Terjadi kesalahan saat menghubungi API: ${error.message}.</p>`;
+                showNotification('Terjadi kesalahan saat menghubungi API.', true);
             } finally {
                 setLoadingState(false);
             }
         }
 
         /**
-         * Mengatur ulang semua input formulir dan area output LKPD.
+         * Mengatur ulang semua input formulir dan area output modul.
          */
         function resetForm() {
-            mataPelajaranInput.value = 'IPA';
-            kelasInput.value = 'VII';
-            semesterInput.value = 'Genap';
-            materiPokokInput.value = 'Sistem Tata Surya';
-            namaGuruInput.value = 'Bpk. Budi Cahyadi, S.Pd.';
-            tujuanPembelajaranInput.value = `Peserta didik dapat menjelaskan komponen-komponen sistem tata surya dengan benar.
-Peserta didik mampu mengidentifikasi karakteristik masing-masing planet dalam tata surya.
-Peserta didik dapat menganalisis interaksi antaranggota sistem tata surya.`;
-            pengantarApersepsiInput.value = `Pernahkah kamu melihat bintang-bintang di malam malam? Atau mengamati perubahan bentuk bulan? Bagaimana semua benda langit itu bisa bergerak teratur di alam semesta ini?`;
-            petunjukKerjaInput.value = `Bacalah materi tentang sistem tata surya dengan saksama dari berbagai sumber.
-Diskusikan setiap pertanyaan dan tugas dengan kelompokmu.
-Tuliskan jawaban dan hasil diskusimu pada kolom yang disediakan.
-Periksa kembali jawabanmu sebelum dikumpulkan.`;
-            kegiatanIntiPromptInput.value = `Bagian ini akan menguji pemahaman Anda tentang sistem tata surya.
-Studi Kasus: Bayangkan Anda adalah seorang astronom yang baru saja menemukan sebuah objek langit misterius di luar orbit Neptunus. Berdasarkan pengamatan awal, objek ini memiliki massa yang sangat besar dan orbit yang tidak biasa. Jelaskan langkah-langkah investigasi yang akan Anda lakukan untuk mengklasifikasikan objek ini, serta tantangan apa yang mungkin Anda hadapi.`;
-            pertanyaanIntiInput.value = `Bagaimana posisi bumi di tata surya memengaruhi kehidupan di dalamnya?
-Mengapa Pluto tidak lagi diklasifikasikan sebagai planet? Jelaskan argumen ilmiah di baliknya.
-Bandang dan jelaskan perbedaan antara komet dan asteroid dari segi komposisi, orbit, dan asal-usulnya.`;
-            refleksiSiswaInput.value = `Apa yang saya pelajari hari ini tentang sistem tata surya?
-Bagian mana dari materi sistem tata surya yang paling saya pahami atau yang paling sulit saya pahami?
-Apa yang ingin saya tanyakan lebih lanjut terkait materi sistem tata surya ini?`;
-            penilaianDiriPernyataanInput.value = `Saya dapat menjelaskan komponen-komponen sistem tata surya.
-Saya mampu mengidentifikasi karakteristik setiap planet.
-Saya dapat menganalisis interaksi antar anggota tata surya.`;
-            kesimpulanInput.value = `Sistem tata surya adalah kumpulan benda langit yang terdiri dari matahari sebagai pusat, planet-planet, asteroid, komet, dan benda langit lainnya yang mengelilinginya dalam orbit masing-masing. Memahami tata surya membantu kita mengapresiasi kompleksitas dan keteraturan alam semesta.`;
-            tugasTambahanInput.value = `Cari dan catatlah informasi menarik tentang salah satu penemuan terbaru di bidang astronomi terkait sistem tata surya, lalu presentasikan di kelas minggu depan.`;
-            ruangCatatanInput.value = `Gunakan ruang ini untuk mencatat ide, pertanyaan, atau pemikiran lain terkait pembelajaran.`;
+            subjectFieldInput.value = 'Ilmu Pengetahuan Alam';
+            gradeLevelInput.value = 'SMP Kelas VII';
+            learningPeriodInput.value = 'Semester Genap';
+            mainTopicInput.value = 'Dinamika Tata Surya';
+            instructorNameInput.value = 'Ibu Ayu Lestari, M.Pd.';
+            learningOutcomesInput.value = `Peserta didik dapat mengidentifikasi komponen utama sistem tata surya.
+Peserta didik mampu menjelaskan pergerakan benda-benda langit.
+Peserta didik dapat menganalisis fenomena alam yang terkait dengan tata surya.`;
+            introHookInput.value = `Pernahkah kalian bertanya-tanya, bagaimana alam semesta kita bekerja? Dari bintang-bintang yang berkilauan hingga planet-planet yang berputar, semua memiliki cerita dan peran penting. Mari kita selami misteri tata surya bersama!`;
+            activityInstructionsInput.value = `Bacalah bagian pengantar dengan teliti untuk mendapatkan gambaran umum.
+Pelajari sumber belajar yang telah disediakan, baik buku maupun tautan digital.
+Diskusikan setiap pertanyaan dan studi kasus dengan teman kelompokmu.
+Isilah kolom jawaban dan lembar evaluasi diri dengan jujur.
+Pastikan semua bagian terisi sebelum mengumpulkan modul ini.`;
+            coreActivityPromptInput.value = `Skenario: Sebuah misi antariksa yang sedang memetakan planet ekstrasurya menemukan anomali gravitasi di sebuah sistem bintang ganda. Data awal menunjukkan kemungkinan keberadaan planet baru yang sangat besar. Jika Anda adalah kepala tim peneliti, strategi apa yang akan Anda rancang untuk mengonfirmasi keberadaan planet tersebut dan mengumpulkan informasi penting lainnya?`;
+            discussionQuestionsInput.value = `Bagaimana interaksi gravitasi memengaruhi kestabilan orbit planet-planet di tata surya kita?
+Mengapa para ilmuwan terus mencari planet mirip Bumi di zona habitasi bintang lain?
+Bandingkan dan kontraskan model geosentris dan heliosentris tata surya. Faktor apa yang menyebabkan perubahan pemahaman ini?`;
+            studentReflectionInput.value = `Apa konsep paling menarik yang saya pelajari tentang tata surya hari ini?
+Bagian mana dari aktivitas ini yang membuat saya berpikir paling keras, dan mengapa?
+Bagaimana pengetahuan baru ini dapat saya hubungkan dengan kehidupan sehari-hari atau berita terkini?`;
+            selfAssessmentStatementsInput.value = `Saya dapat mengidentifikasi anggota sistem tata surya.
+Saya mampu menjelaskan teori terbentuknya tata surya.
+Saya bisa membedakan antara komet, asteroid, dan meteoroid.`;
+            moduleSummaryInput.value = `Modul ini telah membahas tentang keajaiban sistem tata surya, dari komponen-komponennya hingga dinamika pergerakannya. Pemahaman ini penting untuk mengapresiasi kompleksitas alam semesta dan peran kita di dalamnya.`;
+            followUpActivitiesInput.value = `Carilah video dokumenter tentang penjelajahan luar angkasa dan buatlah ringkasan singkat tentang misi yang paling menarik perhatianmu. Presentasikan di kelas minggu depan.`;
+            studentNotesAreaInput.value = `Ini adalah ruang bagi Anda untuk mencatat hal-hal penting, pertanyaan, atau ide-ide kreatif selama proses pembelajaran.`;
 
             // Hapus kelas 'required-field' dari semua input
             document.querySelectorAll('input, textarea').forEach(elem => {
                 elem.classList.remove('required-field');
             });
 
-            worksheetOutputContainer.innerHTML = `<p class="text-center text-gray-500 italic">Silakan isi formulir di atas dan klik "Buat LKPD" untuk menghasilkan lembar aktivitas.</p>`;
-            displayNotificationMessage('Formulir berhasil direset.', false);
+            moduleOutputContainer.innerHTML = `<p class="text-center text-gray-500 italic">Silakan isi formulir di atas dan klik "Rancang Modul" untuk menghasilkan rancangan modul pembelajaran.</p>`;
+            showNotification('Formulir berhasil direset.', false);
         }
+
+        /**
+         * Mengunduh konten dari moduleOutputContainer sebagai file teks.
+         */
+        function downloadModuleAsText() {
+            const textContent = moduleOutputContainer.innerText;
+            if (!textContent || textContent.includes('Silakan isi formulir')) {
+                showNotification('Tidak ada modul untuk diunduh. Harap buat modul terlebih dahulu.', true);
+                return;
+            }
+            const blob = new Blob([textContent], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Rancangan_Modul_Belajar.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showNotification('Modul berhasil diunduh sebagai file teks!', false);
+        }
+
 
         // Inisialisasi utama setelah DOM dimuat sepenuhnya
         document.addEventListener('DOMContentLoaded', () => {
@@ -803,31 +835,22 @@ Saya dapat menganalisis interaksi antar anggota tata surya.`;
             }
             modalApiInputElem.value = storedApiKey || '';
 
-            saveApiBtn.addEventListener('click', storeApiKeyLocally);
-            clearApiBtn.addEventListener('click', removeApiKeyLocally);
+            saveApiBtn.addEventListener('click', storeApiKey);
+            clearApiBtn.addEventListener('click', removeApiKey);
             closeApiModalBtn.addEventListener('click', () => {
                 geminiApiModal.classList.remove('show');
             });
-            settingsControlBtn.addEventListener('click', () => {
+            apiSettingsButton.addEventListener('click', () => {
                 geminiApiModal.classList.add('show');
                 modalApiInputElem.value = localStorage.getItem('geminiApiKey') || '';
             });
 
-            // Event listeners for worksheet generation and reset
-            generateWorksheetBtn.addEventListener('click', generateWorksheet);
-            resetFormBtn.addEventListener('click', resetForm);
+            // Event listeners for module generation and reset
+            generateModuleBtn.addEventListener('click', generateLearningModule);
+            clearFormBtn.addEventListener('click', resetForm);
             
-            // Mengubah fungsi tombol cetak menjadi salin teks
-            printWorksheetBtn.addEventListener('click', () => {
-                const textToCopy = worksheetOutputContainer.innerText; // Mengambil teks dari elemen
-                const tempTextArea = document.createElement('textarea');
-                tempTextArea.value = textToCopy;
-                document.body.appendChild(tempTextArea);
-                tempTextArea.select();
-                document.execCommand('copy'); // Menyalin teks ke papan klip
-                document.body.removeChild(tempTextArea);
-                displayNotificationMessage('Teks LKPD berhasil disalin ke papan klip!', false);
-            });
+            // Event listener for download button
+            downloadModuleBtn.addEventListener('click', downloadModuleAsText);
 
             // Initial reset to populate default values and clear any previous state
             resetForm();
